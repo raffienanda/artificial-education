@@ -1,34 +1,35 @@
 /**
  * Learning Modules — Dummy Data (Indonesian)
- * Matematika SMP Kelas 7 with 8 modules
+ * Algoritma dan Pemrograman untuk Mahasiswa Ilmu Komputer
+ * Arsitektur Graph Knowledge Tracing (GKT)
  */
 export const course = {
-  id: 'course-math-01',
-  title: 'Matematika SMP Kelas 7',
-  description: 'Kuasai konsep dasar matematika melalui pembelajaran adaptif berbasis AI',
-  icon: '📐',
-  totalModules: 8,
+  id: 'course-algo-01',
+  title: 'Algoritma dan Pemrograman',
+  description: 'Kuasai dasar-dasar algoritma dan pemrograman melalui pembelajaran adaptif berbasis AI',
+  icon: '💻',
+  totalModules: 3,
 }
 
 export const modules = [
   {
     id: 'mod-001',
-    title: 'Bilangan Bulat',
-    icon: '🔢',
-    description: 'Pelajari bilangan bulat, sifat-sifatnya, dan operasi dasar',
+    title: 'Dasar & Variabel',
+    icon: '🧱',
+    description: 'Pelajari konsep dasar pemrograman, tipe data, variabel, dan operasi aritmatika',
     difficulty: 'Dasar',
-    estimatedTime: '45 menit',
+    estimatedTime: '60 menit',
     order: 1,
     status: 'in-progress',
-    progress: 60,
+    progress: 65,
     subMateriCount: 5,
     subtopics: [
       {
         id: 'sub-001-1',
-        title: 'Penjumlahan dan Pengurangan Bilangan Bulat',
-        completed: false,
+        title: 'Pengantar Algoritma dan Program',
+        completed: true,
         content: {
-          title: 'Penjumlahan dan Pengurangan Bilangan Bulat',
+          title: 'Pengantar Algoritma dan Program',
           tabs: [
             {
               id: 'ringkasan',
@@ -49,23 +50,20 @@ export const modules = [
           sections: [
             {
               type: 'text',
-              content: 'Dalam penjumlahan dan pengurangan bilangan bulat, terdapat beberapa aturan tanda yang perlu kamu pahami.',
+              content: 'Algoritma adalah urutan langkah-langkah logis dan sistematis untuk menyelesaikan suatu masalah. Program adalah implementasi algoritma dalam bahasa pemrograman tertentu sehingga dapat dieksekusi oleh komputer.',
             },
             {
               type: 'formula',
-              title: 'Aturan Tanda',
-              content: '(+) + (+) = hasil (+)\n(−) + (−) = hasil (−)\n(+) + (−) = kurangi dan ambil tanda dari yang terbesar\n(−) + (+) = kurangi dan ambil tanda dari yang terbesar',
-              description: '',
+              title: 'Siklus Pengembangan Program',
+              content: '1. Definisi Masalah\n2. Merancang Algoritma (Pseudocode / Flowchart)\n3. Menulis Kode Program (Coding)\n4. Kompilasi / Interpretasi\n5. Pengujian (Testing & Debugging)\n6. Dokumentasi',
+              description: 'Setiap program yang baik melewati siklus ini secara iteratif.',
             },
             {
-              type: 'numberline',
-              title: 'Garis Bilangan',
-              description: 'Perhatikan garis bilangan berikut untuk memahami penjumlahan bilangan bulat.',
-              min: -3,
-              max: 3,
-              annotations: [
-                { from: 0, to: -3, label: '−3', color: 'red', side: 'bottom' },
-                { from: -3, to: -1, label: '+2', color: 'blue', side: 'top' },
+              type: 'example',
+              title: 'Contoh Pseudocode Sederhana',
+              items: [
+                'MULAI\n  TAMPILKAN "Halo, Dunia!"\nSELESAI',
+                'Dalam Python:\nprint("Halo, Dunia!")\n\nDalam C++:\n#include <iostream>\nint main() {\n    std::cout << "Halo, Dunia!" << std::endl;\n    return 0;\n}',
               ],
             },
           ],
@@ -73,61 +71,69 @@ export const modules = [
       },
       {
         id: 'sub-001-2',
-        title: 'Perkalian Bilangan Bulat',
-        completed: false,
+        title: 'Variabel dan Tipe Data',
+        completed: true,
         content: {
-          title: 'Perkalian Bilangan Bulat',
+          title: 'Variabel dan Tipe Data',
           sections: [
             {
               type: 'text',
-              content: 'Perkalian bilangan bulat mengikuti aturan tanda yang sederhana: jika tanda sama maka hasilnya positif, jika tanda berbeda maka hasilnya negatif.',
+              content: 'Variabel adalah wadah untuk menyimpan data di dalam memori komputer. Setiap variabel memiliki nama, tipe data, dan nilai. Tipe data menentukan jenis nilai yang dapat disimpan dan operasi yang dapat dilakukan.',
             },
             {
               type: 'formula',
-              title: 'Aturan Perkalian',
-              content: '(+) × (+) = (+)\n(−) × (−) = (+)\n(+) × (−) = (−)\n(−) × (+) = (−)',
-              description: 'Tanda sama → positif. Tanda beda → negatif.',
+              title: 'Tipe Data Dasar',
+              content: 'int     → Bilangan bulat (contoh: 10, -3, 0)\nfloat   → Bilangan desimal (contoh: 3.14, -0.5)\nstr     → Teks/string (contoh: "Halo")\nbool    → Nilai logika (True / False)\nchar    → Karakter tunggal (contoh: \'A\', \'z\')',
+              description: 'Python menggunakan dynamic typing, sedangkan C++ menggunakan static typing.',
+            },
+            {
+              type: 'example',
+              title: 'Deklarasi Variabel',
+              items: [
+                'Python:\nnama = "Budi"\numur = 20\nip_semester = 3.75\nis_aktif = True',
+                'C++:\nstring nama = "Budi";\nint umur = 20;\nfloat ip_semester = 3.75;\nbool is_aktif = true;',
+              ],
             },
           ],
         },
       },
       {
         id: 'sub-001-3',
-        title: 'Pembagian Bilangan Bulat',
-        completed: false,
+        title: 'Operasi Aritmatika dan Ekspresi',
+        completed: true,
         content: {
-          title: 'Pembagian Bilangan Bulat',
+          title: 'Operasi Aritmatika dan Ekspresi',
           sections: [
             {
               type: 'text',
-              content: 'Aturan pembagian sama dengan perkalian: tanda sama menghasilkan positif, tanda berbeda menghasilkan negatif.',
+              content: 'Operasi aritmatika digunakan untuk melakukan perhitungan matematika pada variabel numerik. Hasil operasi dapat disimpan ke variabel lain atau langsung ditampilkan.',
             },
             {
               type: 'formula',
-              title: 'Aturan Pembagian',
-              content: '(+) ÷ (+) = (+)\n(−) ÷ (−) = (+)\n(+) ÷ (−) = (−)\n(−) ÷ (+) = (−)',
-              description: '',
+              title: 'Operator Aritmatika',
+              content: '+   → Penjumlahan        (5 + 3 = 8)\n-   → Pengurangan        (10 - 4 = 6)\n*   → Perkalian          (3 * 7 = 21)\n/   → Pembagian          (15 / 4 = 3.75)\n//  → Pembagian bulat    (15 // 4 = 3)\n%   → Modulo (sisa bagi) (15 % 4 = 3)\n**  → Pangkat            (2 ** 3 = 8)',
+              description: 'Prioritas operator mengikuti aturan matematika: pangkat → kali/bagi → tambah/kurang.',
             },
           ],
         },
       },
       {
         id: 'sub-001-4',
-        title: 'Soal Cerita Bilangan Bulat',
+        title: 'Input dan Output',
         completed: false,
         content: {
-          title: 'Soal Cerita Bilangan Bulat',
+          title: 'Input dan Output',
           sections: [
             {
               type: 'text',
-              content: 'Soal cerita mengaplikasikan operasi bilangan bulat dalam kehidupan sehari-hari, seperti suhu, ketinggian, dan keuangan.',
+              content: 'Program interaktif memerlukan mekanisme untuk menerima masukan (input) dari pengguna dan menampilkan keluaran (output). Fungsi input membaca data dari keyboard, sedangkan fungsi output menampilkan data ke layar.',
             },
             {
               type: 'example',
-              title: 'Contoh Soal Cerita',
+              title: 'Contoh Input/Output',
               items: [
-                'Suhu di puncak gunung −5°C. Setelah matahari terbit, suhu naik 8°C. Berapa suhu sekarang? Jawab: −5 + 8 = 3°C',
-                'Saldo rekening Andi Rp50.000. Ia membeli buku Rp75.000. Berapa saldo Andi? Jawab: 50.000 − 75.000 = −25.000 (hutang)',
+                'Python:\nnama = input("Masukkan nama: ")\nprint("Halo,", nama)\nprint(f"Selamat datang, {nama}!")',
+                'C++:\nstring nama;\ncout << "Masukkan nama: ";\ncin >> nama;\ncout << "Halo, " << nama << endl;',
               ],
             },
           ],
@@ -135,20 +141,20 @@ export const modules = [
       },
       {
         id: 'sub-001-5',
-        title: 'Sifat-sifat Operasi Bilangan Bulat',
+        title: 'Konversi Tipe Data (Type Casting)',
         completed: false,
         content: {
-          title: 'Sifat-sifat Operasi Bilangan Bulat',
+          title: 'Konversi Tipe Data (Type Casting)',
           sections: [
             {
               type: 'text',
-              content: 'Operasi bilangan bulat memiliki beberapa sifat penting: komutatif, asosiatif, dan distributif.',
+              content: 'Konversi tipe data adalah proses mengubah nilai dari satu tipe data ke tipe data lain. Hal ini sering diperlukan saat melakukan operasi antar tipe data yang berbeda atau saat menerima input dari pengguna.',
             },
             {
               type: 'formula',
-              title: 'Sifat-sifat',
-              content: 'Komutatif: a + b = b + a\nAsosiatif: (a + b) + c = a + (b + c)\nDistributif: a × (b + c) = (a × b) + (a × c)',
-              description: '',
+              title: 'Fungsi Konversi di Python',
+              content: 'int("42")    → 42        (string ke integer)\nfloat("3.14") → 3.14     (string ke float)\nstr(100)     → "100"     (integer ke string)\nint(3.99)    → 3         (float ke int, dibulatkan ke bawah)\nbool(0)      → False     (nol = False, selainnya = True)',
+              description: 'Hati-hati: int("abc") akan menghasilkan error karena "abc" bukan angka valid.',
             },
           ],
         },
@@ -157,134 +163,253 @@ export const modules = [
   },
   {
     id: 'mod-002',
-    title: 'Pecahan',
-    icon: '🍕',
-    description: 'Memahami pecahan, pecahan senilai, dan operasi pecahan',
-    difficulty: 'Dasar',
-    estimatedTime: '60 menit',
+    title: 'Percabangan (Control Flow)',
+    icon: '🔀',
+    description: 'Memahami logika percabangan menggunakan if, else, elif/else-if, dan operator logika',
+    difficulty: 'Menengah',
+    estimatedTime: '75 menit',
     order: 2,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 6,
+    status: 'in-progress',
+    progress: 30,
+    subMateriCount: 5,
     subtopics: [
-      { id: 'sub-002-1', title: 'Pengertian Pecahan', completed: false, content: { title: 'Pengertian Pecahan', sections: [{ type: 'text', content: 'Pecahan adalah bilangan yang menyatakan bagian dari keseluruhan. Pecahan terdiri dari pembilang (atas) dan penyebut (bawah).' }] } },
-      { id: 'sub-002-2', title: 'Pecahan Senilai', completed: false, content: { title: 'Pecahan Senilai', sections: [{ type: 'text', content: 'Pecahan senilai adalah pecahan-pecahan yang memiliki nilai sama meskipun bentuknya berbeda.' }] } },
-      { id: 'sub-002-3', title: 'Penjumlahan Pecahan', completed: false, content: { title: 'Penjumlahan Pecahan', sections: [{ type: 'text', content: 'Untuk menjumlahkan pecahan, samakan penyebutnya terlebih dahulu.' }] } },
-      { id: 'sub-002-4', title: 'Pengurangan Pecahan', completed: false, content: { title: 'Pengurangan Pecahan', sections: [{ type: 'text', content: 'Pengurangan pecahan mengikuti prinsip yang sama dengan penjumlahan.' }] } },
-      { id: 'sub-002-5', title: 'Perkalian Pecahan', completed: false, content: { title: 'Perkalian Pecahan', sections: [{ type: 'text', content: 'Perkalian pecahan: kalikan pembilang dengan pembilang, dan penyebut dengan penyebut.' }] } },
-      { id: 'sub-002-6', title: 'Pembagian Pecahan', completed: false, content: { title: 'Pembagian Pecahan', sections: [{ type: 'text', content: 'Pembagian pecahan: balikkan pecahan kedua lalu kalikan.' }] } },
+      {
+        id: 'sub-002-1',
+        title: 'Operator Perbandingan dan Logika',
+        completed: true,
+        content: {
+          title: 'Operator Perbandingan dan Logika',
+          sections: [
+            {
+              type: 'text',
+              content: 'Operator perbandingan digunakan untuk membandingkan dua nilai dan menghasilkan nilai boolean (True/False). Operator logika digunakan untuk menggabungkan beberapa kondisi.',
+            },
+            {
+              type: 'formula',
+              title: 'Operator Perbandingan',
+              content: '==  → Sama dengan         (5 == 5 → True)\n!=  → Tidak sama dengan   (5 != 3 → True)\n>   → Lebih besar         (7 > 3 → True)\n<   → Lebih kecil         (2 < 8 → True)\n>=  → Lebih besar/sama    (5 >= 5 → True)\n<=  → Lebih kecil/sama    (3 <= 4 → True)',
+              description: '',
+            },
+            {
+              type: 'formula',
+              title: 'Operator Logika',
+              content: 'and  → Keduanya harus True   (True and False → False)\nor   → Salah satu True cukup  (True or False → True)\nnot  → Membalikkan nilai       (not True → False)',
+              description: 'Dalam C++, gunakan && (and), || (or), dan ! (not).',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-002-2',
+        title: 'Percabangan if dan if-else',
+        completed: true,
+        content: {
+          title: 'Percabangan if dan if-else',
+          sections: [
+            {
+              type: 'text',
+              content: 'Struktur if digunakan untuk mengeksekusi blok kode hanya jika suatu kondisi bernilai True. Struktur if-else menyediakan alternatif eksekusi ketika kondisi bernilai False.',
+            },
+            {
+              type: 'formula',
+              title: 'Sintaks if-else',
+              content: 'Python:\nif kondisi:\n    # blok jika True\nelse:\n    # blok jika False\n\nC++:\nif (kondisi) {\n    // blok jika true\n} else {\n    // blok jika false\n}',
+              description: 'Perhatikan indentasi pada Python dan kurung kurawal pada C++.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh: Cek Bilangan Positif/Negatif',
+              items: [
+                'angka = int(input("Masukkan angka: "))\nif angka >= 0:\n    print("Bilangan positif")\nelse:\n    print("Bilangan negatif")',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-002-3',
+        title: 'Percabangan Bertingkat (elif / else-if)',
+        completed: false,
+        content: {
+          title: 'Percabangan Bertingkat (elif / else-if)',
+          sections: [
+            {
+              type: 'text',
+              content: 'Ketika ada lebih dari dua kemungkinan kondisi, gunakan elif (Python) atau else if (C++) untuk memeriksa kondisi secara bertingkat dari atas ke bawah.',
+            },
+            {
+              type: 'formula',
+              title: 'Sintaks elif',
+              content: 'nilai = int(input("Masukkan nilai: "))\n\nif nilai >= 85:\n    grade = "A"\nelif nilai >= 70:\n    grade = "B"\nelif nilai >= 55:\n    grade = "C"\nelif nilai >= 40:\n    grade = "D"\nelse:\n    grade = "E"\n\nprint(f"Grade Anda: {grade}")',
+              description: 'Kondisi diperiksa dari atas ke bawah. Begitu satu kondisi True, blok di bawahnya tidak diperiksa lagi.',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-002-4',
+        title: 'Percabangan Bersarang (Nested If)',
+        completed: false,
+        content: {
+          title: 'Percabangan Bersarang (Nested If)',
+          sections: [
+            {
+              type: 'text',
+              content: 'Percabangan bersarang adalah struktur if di dalam if. Digunakan ketika keputusan kedua bergantung pada hasil keputusan pertama. Hindari nested if terlalu dalam karena menurunkan keterbacaan kode.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh: Validasi Login',
+              items: [
+                'username = input("Username: ")\npassword = input("Password: ")\n\nif username == "admin":\n    if password == "1234":\n        print("Login berhasil!")\n    else:\n        print("Password salah!")\nelse:\n    print("Username tidak ditemukan!")',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-002-5',
+        title: 'Studi Kasus Percabangan',
+        completed: false,
+        content: {
+          title: 'Studi Kasus Percabangan',
+          sections: [
+            {
+              type: 'text',
+              content: 'Terapkan konsep percabangan untuk menyelesaikan masalah nyata dalam pemrograman, seperti kalkulator sederhana, sistem grading, dan validasi input.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh: Kalkulator Sederhana',
+              items: [
+                'a = float(input("Angka pertama: "))\nop = input("Operator (+, -, *, /): ")\nb = float(input("Angka kedua: "))\n\nif op == "+":\n    hasil = a + b\nelif op == "-":\n    hasil = a - b\nelif op == "*":\n    hasil = a * b\nelif op == "/":\n    if b != 0:\n        hasil = a / b\n    else:\n        print("Error: Pembagian dengan nol!")\n        hasil = None\nelse:\n    print("Operator tidak valid!")\n    hasil = None\n\nif hasil is not None:\n    print(f"Hasil: {hasil}")',
+                'Studi Kasus 2 — Cek Tahun Kabisat:\ntahun = int(input("Masukkan tahun: "))\nif (tahun % 4 == 0 and tahun % 100 != 0) or (tahun % 400 == 0):\n    print(f"{tahun} adalah tahun kabisat")\nelse:\n    print(f"{tahun} bukan tahun kabisat")',
+              ],
+            },
+          ],
+        },
+      },
     ],
   },
   {
     id: 'mod-003',
-    title: 'Desimal',
-    icon: '🔵',
-    description: 'Operasi bilangan desimal dan konversi pecahan-desimal',
+    title: 'Perulangan (Looping)',
+    icon: '🔁',
+    description: 'Menguasai konsep perulangan menggunakan for, while, dan teknik kontrol loop',
     difficulty: 'Menengah',
-    estimatedTime: '50 menit',
+    estimatedTime: '80 menit',
     order: 3,
     status: 'locked',
     progress: 0,
-    subMateriCount: 4,
+    subMateriCount: 5,
     subtopics: [
-      { id: 'sub-003-1', title: 'Pengertian Desimal', completed: false, content: { title: 'Pengertian Desimal', sections: [{ type: 'text', content: 'Bilangan desimal adalah cara lain untuk menyatakan pecahan menggunakan sistem basis 10.' }] } },
-      { id: 'sub-003-2', title: 'Operasi Desimal', completed: false, content: { title: 'Operasi Desimal', sections: [{ type: 'text', content: 'Penjumlahan, pengurangan, perkalian, dan pembagian desimal memerlukan ketelitian posisi koma.' }] } },
-      { id: 'sub-003-3', title: 'Konversi Desimal-Pecahan', completed: false, content: { title: 'Konversi Desimal-Pecahan', sections: [{ type: 'text', content: 'Setiap bilangan desimal dapat diubah menjadi pecahan dengan menempatkan angka desimal di atas pangkat 10 yang sesuai.' }] } },
-      { id: 'sub-003-4', title: 'Pembulatan Desimal', completed: false, content: { title: 'Pembulatan Desimal', sections: [{ type: 'text', content: 'Pembulatan desimal dilakukan berdasarkan angka di belakang posisi yang diinginkan.' }] } },
-    ],
-  },
-  {
-    id: 'mod-004',
-    title: 'Persentase',
-    icon: '📊',
-    description: 'Persentase, diskon, bunga, dan aplikasi dalam kehidupan nyata',
-    difficulty: 'Menengah',
-    estimatedTime: '55 menit',
-    order: 4,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 4,
-    subtopics: [
-      { id: 'sub-004-1', title: 'Pengertian Persentase', completed: false, content: { title: 'Pengertian Persentase', sections: [{ type: 'text', content: 'Persentase adalah cara menyatakan bilangan sebagai bagian dari 100.' }] } },
-      { id: 'sub-004-2', title: 'Menghitung Persentase', completed: false, content: { title: 'Menghitung Persentase', sections: [{ type: 'text', content: 'Pelajari cara menghitung persentase dari suatu jumlah, kenaikan dan penurunan persentase.' }] } },
-      { id: 'sub-004-3', title: 'Diskon dan Bunga', completed: false, content: { title: 'Diskon dan Bunga', sections: [{ type: 'text', content: 'Persentase digunakan dalam menghitung diskon belanja dan bunga tabungan.' }] } },
-      { id: 'sub-004-4', title: 'Soal Cerita Persentase', completed: false, content: { title: 'Soal Cerita Persentase', sections: [{ type: 'text', content: 'Aplikasi persentase dalam kehidupan sehari-hari.' }] } },
-    ],
-  },
-  {
-    id: 'mod-005',
-    title: 'Aljabar',
-    icon: '🔤',
-    description: 'Variabel, ekspresi, persamaan, dan pemikiran aljabar',
-    difficulty: 'Lanjut',
-    estimatedTime: '75 menit',
-    order: 5,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 6,
-    subtopics: [
-      { id: 'sub-005-1', title: 'Variabel dan Konstanta', completed: false, content: { title: 'Variabel dan Konstanta', sections: [{ type: 'text', content: 'Dalam aljabar, variabel adalah simbol yang mewakili bilangan yang belum diketahui.' }] } },
-      { id: 'sub-005-2', title: 'Bentuk Aljabar', completed: false, content: { title: 'Bentuk Aljabar', sections: [{ type: 'text', content: 'Bentuk aljabar terdiri dari suku, koefisien, variabel, dan konstanta.' }] } },
-      { id: 'sub-005-3', title: 'Operasi Aljabar', completed: false, content: { title: 'Operasi Aljabar', sections: [{ type: 'text', content: 'Penjumlahan dan pengurangan bentuk aljabar hanya bisa dilakukan pada suku-suku sejenis.' }] } },
-      { id: 'sub-005-4', title: 'Persamaan Linear', completed: false, content: { title: 'Persamaan Linear', sections: [{ type: 'text', content: 'Persamaan linear satu variabel berbentuk ax + b = c.' }] } },
-      { id: 'sub-005-5', title: 'Pertidaksamaan', completed: false, content: { title: 'Pertidaksamaan', sections: [{ type: 'text', content: 'Pertidaksamaan linear menggunakan tanda <, >, ≤, atau ≥.' }] } },
-      { id: 'sub-005-6', title: 'Soal Cerita Aljabar', completed: false, content: { title: 'Soal Cerita Aljabar', sections: [{ type: 'text', content: 'Mengubah soal cerita menjadi bentuk aljabar dan menyelesaikannya.' }] } },
-    ],
-  },
-  {
-    id: 'mod-006',
-    title: 'Perbandingan',
-    icon: '⚖️',
-    description: 'Perbandingan senilai, berbalik nilai, dan skala',
-    difficulty: 'Menengah',
-    estimatedTime: '50 menit',
-    order: 6,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 4,
-    subtopics: [
-      { id: 'sub-006-1', title: 'Perbandingan Senilai', completed: false, content: { title: 'Perbandingan Senilai', sections: [{ type: 'text', content: 'Perbandingan senilai terjadi ketika dua besaran naik atau turun secara bersamaan.' }] } },
-      { id: 'sub-006-2', title: 'Perbandingan Berbalik Nilai', completed: false, content: { title: 'Perbandingan Berbalik Nilai', sections: [{ type: 'text', content: 'Perbandingan berbalik nilai terjadi ketika satu besaran naik sementara yang lain turun.' }] } },
-      { id: 'sub-006-3', title: 'Skala dan Peta', completed: false, content: { title: 'Skala dan Peta', sections: [{ type: 'text', content: 'Skala digunakan untuk menyatakan perbandingan ukuran pada peta atau denah dengan ukuran sebenarnya.' }] } },
-      { id: 'sub-006-4', title: 'Soal Cerita Perbandingan', completed: false, content: { title: 'Soal Cerita Perbandingan', sections: [{ type: 'text', content: 'Penerapan konsep perbandingan dalam masalah sehari-hari.' }] } },
-    ],
-  },
-  {
-    id: 'mod-007',
-    title: 'Geometri',
-    icon: '📐',
-    description: 'Bentuk, sudut, luas, keliling, dan penalaran geometri',
-    difficulty: 'Lanjut',
-    estimatedTime: '80 menit',
-    order: 7,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 6,
-    subtopics: [
-      { id: 'sub-007-1', title: 'Garis dan Sudut', completed: false, content: { title: 'Garis dan Sudut', sections: [{ type: 'text', content: 'Garis adalah kumpulan titik yang memanjang tanpa batas. Sudut terbentuk dari dua garis yang bertemu di satu titik.' }] } },
-      { id: 'sub-007-2', title: 'Segitiga', completed: false, content: { title: 'Segitiga', sections: [{ type: 'text', content: 'Segitiga adalah bangun datar yang memiliki tiga sisi dan tiga sudut.' }] } },
-      { id: 'sub-007-3', title: 'Segiempat', completed: false, content: { title: 'Segiempat', sections: [{ type: 'text', content: 'Segiempat meliputi persegi, persegi panjang, jajar genjang, belah ketupat, layang-layang, dan trapesium.' }] } },
-      { id: 'sub-007-4', title: 'Lingkaran', completed: false, content: { title: 'Lingkaran', sections: [{ type: 'text', content: 'Lingkaran adalah himpunan titik-titik yang berjarak sama dari titik pusat.' }] } },
-      { id: 'sub-007-5', title: 'Luas dan Keliling', completed: false, content: { title: 'Luas dan Keliling', sections: [{ type: 'text', content: 'Rumus luas dan keliling untuk berbagai bangun datar.' }] } },
-      { id: 'sub-007-6', title: 'Transformasi Geometri', completed: false, content: { title: 'Transformasi Geometri', sections: [{ type: 'text', content: 'Translasi, refleksi, rotasi, dan dilatasi.' }] } },
-    ],
-  },
-  {
-    id: 'mod-008',
-    title: 'Statistika',
-    icon: '📈',
-    description: 'Pengumpulan data, penyajian data, dan ukuran pemusatan',
-    difficulty: 'Menengah',
-    estimatedTime: '55 menit',
-    order: 8,
-    status: 'locked',
-    progress: 0,
-    subMateriCount: 4,
-    subtopics: [
-      { id: 'sub-008-1', title: 'Pengumpulan Data', completed: false, content: { title: 'Pengumpulan Data', sections: [{ type: 'text', content: 'Data dapat dikumpulkan melalui observasi, wawancara, kuesioner, atau eksperimen.' }] } },
-      { id: 'sub-008-2', title: 'Penyajian Data', completed: false, content: { title: 'Penyajian Data', sections: [{ type: 'text', content: 'Data dapat disajikan dalam bentuk tabel, diagram batang, diagram garis, dan diagram lingkaran.' }] } },
-      { id: 'sub-008-3', title: 'Rata-rata, Median, Modus', completed: false, content: { title: 'Rata-rata, Median, Modus', sections: [{ type: 'text', content: 'Ukuran pemusatan data meliputi rata-rata (mean), median (nilai tengah), dan modus (nilai yang paling sering muncul).' }] } },
-      { id: 'sub-008-4', title: 'Soal Cerita Statistika', completed: false, content: { title: 'Soal Cerita Statistika', sections: [{ type: 'text', content: 'Menerapkan konsep statistika untuk menganalisis data dalam kehidupan sehari-hari.' }] } },
+      {
+        id: 'sub-003-1',
+        title: 'Perulangan for',
+        completed: false,
+        content: {
+          title: 'Perulangan for',
+          sections: [
+            {
+              type: 'text',
+              content: 'Perulangan for digunakan ketika jumlah iterasi sudah diketahui. Di Python, for bekerja dengan iterable (range, list, string). Di C++, for memiliki tiga komponen: inisialisasi, kondisi, dan increment.',
+            },
+            {
+              type: 'formula',
+              title: 'Sintaks Perulangan for',
+              content: 'Python:\nfor i in range(5):       # i = 0, 1, 2, 3, 4\n    print(i)\n\nfor i in range(1, 11):   # i = 1, 2, ..., 10\n    print(i)\n\nC++:\nfor (int i = 0; i < 5; i++) {\n    cout << i << endl;\n}',
+              description: 'range(start, stop, step) → start inklusif, stop eksklusif.',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-003-2',
+        title: 'Perulangan while',
+        completed: false,
+        content: {
+          title: 'Perulangan while',
+          sections: [
+            {
+              type: 'text',
+              content: 'Perulangan while mengeksekusi blok kode selama kondisi masih bernilai True. Cocok digunakan ketika jumlah iterasi belum diketahui dan bergantung pada suatu kondisi tertentu.',
+            },
+            {
+              type: 'formula',
+              title: 'Sintaks Perulangan while',
+              content: 'Python:\ncount = 0\nwhile count < 5:\n    print(f"Iterasi ke-{count}")\n    count += 1\n\nC++:\nint count = 0;\nwhile (count < 5) {\n    cout << "Iterasi ke-" << count << endl;\n    count++;\n}',
+              description: 'PERINGATAN: Pastikan kondisi while akan menjadi False di suatu titik, jika tidak terjadi infinite loop!',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-003-3',
+        title: 'break, continue, dan else pada Loop',
+        completed: false,
+        content: {
+          title: 'break, continue, dan else pada Loop',
+          sections: [
+            {
+              type: 'text',
+              content: 'Keyword break menghentikan loop sepenuhnya, continue melewati iterasi saat ini dan lanjut ke iterasi berikutnya. Python memiliki fitur unik: else pada loop yang dieksekusi jika loop selesai tanpa break.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh Penggunaan break dan continue',
+              items: [
+                'Break — Mencari angka dalam list:\ndata = [3, 7, 2, 9, 5]\ntarget = 9\nfor angka in data:\n    if angka == target:\n        print(f"Ditemukan: {target}")\n        break\nelse:\n    print("Tidak ditemukan")',
+                'Continue — Cetak bilangan ganjil saja:\nfor i in range(1, 11):\n    if i % 2 == 0:\n        continue\n    print(i)   # Output: 1, 3, 5, 7, 9',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-003-4',
+        title: 'Perulangan Bersarang (Nested Loop)',
+        completed: false,
+        content: {
+          title: 'Perulangan Bersarang (Nested Loop)',
+          sections: [
+            {
+              type: 'text',
+              content: 'Nested loop adalah loop di dalam loop. Loop luar mengontrol jumlah baris, dan loop dalam mengontrol jumlah kolom. Umum digunakan untuk memproses data 2 dimensi seperti matriks atau membuat pola.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh: Mencetak Pola Bintang',
+              items: [
+                'Pola segitiga bintang:\nn = 5\nfor i in range(1, n + 1):\n    for j in range(i):\n        print("*", end="")\n    print()\n\nOutput:\n*\n**\n***\n****\n*****',
+                'Tabel perkalian 1-5:\nfor i in range(1, 6):\n    for j in range(1, 6):\n        print(f"{i*j:4}", end="")\n    print()',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-003-5',
+        title: 'Studi Kasus Perulangan',
+        completed: false,
+        content: {
+          title: 'Studi Kasus Perulangan',
+          sections: [
+            {
+              type: 'text',
+              content: 'Terapkan konsep perulangan untuk menyelesaikan masalah algoritmik klasik: menghitung faktorial, deret Fibonacci, dan mencari bilangan prima.',
+            },
+            {
+              type: 'example',
+              title: 'Studi Kasus',
+              items: [
+                'Faktorial:\nn = int(input("Masukkan n: "))\nfaktorial = 1\nfor i in range(1, n + 1):\n    faktorial *= i\nprint(f"{n}! = {faktorial}")',
+                'Fibonacci:\nn = int(input("Jumlah suku: "))\na, b = 0, 1\nfor _ in range(n):\n    print(a, end=" ")\n    a, b = b, a + b',
+                'Cek Bilangan Prima:\nnum = int(input("Masukkan bilangan: "))\nis_prima = True\nif num < 2:\n    is_prima = False\nfor i in range(2, int(num**0.5) + 1):\n    if num % i == 0:\n        is_prima = False\n        break\nprint(f"{num} {\\"prima\\" if is_prima else \\"bukan prima\\"}")',
+              ],
+            },
+          ],
+        },
+      },
     ],
   },
 ]
