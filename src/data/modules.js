@@ -1,0 +1,290 @@
+/**
+ * Learning Modules — Dummy Data (Indonesian)
+ * Matematika SMP Kelas 7 with 8 modules
+ */
+export const course = {
+  id: 'course-math-01',
+  title: 'Matematika SMP Kelas 7',
+  description: 'Kuasai konsep dasar matematika melalui pembelajaran adaptif berbasis AI',
+  icon: '📐',
+  totalModules: 8,
+}
+
+export const modules = [
+  {
+    id: 'mod-001',
+    title: 'Bilangan Bulat',
+    icon: '🔢',
+    description: 'Pelajari bilangan bulat, sifat-sifatnya, dan operasi dasar',
+    difficulty: 'Dasar',
+    estimatedTime: '45 menit',
+    order: 1,
+    status: 'in-progress',
+    progress: 60,
+    subMateriCount: 5,
+    subtopics: [
+      {
+        id: 'sub-001-1',
+        title: 'Penjumlahan dan Pengurangan Bilangan Bulat',
+        completed: false,
+        content: {
+          title: 'Penjumlahan dan Pengurangan Bilangan Bulat',
+          tabs: [
+            {
+              id: 'ringkasan',
+              label: 'Ringkasan Materi',
+              icon: '📖',
+            },
+            {
+              id: 'video',
+              label: 'Video Pembelajaran',
+              icon: '▶️',
+            },
+            {
+              id: 'contoh',
+              label: 'Contoh Soal',
+              icon: '📝',
+            },
+          ],
+          sections: [
+            {
+              type: 'text',
+              content: 'Dalam penjumlahan dan pengurangan bilangan bulat, terdapat beberapa aturan tanda yang perlu kamu pahami.',
+            },
+            {
+              type: 'formula',
+              title: 'Aturan Tanda',
+              content: '(+) + (+) = hasil (+)\n(−) + (−) = hasil (−)\n(+) + (−) = kurangi dan ambil tanda dari yang terbesar\n(−) + (+) = kurangi dan ambil tanda dari yang terbesar',
+              description: '',
+            },
+            {
+              type: 'numberline',
+              title: 'Garis Bilangan',
+              description: 'Perhatikan garis bilangan berikut untuk memahami penjumlahan bilangan bulat.',
+              min: -3,
+              max: 3,
+              annotations: [
+                { from: 0, to: -3, label: '−3', color: 'red', side: 'bottom' },
+                { from: -3, to: -1, label: '+2', color: 'blue', side: 'top' },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-001-2',
+        title: 'Perkalian Bilangan Bulat',
+        completed: false,
+        content: {
+          title: 'Perkalian Bilangan Bulat',
+          sections: [
+            {
+              type: 'text',
+              content: 'Perkalian bilangan bulat mengikuti aturan tanda yang sederhana: jika tanda sama maka hasilnya positif, jika tanda berbeda maka hasilnya negatif.',
+            },
+            {
+              type: 'formula',
+              title: 'Aturan Perkalian',
+              content: '(+) × (+) = (+)\n(−) × (−) = (+)\n(+) × (−) = (−)\n(−) × (+) = (−)',
+              description: 'Tanda sama → positif. Tanda beda → negatif.',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-001-3',
+        title: 'Pembagian Bilangan Bulat',
+        completed: false,
+        content: {
+          title: 'Pembagian Bilangan Bulat',
+          sections: [
+            {
+              type: 'text',
+              content: 'Aturan pembagian sama dengan perkalian: tanda sama menghasilkan positif, tanda berbeda menghasilkan negatif.',
+            },
+            {
+              type: 'formula',
+              title: 'Aturan Pembagian',
+              content: '(+) ÷ (+) = (+)\n(−) ÷ (−) = (+)\n(+) ÷ (−) = (−)\n(−) ÷ (+) = (−)',
+              description: '',
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-001-4',
+        title: 'Soal Cerita Bilangan Bulat',
+        completed: false,
+        content: {
+          title: 'Soal Cerita Bilangan Bulat',
+          sections: [
+            {
+              type: 'text',
+              content: 'Soal cerita mengaplikasikan operasi bilangan bulat dalam kehidupan sehari-hari, seperti suhu, ketinggian, dan keuangan.',
+            },
+            {
+              type: 'example',
+              title: 'Contoh Soal Cerita',
+              items: [
+                'Suhu di puncak gunung −5°C. Setelah matahari terbit, suhu naik 8°C. Berapa suhu sekarang? Jawab: −5 + 8 = 3°C',
+                'Saldo rekening Andi Rp50.000. Ia membeli buku Rp75.000. Berapa saldo Andi? Jawab: 50.000 − 75.000 = −25.000 (hutang)',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        id: 'sub-001-5',
+        title: 'Sifat-sifat Operasi Bilangan Bulat',
+        completed: false,
+        content: {
+          title: 'Sifat-sifat Operasi Bilangan Bulat',
+          sections: [
+            {
+              type: 'text',
+              content: 'Operasi bilangan bulat memiliki beberapa sifat penting: komutatif, asosiatif, dan distributif.',
+            },
+            {
+              type: 'formula',
+              title: 'Sifat-sifat',
+              content: 'Komutatif: a + b = b + a\nAsosiatif: (a + b) + c = a + (b + c)\nDistributif: a × (b + c) = (a × b) + (a × c)',
+              description: '',
+            },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'mod-002',
+    title: 'Pecahan',
+    icon: '🍕',
+    description: 'Memahami pecahan, pecahan senilai, dan operasi pecahan',
+    difficulty: 'Dasar',
+    estimatedTime: '60 menit',
+    order: 2,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 6,
+    subtopics: [
+      { id: 'sub-002-1', title: 'Pengertian Pecahan', completed: false, content: { title: 'Pengertian Pecahan', sections: [{ type: 'text', content: 'Pecahan adalah bilangan yang menyatakan bagian dari keseluruhan. Pecahan terdiri dari pembilang (atas) dan penyebut (bawah).' }] } },
+      { id: 'sub-002-2', title: 'Pecahan Senilai', completed: false, content: { title: 'Pecahan Senilai', sections: [{ type: 'text', content: 'Pecahan senilai adalah pecahan-pecahan yang memiliki nilai sama meskipun bentuknya berbeda.' }] } },
+      { id: 'sub-002-3', title: 'Penjumlahan Pecahan', completed: false, content: { title: 'Penjumlahan Pecahan', sections: [{ type: 'text', content: 'Untuk menjumlahkan pecahan, samakan penyebutnya terlebih dahulu.' }] } },
+      { id: 'sub-002-4', title: 'Pengurangan Pecahan', completed: false, content: { title: 'Pengurangan Pecahan', sections: [{ type: 'text', content: 'Pengurangan pecahan mengikuti prinsip yang sama dengan penjumlahan.' }] } },
+      { id: 'sub-002-5', title: 'Perkalian Pecahan', completed: false, content: { title: 'Perkalian Pecahan', sections: [{ type: 'text', content: 'Perkalian pecahan: kalikan pembilang dengan pembilang, dan penyebut dengan penyebut.' }] } },
+      { id: 'sub-002-6', title: 'Pembagian Pecahan', completed: false, content: { title: 'Pembagian Pecahan', sections: [{ type: 'text', content: 'Pembagian pecahan: balikkan pecahan kedua lalu kalikan.' }] } },
+    ],
+  },
+  {
+    id: 'mod-003',
+    title: 'Desimal',
+    icon: '🔵',
+    description: 'Operasi bilangan desimal dan konversi pecahan-desimal',
+    difficulty: 'Menengah',
+    estimatedTime: '50 menit',
+    order: 3,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 4,
+    subtopics: [
+      { id: 'sub-003-1', title: 'Pengertian Desimal', completed: false, content: { title: 'Pengertian Desimal', sections: [{ type: 'text', content: 'Bilangan desimal adalah cara lain untuk menyatakan pecahan menggunakan sistem basis 10.' }] } },
+      { id: 'sub-003-2', title: 'Operasi Desimal', completed: false, content: { title: 'Operasi Desimal', sections: [{ type: 'text', content: 'Penjumlahan, pengurangan, perkalian, dan pembagian desimal memerlukan ketelitian posisi koma.' }] } },
+      { id: 'sub-003-3', title: 'Konversi Desimal-Pecahan', completed: false, content: { title: 'Konversi Desimal-Pecahan', sections: [{ type: 'text', content: 'Setiap bilangan desimal dapat diubah menjadi pecahan dengan menempatkan angka desimal di atas pangkat 10 yang sesuai.' }] } },
+      { id: 'sub-003-4', title: 'Pembulatan Desimal', completed: false, content: { title: 'Pembulatan Desimal', sections: [{ type: 'text', content: 'Pembulatan desimal dilakukan berdasarkan angka di belakang posisi yang diinginkan.' }] } },
+    ],
+  },
+  {
+    id: 'mod-004',
+    title: 'Persentase',
+    icon: '📊',
+    description: 'Persentase, diskon, bunga, dan aplikasi dalam kehidupan nyata',
+    difficulty: 'Menengah',
+    estimatedTime: '55 menit',
+    order: 4,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 4,
+    subtopics: [
+      { id: 'sub-004-1', title: 'Pengertian Persentase', completed: false, content: { title: 'Pengertian Persentase', sections: [{ type: 'text', content: 'Persentase adalah cara menyatakan bilangan sebagai bagian dari 100.' }] } },
+      { id: 'sub-004-2', title: 'Menghitung Persentase', completed: false, content: { title: 'Menghitung Persentase', sections: [{ type: 'text', content: 'Pelajari cara menghitung persentase dari suatu jumlah, kenaikan dan penurunan persentase.' }] } },
+      { id: 'sub-004-3', title: 'Diskon dan Bunga', completed: false, content: { title: 'Diskon dan Bunga', sections: [{ type: 'text', content: 'Persentase digunakan dalam menghitung diskon belanja dan bunga tabungan.' }] } },
+      { id: 'sub-004-4', title: 'Soal Cerita Persentase', completed: false, content: { title: 'Soal Cerita Persentase', sections: [{ type: 'text', content: 'Aplikasi persentase dalam kehidupan sehari-hari.' }] } },
+    ],
+  },
+  {
+    id: 'mod-005',
+    title: 'Aljabar',
+    icon: '🔤',
+    description: 'Variabel, ekspresi, persamaan, dan pemikiran aljabar',
+    difficulty: 'Lanjut',
+    estimatedTime: '75 menit',
+    order: 5,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 6,
+    subtopics: [
+      { id: 'sub-005-1', title: 'Variabel dan Konstanta', completed: false, content: { title: 'Variabel dan Konstanta', sections: [{ type: 'text', content: 'Dalam aljabar, variabel adalah simbol yang mewakili bilangan yang belum diketahui.' }] } },
+      { id: 'sub-005-2', title: 'Bentuk Aljabar', completed: false, content: { title: 'Bentuk Aljabar', sections: [{ type: 'text', content: 'Bentuk aljabar terdiri dari suku, koefisien, variabel, dan konstanta.' }] } },
+      { id: 'sub-005-3', title: 'Operasi Aljabar', completed: false, content: { title: 'Operasi Aljabar', sections: [{ type: 'text', content: 'Penjumlahan dan pengurangan bentuk aljabar hanya bisa dilakukan pada suku-suku sejenis.' }] } },
+      { id: 'sub-005-4', title: 'Persamaan Linear', completed: false, content: { title: 'Persamaan Linear', sections: [{ type: 'text', content: 'Persamaan linear satu variabel berbentuk ax + b = c.' }] } },
+      { id: 'sub-005-5', title: 'Pertidaksamaan', completed: false, content: { title: 'Pertidaksamaan', sections: [{ type: 'text', content: 'Pertidaksamaan linear menggunakan tanda <, >, ≤, atau ≥.' }] } },
+      { id: 'sub-005-6', title: 'Soal Cerita Aljabar', completed: false, content: { title: 'Soal Cerita Aljabar', sections: [{ type: 'text', content: 'Mengubah soal cerita menjadi bentuk aljabar dan menyelesaikannya.' }] } },
+    ],
+  },
+  {
+    id: 'mod-006',
+    title: 'Perbandingan',
+    icon: '⚖️',
+    description: 'Perbandingan senilai, berbalik nilai, dan skala',
+    difficulty: 'Menengah',
+    estimatedTime: '50 menit',
+    order: 6,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 4,
+    subtopics: [
+      { id: 'sub-006-1', title: 'Perbandingan Senilai', completed: false, content: { title: 'Perbandingan Senilai', sections: [{ type: 'text', content: 'Perbandingan senilai terjadi ketika dua besaran naik atau turun secara bersamaan.' }] } },
+      { id: 'sub-006-2', title: 'Perbandingan Berbalik Nilai', completed: false, content: { title: 'Perbandingan Berbalik Nilai', sections: [{ type: 'text', content: 'Perbandingan berbalik nilai terjadi ketika satu besaran naik sementara yang lain turun.' }] } },
+      { id: 'sub-006-3', title: 'Skala dan Peta', completed: false, content: { title: 'Skala dan Peta', sections: [{ type: 'text', content: 'Skala digunakan untuk menyatakan perbandingan ukuran pada peta atau denah dengan ukuran sebenarnya.' }] } },
+      { id: 'sub-006-4', title: 'Soal Cerita Perbandingan', completed: false, content: { title: 'Soal Cerita Perbandingan', sections: [{ type: 'text', content: 'Penerapan konsep perbandingan dalam masalah sehari-hari.' }] } },
+    ],
+  },
+  {
+    id: 'mod-007',
+    title: 'Geometri',
+    icon: '📐',
+    description: 'Bentuk, sudut, luas, keliling, dan penalaran geometri',
+    difficulty: 'Lanjut',
+    estimatedTime: '80 menit',
+    order: 7,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 6,
+    subtopics: [
+      { id: 'sub-007-1', title: 'Garis dan Sudut', completed: false, content: { title: 'Garis dan Sudut', sections: [{ type: 'text', content: 'Garis adalah kumpulan titik yang memanjang tanpa batas. Sudut terbentuk dari dua garis yang bertemu di satu titik.' }] } },
+      { id: 'sub-007-2', title: 'Segitiga', completed: false, content: { title: 'Segitiga', sections: [{ type: 'text', content: 'Segitiga adalah bangun datar yang memiliki tiga sisi dan tiga sudut.' }] } },
+      { id: 'sub-007-3', title: 'Segiempat', completed: false, content: { title: 'Segiempat', sections: [{ type: 'text', content: 'Segiempat meliputi persegi, persegi panjang, jajar genjang, belah ketupat, layang-layang, dan trapesium.' }] } },
+      { id: 'sub-007-4', title: 'Lingkaran', completed: false, content: { title: 'Lingkaran', sections: [{ type: 'text', content: 'Lingkaran adalah himpunan titik-titik yang berjarak sama dari titik pusat.' }] } },
+      { id: 'sub-007-5', title: 'Luas dan Keliling', completed: false, content: { title: 'Luas dan Keliling', sections: [{ type: 'text', content: 'Rumus luas dan keliling untuk berbagai bangun datar.' }] } },
+      { id: 'sub-007-6', title: 'Transformasi Geometri', completed: false, content: { title: 'Transformasi Geometri', sections: [{ type: 'text', content: 'Translasi, refleksi, rotasi, dan dilatasi.' }] } },
+    ],
+  },
+  {
+    id: 'mod-008',
+    title: 'Statistika',
+    icon: '📈',
+    description: 'Pengumpulan data, penyajian data, dan ukuran pemusatan',
+    difficulty: 'Menengah',
+    estimatedTime: '55 menit',
+    order: 8,
+    status: 'locked',
+    progress: 0,
+    subMateriCount: 4,
+    subtopics: [
+      { id: 'sub-008-1', title: 'Pengumpulan Data', completed: false, content: { title: 'Pengumpulan Data', sections: [{ type: 'text', content: 'Data dapat dikumpulkan melalui observasi, wawancara, kuesioner, atau eksperimen.' }] } },
+      { id: 'sub-008-2', title: 'Penyajian Data', completed: false, content: { title: 'Penyajian Data', sections: [{ type: 'text', content: 'Data dapat disajikan dalam bentuk tabel, diagram batang, diagram garis, dan diagram lingkaran.' }] } },
+      { id: 'sub-008-3', title: 'Rata-rata, Median, Modus', completed: false, content: { title: 'Rata-rata, Median, Modus', sections: [{ type: 'text', content: 'Ukuran pemusatan data meliputi rata-rata (mean), median (nilai tengah), dan modus (nilai yang paling sering muncul).' }] } },
+      { id: 'sub-008-4', title: 'Soal Cerita Statistika', completed: false, content: { title: 'Soal Cerita Statistika', sections: [{ type: 'text', content: 'Menerapkan konsep statistika untuk menganalisis data dalam kehidupan sehari-hari.' }] } },
+    ],
+  },
+]
