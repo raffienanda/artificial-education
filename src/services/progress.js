@@ -1,48 +1,36 @@
 /**
- * Progress Service
- * Mock API calls for progress, mastery, and BKT data.
+ * Progress Service — Connected to FastAPI Backend
+ * Uses centralized axios instance with interceptors.
  */
-import { delay } from './api'
-import { overallMastery, subtopicMastery, radarChartData, recentActivities, weeklyProgress } from '@/data/progress'
+import api from './api'
+import { radarChartData, recentActivities, weeklyProgress } from '@/data/progress'
 import { recommendations } from '@/data/recommendations'
 
 export const progressService = {
-  /** Fetch overall mastery percentage */
+  /** Fetch overall mastery and subtopic mastery from backend */
   async getMastery() {
-    await delay(300)
-    return { overall: overallMastery, subtopics: [...subtopicMastery] }
+    const subtopics = await api.get('/progress')
+    const overall = await api.get('/progress/overall')
+    return { overall: overall.overall, subtopics }
   },
 
-  /** Fetch radar chart data */
+  /** Fetch radar chart data (uses local data as layout, filled with backend mastery) */
   async getRadarChartData() {
-    await delay(200)
     return { ...radarChartData }
   },
 
-  /** Fetch BKT (Bayesian Knowledge Tracing) data */
-  async getBKTData() {
-    await delay(300)
-    return subtopicMastery.map((s) => ({
-      name: s.name,
-      ...s.bkt,
-    }))
-  },
-
-  /** Fetch recent activities */
+  /** Fetch recent activities (mock — no backend endpoint yet) */
   async getRecentActivities() {
-    await delay(200)
     return [...recentActivities]
   },
 
-  /** Fetch AI recommendations */
+  /** Fetch AI recommendations (mock — no backend endpoint yet) */
   async getRecommendations() {
-    await delay(400)
     return { ...recommendations }
   },
 
-  /** Fetch weekly progress data */
+  /** Fetch weekly progress data (mock — no backend endpoint yet) */
   async getWeeklyProgress() {
-    await delay(200)
     return [...weeklyProgress]
   },
 }

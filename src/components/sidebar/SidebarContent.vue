@@ -87,8 +87,8 @@
 import { computed } from 'vue'
 import { useModulesStore } from '@/stores/modules'
 import { useUiStore } from '@/stores/ui'
-import { modules as modulesData } from '@/data/modules'
 import SidebarItem from './SidebarItem.vue'
+import { onMounted } from 'vue'
 
 const props = defineProps({
   collapsed: { type: Boolean, default: false },
@@ -100,8 +100,14 @@ defineEmits(['close'])
 const modulesStore = useModulesStore()
 const uiStore = useUiStore()
 
-const modules = computed(() => modulesData)
+const modules = computed(() => modulesStore.modules)
 const activeModule = computed(() => modulesStore.activeModule)
+
+onMounted(() => {
+  if (modulesStore.modules.length === 0) {
+    modulesStore.fetchModules()
+  }
+})
 
 function selectModule(mod) {
   if (mod.status !== 'locked') {

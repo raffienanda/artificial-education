@@ -1,45 +1,28 @@
 /**
- * Quiz Service
- * Mock API calls for practice drill questions and answer submission.
+ * Quiz Service — Connected to FastAPI Backend
+ * Uses centralized axios instance with interceptors.
  */
-import { delay } from './api'
-import { questions } from '@/data/questions'
+import api from './api'
 
 export const quizService = {
-  /** Fetch quiz questions, optionally filtered by module */
+  /** Fetch quiz questions for a module */
   async getQuestions(moduleId = null) {
-    await delay(300)
     if (moduleId) {
-      return questions.filter((q) => q.moduleId === moduleId)
+      const data = await api.get(`/quiz/${moduleId}`)
+      return data
     }
-    return [...questions]
+    return []
   },
 
   /**
-   * Submit an answer and get feedback.
-   * In production, this would also update BKT probabilities on the server.
+   * Submit an answer and get feedback with BKT update from backend.
    */
-  async submitAnswer(questionId, selectedAnswer) {
-    await delay(400)
-    const question = questions.find((q) => q.id === questionId)
-    if (!question) throw new Error(`Question ${questionId} not found`)
-
-    const isCorrect = question.correctAnswer === selectedAnswer
-    return {
-      correct: isCorrect,
-      correctAnswer: question.correctAnswer,
-      explanation: question.explanation,
-    }
-  },
-
-  /** Fetch explanation for a specific question */
-  async getExplanation(questionId) {
-    await delay(200)
-    const question = questions.find((q) => q.id === questionId)
-    if (!question) throw new Error(`Question ${questionId} not found`)
-    return {
-      explanation: question.explanation,
-      correctAnswer: question.correctAnswer,
-    }
+  async submitAnswer(questionId, selectedAnswer, userId = 1) {
+    const data = await api.post('/quiz/submit', {
+      question_id: questionId,
+      selected_option_id: selectedAnswer,
+      user_id: userId,
+    })
+    return data
   },
 }

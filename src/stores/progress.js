@@ -1,18 +1,17 @@
 /**
- * Progress Store — Mastery data, BKT, radar chart, and recommendations
+ * Progress Store — Student mastery tracking and radar chart data
+ * Connected to FastAPI backend via centralized API instance
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { progressService } from '@/services/progress'
+import api from '@/services/api'
+import { radarChartData as initialRadar } from '@/data/progress' // Keep layout
 
 export const useProgressStore = defineStore('progress', () => {
   // State
   const overallMastery = ref(0)
-  const subtopicMastery = ref([])
-  const radarChartData = ref(null)
-  const recentActivities = ref([])
-  const recommendations = ref(null)
-  const weeklyProgress = ref([])
+  const subtopicMastery = ref([]) 
+  const radarChartData = ref(JSON.parse(JSON.stringify(initialRadar))) // Clone dummy format
   const loading = ref(false)
 
   // Computed
@@ -32,75 +31,69 @@ export const useProgressStore = defineStore('progress', () => {
   })
 
   // Actions
+  function updateProgress(topicId, newMastery) {
+    const topicIndex = subtopicMastery.value.findIndex(t => t.topic_id === topicId)
+    
+    if (topicIndex !== -1) {
+      subtopicMastery.value[topicIndex].mastery = newMastery
+    } else {
+      subtopicMastery.value.push({ topic_id: topicId, mastery: newMastery, status: 'learning' })
+    }
+    
+    // Refresh chart
+    if (radarChartData.value && radarChartData.value.datasets[0]) {
+      radarChartData.value.datasets[0].data = subtopicMastery.value.map(s => s.mastery)
+      radarChartData.value = { ...radarChartData.value }
+    }
+    
+    // Refresh overall
+    fetchOverall()
+  }
+
+  async function fetchOverall() {
+    try {
+      const data = await api.get('/progress/overall')
+      overallMastery.value = data.overall
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // Load data dari backend
   async function fetchMastery() {
     loading.value = true
     try {
-      const data = await progressService.getMastery()
-      overallMastery.value = data.overall
-      subtopicMastery.value = data.subtopics
+      const data = await api.get('/progress')
+      subtopicMastery.value = data
+      
+      if (radarChartData.value && radarChartData.value.datasets[0]) {
+        radarChartData.value.datasets[0].data = data.map(s => s.mastery)
+        radarChartData.value = { ...radarChartData.value }
+      }
+      
+      await fetchOverall()
+    } catch (e) {
+      console.error("Error fetching progress:", e)
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchRadarChart() {
-    try {
-      radarChartData.value = await progressService.getRadarChartData()
-    } catch (err) {
-      console.error('Failed to fetch radar chart data:', err)
-    }
-  }
-
-  async function fetchRecentActivities() {
-    try {
-      recentActivities.value = await progressService.getRecentActivities()
-    } catch (err) {
-      console.error('Failed to fetch recent activities:', err)
-    }
-  }
-
-  async function fetchRecommendations() {
-    try {
-      recommendations.value = await progressService.getRecommendations()
-    } catch (err) {
-      console.error('Failed to fetch recommendations:', err)
-    }
-  }
-
-  async function fetchWeeklyProgress() {
-    try {
-      weeklyProgress.value = await progressService.getWeeklyProgress()
-    } catch (err) {
-      console.error('Failed to fetch weekly progress:', err)
-    }
-  }
-
+  // Alias for DashboardPage.vue compatibility
   async function fetchAll() {
-    await Promise.all([
-      fetchMastery(),
-      fetchRadarChart(),
-      fetchRecentActivities(),
-      fetchRecommendations(),
-      fetchWeeklyProgress(),
-    ])
+    await fetchMastery()
   }
 
   return {
     overallMastery,
     subtopicMastery,
     radarChartData,
-    recentActivities,
-    recommendations,
-    weeklyProgress,
     loading,
     weakSubtopics,
     masteredSubtopics,
     masteryColor,
+    updateProgress,
     fetchMastery,
-    fetchRadarChart,
-    fetchRecentActivities,
-    fetchRecommendations,
-    fetchWeeklyProgress,
     fetchAll,
   }
 })
