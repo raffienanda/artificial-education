@@ -93,7 +93,7 @@ export const notifications = [
     id: 'notif-003',
     type: 'recommendation',
     title: 'Rekomendasi AI',
-    message: 'Review sub-materi Perkalian untuk meningkatkan penguasaan',
+    message: 'Review materi Perkalian untuk meningkatkan penguasaan',
     time: '1 hari lalu',
     read: true,
   },

@@ -16,6 +16,7 @@
 
     <!-- Modals & Overlays -->
     <SettingsModal />
+    <SearchModal />
     <ToastNotification />
     <ConfettiEffect :active="userStore.recentLevelUp" />
     <AchievementModal 
@@ -34,6 +35,7 @@
 import TheSidebar from '@/components/sidebar/TheSidebar.vue'
 import TopBar from '@/components/header/TopBar.vue'
 import SettingsModal from '@/components/header/SettingsModal.vue'
+import SearchModal from '@/components/header/SearchModal.vue'
 import ToastNotification from '@/components/common/ToastNotification.vue'
 import ConfettiEffect from '@/components/common/ConfettiEffect.vue'
 import AchievementModal from '@/components/common/AchievementModal.vue'

@@ -38,14 +38,8 @@
           <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <p class="text-xs font-semibold text-gray-500 mb-1">Status</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              {{ recommendations?.statusMessage || 'Kamu perlu fokus pada 2 sub-materi yang belum dikuasai.' }}
+              {{ recommendations?.statusMessage || 'Kamu perlu fokus pada 2 materi yang belum dikuasai.' }}
             </p>
-            <button class="flex items-center gap-1 mt-2 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-              </svg>
-              Lihat Rekomendasi
-            </button>
           </div>
         </div>
 

@@ -30,8 +30,8 @@ export const recommendations = {
     },
   ],
   totalEstimatedTime: '15 menit',
-  message: 'Kamu perlu fokus pada 2 sub-materi yang belum dikuasai.',
-  statusMessage: 'Kamu perlu fokus pada 2 sub-materi yang belum dikuasai.',
+  message: 'Kamu perlu fokus pada 2 materi yang belum dikuasai.',
+  statusMessage: 'Kamu perlu fokus pada 2 materi yang belum dikuasai.',
   nextMilestone: {
     title: 'Buka Modul Pecahan',
     requirement: 'Selesaikan Bilangan Bulat dengan penguasaan 80%',

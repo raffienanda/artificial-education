@@ -9,15 +9,19 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.database import SessionLocal, engine, Base
+from app.core.migrations import ensure_runtime_columns
 from app.models.user import User
-from app.models.module import Module, Subtopic
+from app.models.module import Course, Module, Subtopic
 from app.models.question import Question
 from app.models.progress import UserProgress
+from app.models.learning_path import TopicPrerequisite
+from app.core.security import hash_password
 
 
 def seed_all():
     # Create tables if not exist
     Base.metadata.create_all(bind=engine)
+    ensure_runtime_columns(engine)
     db = SessionLocal()
 
     try:
@@ -26,17 +30,82 @@ def seed_all():
         # ==============================
         user = db.query(User).filter(User.username == "student_cs").first()
         if not user:
-            user = User(username="student_cs", xp=500, combo=0, total_score=0)
+            user = User(
+                username="student_cs",
+                display_name="Student CS",
+                password_hash=hash_password("password123"),
+                role="student",
+                xp=500,
+                combo=0,
+                total_score=0,
+                reward_points=75,
+                current_streak=1,
+                longest_streak=1,
+                redeemed_rewards=[],
+            )
             db.add(user)
             db.commit()
             db.refresh(user)
             print("[+] User 'student_cs' created")
         else:
+            user.display_name = user.display_name or "Student CS"
+            user.password_hash = user.password_hash or hash_password("password123")
+            user.role = user.role or "student"
+            user.reward_points = user.reward_points or 75
+            user.current_streak = user.current_streak or 1
+            user.longest_streak = user.longest_streak or user.current_streak
+            user.redeemed_rewards = user.redeemed_rewards or []
             print("[=] User 'student_cs' already exists")
 
+        admin_user = db.query(User).filter(User.username == "dosen_demo").first()
+        if not admin_user:
+            admin_user = User(
+                username="dosen_demo",
+                display_name="Dosen Demo",
+                password_hash=hash_password("admin123"),
+                role="admin",
+                xp=0,
+                combo=0,
+                total_score=0,
+                reward_points=0,
+                current_streak=0,
+                longest_streak=0,
+                redeemed_rewards=[],
+            )
+            db.add(admin_user)
+            db.commit()
+            print("[+] Admin user 'dosen_demo' created")
+        else:
+            admin_user.display_name = admin_user.display_name or "Dosen Demo"
+            admin_user.password_hash = admin_user.password_hash or hash_password("admin123")
+            admin_user.role = "admin"
+            admin_user.reward_points = admin_user.reward_points or 0
+            admin_user.current_streak = admin_user.current_streak or 0
+            admin_user.longest_streak = admin_user.longest_streak or 0
+            admin_user.redeemed_rewards = admin_user.redeemed_rewards or []
+            print("[=] Admin user 'dosen_demo' already exists")
+
         # ==============================
-        # 2. Seed Modules & Subtopics
+        # 2. Seed Course, Modules & Subtopics
         # ==============================
+        course = db.query(Course).filter(Course.id == "course-algo-01").first()
+        if not course:
+            course = Course(
+                id="course-algo-01",
+                title="Algoritma dan Pemrograman",
+                description="Kuasai dasar-dasar algoritma dan pemrograman melalui pembelajaran adaptif berbasis AI",
+                icon="computer",
+            )
+            db.add(course)
+            db.commit()
+            print("[+] Course 'Algoritma dan Pemrograman' created")
+        else:
+            course.title = "Algoritma dan Pemrograman"
+            course.description = "Kuasai dasar-dasar algoritma dan pemrograman melalui pembelajaran adaptif berbasis AI"
+            course.icon = "computer"
+            db.commit()
+            print("[=] Course 'Algoritma dan Pemrograman' already exists")
+
         modules_data = [
             {
                 "id": "mod-001",
@@ -189,7 +258,7 @@ def seed_all():
                 "difficulty": "Menengah",
                 "estimated_time": "80 menit",
                 "order": 3,
-                "status": "locked",
+                "status": "in-progress",
                 "subtopics": [
                     {
                         "id": "sub-003-1",
@@ -255,6 +324,7 @@ def seed_all():
             if not existing_mod:
                 mod = Module(
                     id=mod_data["id"],
+                    course_id=course.id,
                     title=mod_data["title"],
                     icon=mod_data["icon"],
                     description=mod_data["description"],
@@ -279,6 +349,14 @@ def seed_all():
                 print(f"    +-- {len(mod_data['subtopics'])} subtopics created")
             else:
                 print(f"[=] Module '{mod_data['title']}' already exists")
+                existing_mod.title = mod_data["title"]
+                existing_mod.course_id = course.id
+                existing_mod.icon = mod_data["icon"]
+                existing_mod.description = mod_data["description"]
+                existing_mod.difficulty = mod_data["difficulty"]
+                existing_mod.estimated_time = mod_data["estimated_time"]
+                existing_mod.order = mod_data["order"]
+                existing_mod.status = mod_data["status"]
                 # Still check for missing subtopics
                 for sub_data in mod_data["subtopics"]:
                     existing_sub = db.query(Subtopic).filter(Subtopic.id == sub_data["id"]).first()
@@ -292,6 +370,69 @@ def seed_all():
                         db.add(sub)
                         print(f"    [+] Subtopic '{sub_data['title']}' added")
                 db.commit()
+
+        example_sections = {
+            "sub-001-3": {
+                "type": "example",
+                "title": "Contoh Ekspresi",
+                "items": [
+                    "harga = 5000\njumlah = 3\ntotal = harga * jumlah\nprint(total)  # 15000",
+                    "sisa = 17 % 5\nprint(sisa)  # 2",
+                ],
+            },
+            "sub-001-5": {
+                "type": "example",
+                "title": "Contoh Type Casting",
+                "items": [
+                    "umur_text = \"20\"\numur = int(umur_text)\nprint(umur + 1)  # 21",
+                    "nilai = \"87.5\"\nnilai_float = float(nilai)\nprint(nilai_float)  # 87.5",
+                ],
+            },
+            "sub-002-1": {
+                "type": "example",
+                "title": "Contoh Kondisi Logika",
+                "items": [
+                    "umur = 19\npunya_ktp = True\nif umur >= 17 and punya_ktp:\n    print(\"Boleh daftar\")",
+                    "nilai = 80\nif nilai >= 75:\n    print(\"Lulus\")",
+                ],
+            },
+            "sub-002-3": {
+                "type": "example",
+                "title": "Contoh Kategori Nilai",
+                "items": [
+                    "skor = 68\nif skor >= 80:\n    print(\"Sangat Baik\")\nelif skor >= 60:\n    print(\"Baik\")\nelse:\n    print(\"Perlu Latihan\")",
+                ],
+            },
+            "sub-003-1": {
+                "type": "example",
+                "title": "Contoh Perulangan for",
+                "items": [
+                    "for i in range(1, 6):\n    print(i)  # 1 sampai 5",
+                    "buah = [\"apel\", \"jeruk\", \"mangga\"]\nfor item in buah:\n    print(item)",
+                ],
+            },
+            "sub-003-2": {
+                "type": "example",
+                "title": "Contoh Perulangan while",
+                "items": [
+                    "angka = 1\nwhile angka <= 3:\n    print(angka)\n    angka += 1",
+                    "password = \"\"\nwhile password != \"1234\":\n    password = input(\"Password: \")\nprint(\"Berhasil\")",
+                ],
+            },
+        }
+
+        for subtopic_id, example_section in example_sections.items():
+            subtopic = db.query(Subtopic).filter(Subtopic.id == subtopic_id).first()
+            if not subtopic:
+                continue
+            content = dict(subtopic.content or {})
+            sections = list(content.get("sections") or [])
+            sections = [section for section in sections if section.get("type") != "example"]
+            sections.append(example_section)
+            content["sections"] = sections
+            subtopic.content = content
+            print(f"[~] Example section for '{subtopic_id}' synced")
+        db.commit()
 
         # ==============================
         # 3. Seed Questions
@@ -394,6 +535,328 @@ def seed_all():
                 "correct_answer": "b",
                 "explanation": "range(2, 10, 3) menghasilkan: 2, 5, 8. Jadi print() dieksekusi 3 kali.",
                 "difficulty": "sedang"
+            },
+            {
+                "id": "q-008",
+                "subtopic_id": "sub-001-1",
+                "question_text": "Apa pengertian algoritma yang paling tepat?",
+                "options": [
+                    {"id": "a", "text": "Bahasa pemrograman khusus untuk membuat website", "label": "A"},
+                    {"id": "b", "text": "Urutan langkah logis untuk menyelesaikan masalah", "label": "B"},
+                    {"id": "c", "text": "Aplikasi untuk menjalankan kode Python", "label": "C"},
+                    {"id": "d", "text": "Kumpulan error dalam sebuah program", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Algoritma adalah urutan langkah logis dan sistematis untuk menyelesaikan masalah.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-009",
+                "subtopic_id": "sub-001-1",
+                "question_text": "Urutan umum pengembangan program yang paling masuk akal adalah...",
+                "options": [
+                    {"id": "a", "text": "Coding, testing, memahami masalah, desain algoritma", "label": "A"},
+                    {"id": "b", "text": "Memahami masalah, desain algoritma, coding, testing", "label": "B"},
+                    {"id": "c", "text": "Testing, coding, desain algoritma, memahami masalah", "label": "C"},
+                    {"id": "d", "text": "Dokumentasi, testing, coding, memahami masalah", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Program sebaiknya dimulai dari memahami masalah, merancang algoritma, menulis kode, lalu menguji hasilnya.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-010",
+                "subtopic_id": "sub-001-2",
+                "question_text": "Tipe data yang cocok untuk menyimpan nilai True atau False adalah...",
+                "options": [
+                    {"id": "a", "text": "int", "label": "A"},
+                    {"id": "b", "text": "float", "label": "B"},
+                    {"id": "c", "text": "bool", "label": "C"},
+                    {"id": "d", "text": "str", "label": "D"}
+                ],
+                "correct_answer": "c",
+                "explanation": "Boolean atau bool digunakan untuk menyimpan nilai logika True atau False.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-011",
+                "subtopic_id": "sub-001-3",
+                "question_text": "Berapakah hasil dari ekspresi Python berikut?\n\n2 + 3 * 4",
+                "options": [
+                    {"id": "a", "text": "20", "label": "A"},
+                    {"id": "b", "text": "14", "label": "B"},
+                    {"id": "c", "text": "24", "label": "C"},
+                    {"id": "d", "text": "9", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Perkalian dikerjakan lebih dulu. 3 * 4 = 12, lalu 2 + 12 = 14.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-012",
+                "subtopic_id": "sub-001-4",
+                "question_text": "Fungsi Python yang digunakan untuk menerima input dari keyboard adalah...",
+                "options": [
+                    {"id": "a", "text": "print()", "label": "A"},
+                    {"id": "b", "text": "input()", "label": "B"},
+                    {"id": "c", "text": "scan()", "label": "C"},
+                    {"id": "d", "text": "readline()", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "input() digunakan untuk menerima masukan dari pengguna melalui keyboard.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-013",
+                "subtopic_id": "sub-001-4",
+                "question_text": "Apa output dari kode berikut jika pengguna mengetik Budi?\n\nnama = input('Nama: ')\nprint('Halo,', nama)",
+                "options": [
+                    {"id": "a", "text": "Halo, nama", "label": "A"},
+                    {"id": "b", "text": "Halo, Budi", "label": "B"},
+                    {"id": "c", "text": "Nama: Budi", "label": "C"},
+                    {"id": "d", "text": "Error", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Nilai input disimpan ke variabel nama, lalu print menampilkan Halo, Budi.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-014",
+                "subtopic_id": "sub-001-5",
+                "question_text": "Manakah kode yang benar untuk mengubah string '25' menjadi integer di Python?",
+                "options": [
+                    {"id": "a", "text": "str('25')", "label": "A"},
+                    {"id": "b", "text": "int('25')", "label": "B"},
+                    {"id": "c", "text": "float_int('25')", "label": "C"},
+                    {"id": "d", "text": "bool('25')", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "int('25') mengubah string angka menjadi integer 25.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-015",
+                "subtopic_id": "sub-002-1",
+                "question_text": "Operator perbandingan untuk 'tidak sama dengan' di Python adalah...",
+                "options": [
+                    {"id": "a", "text": "!=", "label": "A"},
+                    {"id": "b", "text": "==", "label": "B"},
+                    {"id": "c", "text": "<=", "label": "C"},
+                    {"id": "d", "text": "=>", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "Operator != digunakan untuk mengecek apakah dua nilai tidak sama.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-016",
+                "subtopic_id": "sub-002-4",
+                "question_text": "Apa yang dimaksud dengan nested if?",
+                "options": [
+                    {"id": "a", "text": "Loop yang berhenti otomatis", "label": "A"},
+                    {"id": "b", "text": "Percabangan if yang berada di dalam if lain", "label": "B"},
+                    {"id": "c", "text": "Variabel yang menyimpan banyak nilai", "label": "C"},
+                    {"id": "d", "text": "Fungsi untuk mencetak output", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Nested if adalah percabangan if di dalam blok if lain.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-017",
+                "subtopic_id": "sub-002-4",
+                "question_text": "Pada validasi login, nested if cocok digunakan ketika...",
+                "options": [
+                    {"id": "a", "text": "Pengecekan password dilakukan setelah username benar", "label": "A"},
+                    {"id": "b", "text": "Semua kondisi harus diabaikan", "label": "B"},
+                    {"id": "c", "text": "Program hanya mencetak satu teks", "label": "C"},
+                    {"id": "d", "text": "Tidak ada kondisi yang saling bergantung", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "Nested if berguna saat kondisi kedua bergantung pada hasil kondisi pertama.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-018",
+                "subtopic_id": "sub-002-5",
+                "question_text": "Pada kalkulator sederhana, percabangan biasanya dipakai untuk...",
+                "options": [
+                    {"id": "a", "text": "Memilih operasi berdasarkan operator yang dimasukkan", "label": "A"},
+                    {"id": "b", "text": "Menghapus semua variabel", "label": "B"},
+                    {"id": "c", "text": "Mengubah Python menjadi C++", "label": "C"},
+                    {"id": "d", "text": "Menghentikan komputer", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "Percabangan dapat menentukan operasi mana yang dijalankan, misalnya tambah, kurang, kali, atau bagi.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-019",
+                "subtopic_id": "sub-002-5",
+                "question_text": "Mengapa pembagian dengan nol perlu dicek pada studi kasus kalkulator?",
+                "options": [
+                    {"id": "a", "text": "Karena hasilnya selalu 1", "label": "A"},
+                    {"id": "b", "text": "Karena dapat menyebabkan error atau operasi tidak valid", "label": "B"},
+                    {"id": "c", "text": "Karena membuat string menjadi integer", "label": "C"},
+                    {"id": "d", "text": "Karena operator / tidak bisa dipakai", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Pembagian dengan nol tidak valid, sehingga program perlu menangani kondisi tersebut.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-020",
+                "subtopic_id": "sub-003-2",
+                "question_text": "Perulangan while akan terus berjalan selama...",
+                "options": [
+                    {"id": "a", "text": "Kondisinya bernilai True", "label": "A"},
+                    {"id": "b", "text": "Kondisinya bernilai False", "label": "B"},
+                    {"id": "c", "text": "Tidak ada variabel", "label": "C"},
+                    {"id": "d", "text": "Program tidak memiliki input", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "while mengeksekusi blok kode selama kondisi bernilai True.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-021",
+                "subtopic_id": "sub-003-2",
+                "question_text": "Apa risiko utama jika kondisi while tidak pernah menjadi False?",
+                "options": [
+                    {"id": "a", "text": "Syntax error", "label": "A"},
+                    {"id": "b", "text": "Infinite loop", "label": "B"},
+                    {"id": "c", "text": "Variabel otomatis terhapus", "label": "C"},
+                    {"id": "d", "text": "Semua output menjadi kosong", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Jika kondisi while selalu True, loop dapat berjalan tanpa henti atau infinite loop.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-022",
+                "subtopic_id": "sub-003-3",
+                "question_text": "Keyword yang digunakan untuk menghentikan loop sepenuhnya adalah...",
+                "options": [
+                    {"id": "a", "text": "continue", "label": "A"},
+                    {"id": "b", "text": "break", "label": "B"},
+                    {"id": "c", "text": "skip", "label": "C"},
+                    {"id": "d", "text": "pass", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "break digunakan untuk keluar dari loop secara langsung.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-023",
+                "subtopic_id": "sub-003-3",
+                "question_text": "Apa fungsi keyword continue di dalam loop?",
+                "options": [
+                    {"id": "a", "text": "Menghentikan seluruh program", "label": "A"},
+                    {"id": "b", "text": "Melewati sisa kode pada iterasi saat ini dan lanjut ke iterasi berikutnya", "label": "B"},
+                    {"id": "c", "text": "Mengubah tipe data menjadi integer", "label": "C"},
+                    {"id": "d", "text": "Mencetak output ke layar", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "continue melewati sisa proses pada iterasi berjalan, lalu loop lanjut ke iterasi berikutnya.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-024",
+                "subtopic_id": "sub-003-4",
+                "question_text": "Nested loop adalah...",
+                "options": [
+                    {"id": "a", "text": "Loop di dalam loop lain", "label": "A"},
+                    {"id": "b", "text": "If di dalam if lain", "label": "B"},
+                    {"id": "c", "text": "Variabel tanpa nilai", "label": "C"},
+                    {"id": "d", "text": "Input yang selalu salah", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "Nested loop berarti terdapat loop yang dijalankan di dalam loop lain.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-025",
+                "subtopic_id": "sub-003-4",
+                "question_text": "Nested loop sering dipakai untuk memproses data berbentuk...",
+                "options": [
+                    {"id": "a", "text": "Satu angka tunggal saja", "label": "A"},
+                    {"id": "b", "text": "Tabel, matriks, atau pola baris-kolom", "label": "B"},
+                    {"id": "c", "text": "Password terenkripsi", "label": "C"},
+                    {"id": "d", "text": "Nama file program", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Nested loop cocok untuk struktur dua dimensi seperti tabel, matriks, dan pola.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-026",
+                "subtopic_id": "sub-003-5",
+                "question_text": "Pada perhitungan faktorial 5!, operasi utama yang dilakukan adalah...",
+                "options": [
+                    {"id": "a", "text": "5 + 4 + 3 + 2 + 1", "label": "A"},
+                    {"id": "b", "text": "5 * 4 * 3 * 2 * 1", "label": "B"},
+                    {"id": "c", "text": "5 / 4 / 3 / 2 / 1", "label": "C"},
+                    {"id": "d", "text": "5 - 4 - 3 - 2 - 1", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Faktorial adalah hasil perkalian bilangan dari n sampai 1. Jadi 5! = 5 * 4 * 3 * 2 * 1.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-027",
+                "subtopic_id": "sub-003-5",
+                "question_text": "Dalam algoritma cek bilangan prima, mengapa kita perlu mencari faktor pembagi?",
+                "options": [
+                    {"id": "a", "text": "Karena bilangan prima punya pembagi selain 1 dan dirinya sendiri", "label": "A"},
+                    {"id": "b", "text": "Karena bilangan prima tidak boleh punya pembagi selain 1 dan dirinya sendiri", "label": "B"},
+                    {"id": "c", "text": "Karena semua bilangan prima harus genap", "label": "C"},
+                    {"id": "d", "text": "Karena angka 1 selalu prima", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Bilangan prima hanya memiliki dua pembagi, yaitu 1 dan dirinya sendiri. Jika ada faktor lain, maka bukan prima.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-028",
+                "subtopic_id": "sub-002-2",
+                "question_text": "Pada struktur if-else, blok else akan dijalankan ketika...",
+                "options": [
+                    {"id": "a", "text": "Kondisi if bernilai True", "label": "A"},
+                    {"id": "b", "text": "Kondisi if bernilai False", "label": "B"},
+                    {"id": "c", "text": "Program belum memiliki variabel", "label": "C"},
+                    {"id": "d", "text": "Input selalu berupa angka", "label": "D"}
+                ],
+                "correct_answer": "b",
+                "explanation": "Blok else menjadi jalur alternatif ketika kondisi if tidak terpenuhi atau bernilai False.",
+                "difficulty": "sedang"
+            },
+            {
+                "id": "q-029",
+                "subtopic_id": "sub-002-3",
+                "question_text": "Pada rangkaian if-elif-else, apa yang terjadi setelah salah satu kondisi elif bernilai True?",
+                "options": [
+                    {"id": "a", "text": "Semua kondisi berikutnya tetap diperiksa", "label": "A"},
+                    {"id": "b", "text": "Program langsung keluar dari seluruh aplikasi", "label": "B"},
+                    {"id": "c", "text": "Blok kondisi tersebut dijalankan dan kondisi berikutnya dilewati", "label": "C"},
+                    {"id": "d", "text": "Nilai variabel otomatis menjadi nol", "label": "D"}
+                ],
+                "correct_answer": "c",
+                "explanation": "Pada if-elif-else, setelah satu kondisi terpenuhi, bloknya dijalankan dan kondisi di bawahnya tidak diperiksa lagi.",
+                "difficulty": "mudah"
+            },
+            {
+                "id": "q-030",
+                "subtopic_id": "sub-003-1",
+                "question_text": "Perulangan for paling cocok digunakan ketika...",
+                "options": [
+                    {"id": "a", "text": "Jumlah iterasi sudah diketahui atau datanya bisa diiterasi", "label": "A"},
+                    {"id": "b", "text": "Program tidak membutuhkan kondisi apa pun", "label": "B"},
+                    {"id": "c", "text": "Kita hanya ingin membuat variabel string", "label": "C"},
+                    {"id": "d", "text": "Semua input harus ditolak", "label": "D"}
+                ],
+                "correct_answer": "a",
+                "explanation": "for cocok untuk mengulang berdasarkan range atau koleksi data yang dapat diiterasi.",
+                "difficulty": "mudah"
             }
         ]
 
@@ -459,11 +922,35 @@ def seed_all():
                 print(f"[~] Progress for '{p_data['topic_id']}' updated ({p_data['mastery']}%)")
 
         db.commit()
+
+        # ==============================
+        # 5. Seed Topic Prerequisite Graph for GKT
+        # ==============================
+        prerequisite_data = [
+            {"topic_id": "mod-002", "prerequisite_id": "mod-001", "mastery_threshold": 60.0},
+            {"topic_id": "mod-003", "prerequisite_id": "mod-002", "mastery_threshold": 60.0},
+        ]
+
+        for relation in prerequisite_data:
+            existing_relation = db.query(TopicPrerequisite).filter(
+                TopicPrerequisite.topic_id == relation["topic_id"],
+                TopicPrerequisite.prerequisite_id == relation["prerequisite_id"],
+            ).first()
+
+            if not existing_relation:
+                db.add(TopicPrerequisite(**relation))
+                print(f"[+] Prerequisite {relation['prerequisite_id']} -> {relation['topic_id']} created")
+            else:
+                existing_relation.mastery_threshold = relation["mastery_threshold"]
+                print(f"[=] Prerequisite {relation['prerequisite_id']} -> {relation['topic_id']} already exists")
+
+        db.commit()
         print("\n[OK] Database seeding complete!")
         print(f"   Modules: {db.query(Module).count()}")
         print(f"   Subtopics: {db.query(Subtopic).count()}")
         print(f"   Questions: {db.query(Question).count()}")
         print(f"   User Progress: {db.query(UserProgress).count()}")
+        print(f"   Topic Prerequisites: {db.query(TopicPrerequisite).count()}")
 
     except Exception as e:
         db.rollback()

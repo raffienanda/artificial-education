@@ -5,6 +5,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useProgressStore } from './progress'
+import { useModulesStore } from './modules'
+import { useRecommendationStore } from './recommendation'
+import { useUserStore } from './user'
 import api from '@/services/api'
 
 export const useQuizStore = defineStore('quiz', () => {
@@ -19,6 +22,7 @@ export const useQuizStore = defineStore('quiz', () => {
   const quizFinished = ref(false)
   const combo = ref(0)
   const loading = ref(false)
+  const activeQuizAction = ref('easy_quiz')
 
   // Computed
   const currentQuestion = computed(() =>
@@ -42,11 +46,21 @@ export const useQuizStore = defineStore('quiz', () => {
   })
 
   // Actions
-  async function fetchQuestions(moduleId = null) {
+  function difficultyFromAction(action) {
+    if (action === 'easy_quiz') return 'mudah'
+    if (action === 'hard_quiz') return 'sedang'
+    return null
+  }
+
+  async function fetchQuestions(moduleId = null, action = activeQuizAction.value) {
     loading.value = true
     try {
       if (moduleId) {
-        const data = await api.get(`/quiz/${moduleId}`)
+        activeQuizAction.value = action || 'easy_quiz'
+        const difficulty = difficultyFromAction(activeQuizAction.value)
+        const data = await api.get(`/quiz/${moduleId}`, {
+          params: difficulty ? { difficulty } : {},
+        })
         questions.value = data
       }
       resetQuiz()
@@ -70,18 +84,28 @@ export const useQuizStore = defineStore('quiz', () => {
     }
 
     try {
+      const userStore = useUserStore()
+      const recommendationStore = useRecommendationStore()
       // Call backend via centralized API
       const result = await api.post('/quiz/submit', {
         question_id: questionId,
         selected_option_id: optionId,
-        user_id: 1 // hardcoded user
+        user_id: userStore.userId,
+        action: recommendationStore.microAction,
       })
 
       submissionResult.value = {
         correct: result.correct,
         correctAnswer: result.correct_answer,
-        explanation: result.explanation
+        explanation: result.explanation,
+        rewardXp: result.reward_xp,
+        qValue: result.q_value,
+        learningState: result.learning_state,
+        nextLearningState: result.next_learning_state,
+        action: recommendationStore.microAction,
+        newMastery: result.new_mastery,
       }
+      userStore.applyQuizUserUpdate(result.user)
 
       isSubmitted.value = true
       totalAnswered.value++
@@ -95,6 +119,16 @@ export const useQuizStore = defineStore('quiz', () => {
         progressStore.updateProgress(question.subtopic_id, result.new_mastery)
       } else {
         combo.value = 0
+      }
+
+      const modulesStore = useModulesStore()
+      if (modulesStore.activeModule?.id && modulesStore.activeSubtopic?.id) {
+        recommendationStore.fetchNext({
+          userId: userStore.userId,
+          currentModuleId: modulesStore.activeModule.id,
+          currentSubtopicId: modulesStore.activeSubtopic.id,
+        })
+        recommendationStore.fetchLogs({ userId: userStore.userId })
       }
     } catch (error) {
       console.error("Error submitting answer:", error)
@@ -135,6 +169,7 @@ export const useQuizStore = defineStore('quiz', () => {
     totalAnswered,
     quizFinished,
     combo,
+    activeQuizAction,
     loading,
     currentQuestion,
     totalQuestions,

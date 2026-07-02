@@ -3,12 +3,12 @@
  * Uses centralized axios instance with interceptors
  */
 import api from './api'
-import { course } from '@/data/modules' // keeping course static for now
 
 export const modulesService = {
-  /** Fetch the course details (mocked) */
+  /** Fetch the current course details */
   async getCourse() {
-    return { ...course }
+    const data = await api.get('/modules/course/current')
+    return data
   },
 
   /** Fetch all modules */

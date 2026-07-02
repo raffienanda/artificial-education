@@ -57,8 +57,15 @@
                     <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Daily Reminders</p>
                     <p class="text-xs text-gray-500">Remind me to study daily</p>
                   </div>
-                  <button class="relative w-11 h-6 rounded-full bg-primary-500 transition-colors duration-200">
-                    <div class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transform translate-x-5 shadow-sm" />
+                  <button
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                    :class="dailyReminders ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'"
+                    @click="dailyReminders = !dailyReminders"
+                  >
+                    <div
+                      class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200"
+                      :class="dailyReminders ? 'translate-x-5' : ''"
+                    />
                   </button>
                 </div>
                 <div class="flex items-center justify-between">
@@ -66,21 +73,18 @@
                     <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Achievement Alerts</p>
                     <p class="text-xs text-gray-500">Notify when I unlock badges</p>
                   </div>
-                  <button class="relative w-11 h-6 rounded-full bg-primary-500 transition-colors duration-200">
-                    <div class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transform translate-x-5 shadow-sm" />
+                  <button
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                    :class="achievementAlerts ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'"
+                    @click="achievementAlerts = !achievementAlerts"
+                  >
+                    <div
+                      class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full shadow-sm transition-transform duration-200"
+                      :class="achievementAlerts ? 'translate-x-5' : ''"
+                    />
                   </button>
                 </div>
               </div>
-            </div>
-            
-            <hr class="border-gray-100 dark:border-gray-700">
-
-            <!-- Account -->
-            <div>
-               <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Account</h3>
-               <button class="text-sm font-medium text-danger-600 hover:text-danger-700">
-                 Clear Learning Data (Reset Progress)
-               </button>
             </div>
           </div>
           
@@ -102,8 +106,11 @@
  */
 import { useUiStore } from '@/stores/ui'
 import BaseButton from '@/components/common/BaseButton.vue'
+import { ref } from 'vue'
 
 const uiStore = useUiStore()
+const dailyReminders = ref(true)
+const achievementAlerts = ref(true)
 </script>
 
 <style scoped>

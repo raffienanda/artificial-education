@@ -21,7 +21,7 @@
     </div>
 
     <!-- Card body -->
-    <div :class="[padding ? paddingClass : '', !$slots.header && !title ? '' : 'pt-3']">
+    <div :class="['min-h-0 flex-1', padding ? paddingClass : '', !$slots.header && !title ? '' : 'pt-3']">
       <slot />
     </div>
 

@@ -2,25 +2,25 @@
   <div class="h-full w-full p-2 sm:p-4 lg:p-6 lg:overflow-hidden overflow-y-auto">
     <!-- Dashboard CSS Grid Layout -->
     <div 
-      class="w-full grid gap-4 lg:gap-5 relative lg:h-full"
+      class="w-full min-h-0 grid gap-4 lg:gap-5 relative lg:h-full"
       :class="[
         'grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px]',
-        'grid-rows-auto lg:grid-rows-[1fr_340px]'
+        'grid-rows-auto lg:grid-rows-[minmax(0,1fr)_340px]'
       ]"
     >
       <!-- Center Top: Module Viewer -->
       <BaseCard 
-        class="flex flex-col lg:row-start-1 lg:col-start-1 overflow-hidden"
+        class="min-h-0 flex flex-col lg:row-start-1 lg:col-start-1 overflow-hidden"
         :padding="false"
       >
-        <div class="h-full p-4 sm:p-5 lg:p-6 flex flex-col overflow-y-auto scrollbar-hide">
+        <div class="h-full min-h-0 p-4 sm:p-5 lg:p-6 flex flex-col overflow-hidden">
           <ModuleViewer />
         </div>
       </BaseCard>
 
       <!-- Center Bottom: Learning Progress -->
       <BaseCard 
-        class="flex flex-col lg:row-start-2 lg:col-start-1 overflow-hidden"
+        class="min-h-0 flex flex-col lg:row-start-2 lg:col-start-1 overflow-hidden"
         :padding="false"
       >
         <div class="h-full p-4 sm:p-5 flex flex-col overflow-y-auto scrollbar-hide">
@@ -28,23 +28,40 @@
         </div>
       </BaseCard>
 
-      <!-- Right Top: AI Chatbot -->
-      <BaseCard 
-        class="hidden lg:flex flex-col lg:row-start-1 lg:col-start-2 overflow-hidden border-none"
-        :padding="false"
-      >
-        <ChatbotPanel />
-      </BaseCard>
+      <!-- Right Column: Chatbot + Practice Drill -->
+      <div class="min-h-0 flex flex-col gap-4 lg:row-start-1 lg:row-span-2 lg:col-start-2">
+        <BaseCard
+          class="hidden min-h-0 lg:flex flex-col overflow-hidden border-none transition-all duration-300"
+          :class="uiStore.chatbotDesktopVisible ? 'flex-1' : 'h-14 flex-shrink-0'"
+          :padding="false"
+        >
+          <ChatbotPanel v-if="uiStore.chatbotDesktopVisible" />
+          <button
+            v-else
+            class="flex h-full w-full items-center justify-between gap-3 px-4 text-left text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/20"
+            title="Tampilkan chatbot"
+            @click="uiStore.toggleChatbotDesktop()"
+          >
+            <span class="flex items-center gap-2">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              <span class="text-sm font-bold">Chatbot AI</span>
+            </span>
+            <span class="text-xs font-semibold text-gray-400">Tampilkan</span>
+          </button>
+        </BaseCard>
 
-      <!-- Right Bottom: Practice Drill -->
-      <BaseCard 
-        class="flex flex-col lg:row-start-2 lg:col-start-2 overflow-hidden"
-        :padding="false"
-      >
-        <div class="h-full p-4 sm:p-5 flex flex-col overflow-y-auto scrollbar-hide">
-          <PracticePanel />
-        </div>
-      </BaseCard>
+        <BaseCard
+          class="min-h-0 flex flex-col overflow-hidden"
+          :class="uiStore.chatbotDesktopVisible ? 'lg:h-[340px] lg:flex-shrink-0' : 'lg:flex-1'"
+          :padding="false"
+        >
+          <div class="h-full min-h-0 p-4 sm:p-5 flex flex-col overflow-y-auto scrollbar-hide">
+            <PracticePanel />
+          </div>
+        </BaseCard>
+      </div>
     </div>
 
     <!-- Mobile Floating Chatbot Button -->
@@ -95,15 +112,12 @@ const chatbotStore = useChatbotStore()
 onMounted(async () => {
   // Load all initial data in parallel
   await Promise.all([
+    modulesStore.fetchCourse(),
     modulesStore.fetchModules(),
     progressStore.fetchAll(),
     chatbotStore.fetchConversation(),
   ])
 
-  // Auto-select the first non-locked module so content shows immediately
-  if (!modulesStore.activeModule) {
-    await modulesStore.fetchModuleById('mod-001')
-  }
 })
 </script>
 
@@ -116,4 +130,5 @@ onMounted(async () => {
 .slide-up-leave-to {
   transform: translateY(100%);
 }
+
 </style>

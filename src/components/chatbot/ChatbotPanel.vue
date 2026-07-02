@@ -17,9 +17,13 @@
           </svg>
         </button>
         <!-- Menu dots -->
-        <button class="hidden lg:block text-gray-400 hover:text-gray-600">
+        <button
+          class="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+          title="Sembunyikan chatbot"
+          @click="uiStore.toggleChatbotDesktop()"
+        >
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -44,20 +48,6 @@
       </div>
     </div>
 
-    <!-- Quick Replies -->
-    <div class="px-4 pt-3 pb-1 bg-white dark:bg-gray-800 border-t border-gray-50 dark:border-gray-700/50 flex-shrink-0">
-      <div class="flex flex-col gap-2">
-        <button
-          v-for="reply in quickReplies"
-          :key="reply.id"
-          class="px-3 py-2 rounded-xl border border-primary-200 dark:border-primary-700 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors text-left"
-          @click="sendMessage(reply.text)"
-        >
-          {{ reply.text }}
-        </button>
-      </div>
-    </div>
-
     <!-- Input -->
     <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex-shrink-0">
       <MessageInput :disabled="isTyping" placeholder="Ketik pertanyaanmu di sini..." @send="sendMessage" />
@@ -71,18 +61,18 @@
  */
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useChatbotStore } from '@/stores/chatbot'
-import { quickReplies as quickRepliesData } from '@/data/conversations'
+import { useUiStore } from '@/stores/ui'
 import ChatBubble from './ChatBubble.vue'
 import MessageInput from './MessageInput.vue'
 
 defineEmits(['close'])
 
 const chatbotStore = useChatbotStore()
+const uiStore = useUiStore()
 const messagesContainer = ref(null)
 
 const messages = computed(() => chatbotStore.messages)
 const isTyping = computed(() => chatbotStore.isTyping)
-const quickReplies = ref(quickRepliesData)
 
 async function sendMessage(text) {
   await chatbotStore.sendMessage(text)

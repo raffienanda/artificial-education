@@ -1,11 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.module import Module, Subtopic
-from app.schemas.api_schemas import ModuleResponse, SubtopicResponse
+from app.models.module import Course, Module, Subtopic
+from app.schemas.api_schemas import CourseResponse, ModuleResponse, SubtopicResponse
 from typing import List
 
 router = APIRouter()
+
+
+@router.get("/course/current", response_model=CourseResponse)
+def get_current_course(db: Session = Depends(get_db)):
+    course = db.query(Course).order_by(Course.id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return course
+
 
 @router.get("/", response_model=List[ModuleResponse])
 def get_modules(db: Session = Depends(get_db)):

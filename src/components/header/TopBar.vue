@@ -107,7 +107,7 @@ const breadcrumbItems = computed(() => {
     { label: 'Dashboard', to: '/' }
   ]
   if (activeModule.value) {
-    items.push({ label: 'Matematika' })
+    items.push({ label: 'Algoritma dan Pemrograman' })
     items.push({ label: activeModule.value.title })
   }
   return items

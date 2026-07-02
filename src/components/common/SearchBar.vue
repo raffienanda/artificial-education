@@ -52,6 +52,7 @@
  * SearchBar — Search input with debounced filtering and dropdown results
  */
 import { ref, computed } from 'vue'
+import { useModulesStore } from '@/stores/modules'
 import { modules } from '@/data/modules'
 
 const props = defineProps({
@@ -63,6 +64,7 @@ const emit = defineEmits(['select'])
 const query = ref('')
 const focused = ref(false)
 const inputRef = ref(null)
+const modulesStore = useModulesStore()
 
 // Build searchable items from modules data
 const searchableItems = modules.map((mod) => ({
@@ -88,6 +90,7 @@ function onInput() {
 function selectResult(result) {
   query.value = result.title
   focused.value = false
+  modulesStore.fetchModuleById(result.id)
   emit('select', result)
 }
 

@@ -5,6 +5,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/services/api'
+import { useUserStore } from './user'
 import { radarChartData as initialRadar } from '@/data/progress' // Keep layout
 
 export const useProgressStore = defineStore('progress', () => {
@@ -52,7 +53,8 @@ export const useProgressStore = defineStore('progress', () => {
 
   async function fetchOverall() {
     try {
-      const data = await api.get('/progress/overall')
+      const userStore = useUserStore()
+      const data = await api.get('/progress/overall', { params: { user_id: userStore.userId } })
       overallMastery.value = data.overall
     } catch (e) {
       console.error(e)
@@ -63,7 +65,8 @@ export const useProgressStore = defineStore('progress', () => {
   async function fetchMastery() {
     loading.value = true
     try {
-      const data = await api.get('/progress')
+      const userStore = useUserStore()
+      const data = await api.get('/progress', { params: { user_id: userStore.userId } })
       subtopicMastery.value = data
       
       if (radarChartData.value && radarChartData.value.datasets[0]) {

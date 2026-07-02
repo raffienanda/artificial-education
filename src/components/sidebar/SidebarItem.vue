@@ -46,14 +46,17 @@
           {{ module.title }}
         </p>
         <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
-          {{ module.subMateriCount || module.subtopics?.length || 0 }} sub-materi
+          {{ module.subMateriCount || module.subtopics?.length || 0 }} materi
         </p>
       </div>
 
-      <!-- Arrow indicator for active -->
+      <!-- Expand indicator -->
       <svg
-        v-if="isActive"
-        class="w-4 h-4 text-primary-500 flex-shrink-0"
+        v-if="module.status !== 'locked'"
+        :class="[
+          'w-4 h-4 flex-shrink-0 text-primary-500 transition-transform duration-200',
+          isExpanded ? 'rotate-90' : '',
+        ]"
         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
       >
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -70,6 +73,7 @@ defineProps({
   module: { type: Object, required: true },
   number: { type: Number, required: true },
   isActive: { type: Boolean, default: false },
+  isExpanded: { type: Boolean, default: false },
   isLast: { type: Boolean, default: false },
   collapsed: { type: Boolean, default: false },
 })

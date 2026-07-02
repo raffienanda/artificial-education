@@ -22,6 +22,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // Mobile chatbot overlay
   const chatbotMobileOpen = ref(false)
+  const chatbotDesktopVisible = ref(localStorage.getItem('chatbotDesktopVisible') !== 'false')
 
   // Loading states
   const globalLoading = ref(false)
@@ -83,6 +84,11 @@ export const useUiStore = defineStore('ui', () => {
     chatbotMobileOpen.value = !chatbotMobileOpen.value
   }
 
+  function toggleChatbotDesktop() {
+    chatbotDesktopVisible.value = !chatbotDesktopVisible.value
+    localStorage.setItem('chatbotDesktopVisible', String(chatbotDesktopVisible.value))
+  }
+
   return {
     sidebarCollapsed,
     sidebarMobileOpen,
@@ -91,6 +97,7 @@ export const useUiStore = defineStore('ui', () => {
     settingsModalOpen,
     searchModalOpen,
     chatbotMobileOpen,
+    chatbotDesktopVisible,
     globalLoading,
     toggleSidebar,
     toggleMobileSidebar,
@@ -101,5 +108,6 @@ export const useUiStore = defineStore('ui', () => {
     toggleSettingsModal,
     toggleSearchModal,
     toggleChatbotMobile,
+    toggleChatbotDesktop,
   }
 })

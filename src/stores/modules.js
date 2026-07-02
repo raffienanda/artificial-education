@@ -7,6 +7,7 @@ import { modulesService } from '@/services/modules'
 
 export const useModulesStore = defineStore('modules', () => {
   // State
+  const course = ref(null)
   const modules = ref([])
   const activeModule = ref(null)
   const activeSubtopicIndex = ref(0)
@@ -46,6 +47,15 @@ export const useModulesStore = defineStore('modules', () => {
   })
 
   // Actions
+  async function fetchCourse() {
+    error.value = null
+    try {
+      course.value = await modulesService.getCourse()
+    } catch (err) {
+      error.value = err.message
+    }
+  }
+
   async function fetchModules() {
     loading.value = true
     error.value = null
@@ -78,6 +88,11 @@ export const useModulesStore = defineStore('modules', () => {
     activeSubtopicIndex.value = 0
   }
 
+  function clearActiveModule() {
+    activeModule.value = null
+    activeSubtopicIndex.value = 0
+  }
+
   function nextSubtopic() {
     if (hasNextSubtopic.value) {
       activeSubtopicIndex.value++
@@ -96,7 +111,19 @@ export const useModulesStore = defineStore('modules', () => {
     }
   }
 
+  async function goToModuleSubtopic(moduleId, subtopicId) {
+    if (!activeModule.value || activeModule.value.id !== moduleId) {
+      await fetchModuleById(moduleId)
+    }
+
+    const targetIndex = activeModule.value?.subtopics?.findIndex((subtopic) => subtopic.id === subtopicId)
+    if (targetIndex >= 0) {
+      activeSubtopicIndex.value = targetIndex
+    }
+  }
+
   return {
+    course,
     modules,
     activeModule,
     activeSubtopicIndex,
@@ -109,11 +136,14 @@ export const useModulesStore = defineStore('modules', () => {
     hasPreviousSubtopic,
     completedModules,
     currentModuleProgress,
+    fetchCourse,
     fetchModules,
     fetchModuleById,
     setActiveModule,
+    clearActiveModule,
     nextSubtopic,
     previousSubtopic,
     goToSubtopic,
+    goToModuleSubtopic,
   }
 })

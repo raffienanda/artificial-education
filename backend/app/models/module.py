@@ -1,11 +1,24 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+
+
+class Course(Base):
+    __tablename__ = "courses"
+
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String)
+    description = Column(String)
+    icon = Column(String)
+
+    modules = relationship("Module", back_populates="course")
+
 
 class Module(Base):
     __tablename__ = "modules"
 
     id = Column(String, primary_key=True, index=True) # e.g. mod-001
+    course_id = Column(String, ForeignKey("courses.id"), nullable=True)
     title = Column(String)
     icon = Column(String)
     description = Column(String)
@@ -13,7 +26,8 @@ class Module(Base):
     estimated_time = Column(String)
     order = Column(Integer)
     status = Column(String, default="locked")
-    
+
+    course = relationship("Course", back_populates="modules")
     subtopics = relationship("Subtopic", back_populates="module")
 
 class Subtopic(Base):

@@ -1,35 +1,73 @@
-import torch
-
 class GraphKnowledgeTracing:
     """
-    Placeholder for Graph Knowledge Tracing (GKT)
-    Uses a graph representation of concepts to back-trace missing foundational knowledge.
+    Macro-layer tracing over topic prerequisites.
+    This version uses the persisted prerequisite graph and mastery scores.
     """
-    def __init__(self):
-        # In a real implementation, this would load a PyTorch or PyG model
-        # representing the prerequisite graph of subtopics.
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        
-    def evaluate_mastery(self, user_progress: dict, current_topic: str) -> dict:
-        """
-        Evaluate if a user is failing a current topic because of a foundational gap.
-        Returns a recommended topic to back-trace to if mastery is too low.
-        """
-        # Mock logic: if mastery is below 50, recommend going back
-        current_mastery = user_progress.get(current_topic, 0)
-        
-        if current_mastery < 50.0:
-            # Recommend the prerequisite (hardcoded mock logic)
-            # e.g. if failing 'mod-002', recommend 'mod-001'
+
+    def __init__(self, mastery_threshold: float = 60.0):
+        self.mastery_threshold = mastery_threshold
+
+    def evaluate_mastery(
+        self,
+        current_topic_id: str,
+        topic_mastery: dict[str, float],
+        prerequisites: dict[str, list],
+    ) -> dict:
+        weak_prerequisite = self._find_weakest_prerequisite(
+            current_topic_id=current_topic_id,
+            topic_mastery=topic_mastery,
+            prerequisites=prerequisites,
+            visited=set(),
+        )
+
+        if weak_prerequisite:
             return {
                 "action": "back_trace",
-                "recommended_topic": "mod-001",
-                "reason": "Foundational knowledge gap detected by GKT."
+                "recommended_topic": weak_prerequisite,
+                "reason": "Topik prasyarat belum cukup kuat untuk melanjutkan learning path.",
             }
-        
+
         return {
             "action": "continue",
-            "recommended_topic": current_topic
+            "recommended_topic": current_topic_id,
+            "reason": "Penguasaan prasyarat cukup untuk melanjutkan topik saat ini.",
         }
+
+    def _find_weakest_prerequisite(
+        self,
+        current_topic_id: str,
+        topic_mastery: dict[str, float],
+        prerequisites: dict[str, list],
+        visited: set[str],
+    ) -> str | None:
+        if current_topic_id in visited:
+            return None
+
+        visited.add(current_topic_id)
+        direct_prerequisites = prerequisites.get(current_topic_id, [])
+
+        for prerequisite in direct_prerequisites:
+            if isinstance(prerequisite, dict):
+                prerequisite_id = prerequisite["id"]
+                threshold = prerequisite.get("mastery_threshold", self.mastery_threshold)
+            else:
+                prerequisite_id = prerequisite
+                threshold = self.mastery_threshold
+
+            nested_gap = self._find_weakest_prerequisite(
+                current_topic_id=prerequisite_id,
+                topic_mastery=topic_mastery,
+                prerequisites=prerequisites,
+                visited=visited,
+            )
+            if nested_gap:
+                return nested_gap
+
+            mastery = topic_mastery.get(prerequisite_id, 0.0)
+            if mastery < threshold:
+                return prerequisite_id
+
+        return None
+
 
 gkt_model = GraphKnowledgeTracing()

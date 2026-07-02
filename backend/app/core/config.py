@@ -4,6 +4,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Artificial Education API"
     API_V1_STR: str = "/api"
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-secret-change-me")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
     
     # Database
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")

@@ -1,38 +1,62 @@
-import torch
-import numpy as np
+from dataclasses import dataclass
+from typing import Iterable
+
+
+@dataclass(frozen=True)
+class QLearningConfig:
+    alpha: float = 0.1
+    gamma: float = 0.9
+    mastery_pass_threshold: float = 80.0
+
 
 class QLearningAgent:
     """
-    Placeholder for the Micro-layer Q-Learning agent.
-    Optimizes the learning path (Quiz, Video, Text) based on student performance.
+    Micro-layer agent for selecting the next subtopic intervention.
+    The Q-table is persisted in the database; this class only owns the policy math.
     """
-    def __init__(self):
-        # In a real system, Q-table or Deep Q-Network (DQN) would be here
-        # States: [mastery_level, recent_failures]
-        # Actions: [show_text, show_video, show_easy_quiz, show_hard_quiz]
-        self.gamma = 0.9 # Discount factor
-        self.alpha = 0.1 # Learning rate
-        
-    def calculate_reward(self, is_correct: bool, combo: int) -> float:
-        """
-        Calculate reward based on quiz answer to update Q-Values.
-        """
-        base_reward = 10.0 if is_correct else -5.0
-        combo_bonus = (combo * 2.0) if is_correct and combo > 1 else 0.0
-        return base_reward + combo_bonus
 
-    def update_bkt(self, is_correct: bool, p_known: float, p_learn: float, p_guess: float, p_slip: float) -> float:
-        """
-        Standard Bayesian Knowledge Tracing formula update.
-        """
-        # Calculate probability student knew it given evidence
-        if is_correct:
-            p_evidence = (p_known * (1 - p_slip)) / ((p_known * (1 - p_slip)) + ((1 - p_known) * p_guess))
+    ACTIONS = ("show_text", "show_video", "easy_quiz", "hard_quiz", "review_previous")
+
+    def __init__(self, config: QLearningConfig | None = None):
+        self.config = config or QLearningConfig()
+
+    def build_state(self, mastery: float, recent_failures: int = 0) -> str:
+        if mastery >= 80:
+            mastery_bucket = "high"
+        elif mastery >= 50:
+            mastery_bucket = "medium"
         else:
-            p_evidence = (p_known * p_slip) / ((p_known * p_slip) + ((1 - p_known) * (1 - p_guess)))
-            
-        # Update probability of knowing after transition
-        new_p_known = p_evidence + (1 - p_evidence) * p_learn
-        return float(np.clip(new_p_known, 0.0, 1.0))
+            mastery_bucket = "low"
+
+        if recent_failures >= 2:
+            failure_bucket = "stuck"
+        elif recent_failures == 1:
+            failure_bucket = "retry"
+        else:
+            failure_bucket = "stable"
+
+        return f"{mastery_bucket}:{failure_bucket}"
+
+    def select_action(self, q_values: dict[str, float], allowed_actions: Iterable[str] | None = None) -> str:
+        actions = tuple(allowed_actions or self.ACTIONS)
+        if not actions:
+            return "show_text"
+
+        return max(actions, key=lambda action: (q_values.get(action, 0.0), -actions.index(action)))
+
+    def calculate_reward(self, is_correct: bool, mastery_before: float, mastery_after: float, first_attempt: bool = True) -> float:
+        reward = 100.0 if is_correct and first_attempt else 35.0 if is_correct else -10.0
+        reward += max(-20.0, min(20.0, mastery_after - mastery_before))
+
+        if mastery_after >= self.config.mastery_pass_threshold and mastery_before < self.config.mastery_pass_threshold:
+            reward += 25.0
+
+        return reward
+
+    def update_q_value(self, current_q: float, reward: float, next_max_q: float) -> float:
+        return current_q + self.config.alpha * (
+            reward + self.config.gamma * next_max_q - current_q
+        )
+
 
 q_agent = QLearningAgent()

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full min-h-0 flex flex-col overflow-hidden">
     <!-- Empty State -->
     <div v-if="!activeContent" class="flex-1 flex items-center justify-center">
       <div class="text-center py-16">
@@ -13,6 +13,7 @@
 
     <!-- Module Content -->
     <template v-else>
+      <div class="min-h-0 flex-1 overflow-y-auto pr-2 -mr-2">
       <!-- Header Row: Title + Tandai Selesai -->
       <div class="flex items-center justify-between mb-1 flex-shrink-0">
         <h2 class="text-lg font-bold text-gray-900 dark:text-white">Materi Modul</h2>
@@ -29,10 +30,7 @@
         {{ activeContent.title }}
       </h1>
 
-      <!-- Description text -->
-      <p v-if="activeContent.sections?.[0]?.type === 'text'" class="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
-        {{ activeContent.sections[0].content }}
-      </p>
+      <AdaptiveRecommendationPanel />
 
       <!-- Tab Bar -->
       <div class="flex items-center gap-2 mb-5 flex-shrink-0 border-b border-gray-100 dark:border-gray-700 pb-0">
@@ -53,12 +51,24 @@
       </div>
 
       <!-- Content Area -->
-      <div class="flex-1 overflow-y-auto pr-1 -mr-1 scrollbar-hide">
-        <div class="space-y-5">
+      <div>
+        <div v-if="contentSections.length === 0" class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-400">
+          Konten untuk bagian ini belum tersedia.
+        </div>
+        <div v-else class="space-y-5">
           <!-- Only show non-text sections (text already shown as description) -->
           <template v-for="(section, index) in contentSections" :key="index">
+            <!-- Text Summary Section -->
+            <div v-if="section.type === 'text'" class="animate-fade-in-up">
+              <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+                <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                  {{ section.content }}
+                </p>
+              </div>
+            </div>
+
             <!-- Formula / Rules Section -->
-            <div v-if="section.type === 'formula'" class="animate-fade-in-up">
+            <div v-else-if="section.type === 'formula'" class="animate-fade-in-up">
               <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
                 <h3 class="font-bold text-gray-900 dark:text-gray-100 text-sm mb-3">{{ section.title }}</h3>
                 <ul class="space-y-2">
@@ -117,6 +127,7 @@
           </template>
         </div>
       </div>
+      </div>
 
       <!-- Navigation Buttons -->
       <div class="flex-shrink-0 flex items-center justify-between pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
@@ -156,17 +167,23 @@
  */
 import { ref, computed, watch } from 'vue'
 import { useModulesStore } from '@/stores/modules'
+import { useRecommendationStore } from '@/stores/recommendation'
+import { useUserStore } from '@/stores/user'
 import { useToast } from '@/composables/useToast'
 import BaseCard from '@/components/common/BaseCard.vue'
+import AdaptiveRecommendationPanel from '@/components/recommendation/AdaptiveRecommendationPanel.vue'
 import VideoPlayer from './VideoPlayer.vue'
 import NumberLineSVG from './NumberLineSVG.vue'
 
 const modulesStore = useModulesStore()
+const recommendationStore = useRecommendationStore()
+const userStore = useUserStore()
 const toast = useToast()
 
 const activeTab = ref(0)
 
 const activeModule = computed(() => modulesStore.activeModule)
+const activeSubtopic = computed(() => modulesStore.activeSubtopic)
 const activeContent = computed(() => modulesStore.activeContent)
 
 const tabs = computed(() => {
@@ -177,10 +194,20 @@ const tabs = computed(() => {
   ]
 })
 
-// Filter content sections (skip the first text block since it's shown as description)
+// Filter content sections by active tab.
 const contentSections = computed(() => {
   if (!activeContent.value?.sections) return []
-  return activeContent.value.sections.filter((s, i) => !(s.type === 'text' && i === 0))
+  const sections = activeContent.value.sections
+  const activeTabId = tabs.value[activeTab.value]?.id
+  const tabTypes = {
+    ringkasan: ['text', 'formula', 'numberline'],
+    video: ['video'],
+    contoh: ['example', 'interactive'],
+  }
+  const allowedTypes = tabTypes[activeTabId]
+  if (!allowedTypes) return sections
+
+  return sections.filter((section) => allowedTypes.includes(section.type))
 })
 
 function handleNext() {
@@ -196,4 +223,42 @@ function handleNext() {
 watch(() => modulesStore.activeSubtopicIndex, () => {
   activeTab.value = 0
 })
+
+watch(
+  () => recommendationStore.microAction,
+  (action) => {
+    const targetTab = {
+      show_text: 'ringkasan',
+      show_video: 'video',
+      easy_quiz: 'contoh',
+      hard_quiz: 'contoh',
+      review_previous: 'ringkasan',
+    }[action]
+
+    if (!targetTab) return
+
+    const targetIndex = tabs.value.findIndex((tab) => tab.id === targetTab)
+    if (targetIndex >= 0) {
+      activeTab.value = targetIndex
+    }
+  },
+)
+
+watch(
+  () => [activeModule.value?.id, activeSubtopic.value?.id],
+  ([moduleId, subtopicId]) => {
+    if (!moduleId || !subtopicId) {
+      recommendationStore.clear()
+      return
+    }
+
+    recommendationStore.fetchNext({
+      userId: userStore.userId,
+      currentModuleId: moduleId,
+      currentSubtopicId: subtopicId,
+    })
+    recommendationStore.fetchLogs({ userId: userStore.userId })
+  },
+  { immediate: true },
+)
 </script>
