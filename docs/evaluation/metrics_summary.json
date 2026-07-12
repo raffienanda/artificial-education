@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "random_seed": 20260709,
+    "student_count": 120,
+    "module_count": 3,
+    "subtopic_count": 15,
+    "data_type": "synthetic_simulation"
+  },
+  "neural_gkt_proxy": {
+    "baseline_no_graph": {
+      "accuracy": 0.6917,
+      "precision": 0.715,
+      "recall": 0.6532,
+      "f1": 0.6827,
+      "mae": 0.3699,
+      "rmse": 0.4589
+    },
+    "gkt_graph_proxy": {
+      "accuracy": 0.695,
+      "precision": 0.7355,
+      "recall": 0.6236,
+      "f1": 0.675,
+      "mae": 0.3757,
+      "rmse": 0.4498
+    },
+    "test_samples": 1800
+  },
+  "q_learning": {
+    "adaptive": {
+      "mean_final_mastery": 0.9033,
+      "pass_rate_60": 0.9083
+    },
+    "random_baseline": {
+      "mean_final_mastery": 0.8527,
+      "pass_rate_60": 0.8417
+    },
+    "relative_mastery_gain": 0.0506,
+    "relative_pass_rate_gain": 0.0666,
+    "learned_q_values": [
+      {
+        "state": "high:commitment",
+        "action": "easy_quiz",
+        "q_value": 94.6819
+      },
+      {
+        "state": "high:commitment",
+        "action": "hard_quiz",
+        "q_value": 241.1235
+      },
+      {
+        "state": "high:commitment",
+        "action": "review_previous",
+        "q_value": 159.756
+      },
+      {
+        "state": "high:commitment",
+        "action": "show_text",
+        "q_value": 482.6045
+      },
+      {
+        "state": "high:commitment",
+        "action": "show_video",
+        "q_value": 89.7629
+      },
+      {
+        "state": "high:dualism",
+        "action": "easy_quiz",
+        "q_value": 620.7393
+      },
+      {
+        "state": "high:dualism",
+        "action": "hard_quiz",
+        "q_value": 441.3366
+      },
+      {
+        "state": "high:dualism",
+        "action": "review_previous",
+        "q_value": 308.2221
+      },
+      {
+        "state": "high:dualism",
+        "action": "show_text",
+        "q_value": 963.1633
+      },
+      {
+        "state": "high:dualism",
+        "action": "show_video",
+        "q_value": 341.2041
+      },
+      {
+        "state": "high:multiplicity",
+        "action": "easy_quiz",
+        "q_value": 458.7544
+      },
+      {
+        "state": "high:multiplicity",
+        "action": "hard_quiz",
+        "q_value": 510.474
+      },
+      {
+        "state": "high:multiplicity",
+        "action": "review_previous",
+        "q_value": 781.8056
+      },
+      {
+        "state": "high:multiplicity",
+        "action": "show_text",
+        "q_value": 302.3466
+      },
+      {
+        "state": "high:multiplicity",
+        "action": "show_video",
+        "q_value": 501.7536
+      },
+      {
+        "state": "high:relativism",
+        "action": "easy_quiz",
+        "q_value": 282.363
+      },
+      {
+        "state": "high:relativism",
+        "action": "hard_quiz",
+        "q_value": 208.4444
+      },
+      {
+        "state": "high:relativism",
+        "action": "review_previous",
+        "q_value": 242.7258
+      },
+      {
+        "state": "high:relativism",
+        "action": "show_text",
+        "q_value": 681.2853
+      },
+      {
+        "state": "high:relativism",
+        "action": "show_video",
+        "q_value": 349.621
+      },
+      {
+        "state": "low:commitment",
+        "action": "easy_quiz",
+        "q_value": 86.6886
+      },
+      {
+        "state": "low:commitment",
+        "action": "hard_quiz",
+        "q_value": 200.2198
+      },
+      {
+        "state": "low:commitment",
+        "action": "review_previous",
+        "q_value": 184.355
+      },
+      {
+        "state": "low:commitment",
+        "action": "show_text",
+        "q_value": 71.2563
+      },
+      {
+        "state": "low:commitment",
+        "action": "show_video",
+        "q_value": 301.2246
+      },
+      {
+        "state": "low:dualism",
+        "action": "easy_quiz",
+        "q_value": 74.9227
+      },
+      {
+        "state": "low:dualism",
+        "action": "hard_quiz",
+        "q_value": 169.4088
+      },
+      {
+        "state": "low:dualism",
+        "action": "review_previous",
+        "q_value": 132.9136
+      },
+      {
+        "state": "low:dualism",
+        "action": "show_text",
+        "q_value": 615.0975
+      },
+      {
+        "state": "low:dualism",
+        "action": "show_video",
+        "q_value": 214.2477
+      },
+      {
+        "state": "low:multiplicity",
+        "action": "easy_quiz",
+        "q_value": 628.4776
+      },
+      {
+        "state": "low:multiplicity",
+        "action": "hard_quiz",
+        "q_value": 212.02
+      },
+      {
+        "state": "low:multiplicity",
+        "action": "review_previous",
+        "q_value": 182.2066
+      },
+      {
+        "state": "low:multiplicity",
+        "action": "show_text",
+        "q_value": 165.4184
+      },
+      {
+        "state": "low:multiplicity",
+        "action": "show_video",
+        "q_value": 295.8216
+      },
+      {
+        "state": "low:relativism",
+        "action": "easy_quiz",
+        "q_value": 460.8882
+      },
+      {
+        "state": "low:relativism",
+        "action": "hard_quiz",
+        "q_value": 243.385
+      },
+      {
+        "state": "low:relativism",
+        "action": "review_previous",
+        "q_value": 300.2748
+      },
+      {
+        "state": "low:relativism",
+        "action": "show_text",
+        "q_value": 236.0468
+      },
+      {
+        "state": "low:relativism",
+        "action": "show_video",
+        "q_value": 183.1363
+      }
+    ]
+  },
+  "files": {
+    "synthetic_interactions": "docs\\evaluation\\synthetic_interactions.csv",
+    "synthetic_q_learning_interactions": "docs\\evaluation\\synthetic_q_learning_interactions.csv"
+  }
+}

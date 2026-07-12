@@ -5,10 +5,10 @@
         <div class="hidden flex-col justify-center lg:flex">
           <p class="mb-3 text-sm font-bold uppercase tracking-wide text-primary-600">Artificial Education</p>
           <h1 class="max-w-xl text-4xl font-black leading-tight text-gray-950 dark:text-white">
-            Learning path adaptif berbasis GKT dan Q-learning.
+            Learning path adaptif berbasis graph prasyarat dan Q-learning.
           </h1>
           <p class="mt-4 max-w-xl text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            Masuk untuk menyimpan progress, reward, Q-value, dan rekomendasi belajar personal.
+            Masuk untuk menyimpan progress, jawaban, dan saran belajar personal.
           </p>
         </div>
 

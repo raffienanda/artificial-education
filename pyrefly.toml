@@ -1,0 +1,13 @@
+preset = "off"
+disable-type-errors-in-ide = true
+
+project-includes = ["backend/**/*.py"]
+project-excludes = [
+  "**/__pycache__",
+  "**/.venv/**",
+  "**/node_modules/**",
+]
+
+search-path = ["backend"]
+site-package-path = [".venv/Lib/site-packages"]
+python-interpreter-path = ".venv/Scripts/python.exe"

@@ -5,6 +5,9 @@ from uuid import uuid4
 
 from app.core.database import get_db
 from app.core.security import get_current_user
+from app.models.assessment import AssessmentAnswer, AssessmentAttempt
+from app.models.cognitive import CognitiveProfile, CognitiveResponse
+from app.models.knowledge import KnowledgeState
 from app.models.learning_path import InteractionLog, QValue, TopicPrerequisite
 from app.models.module import Module
 from app.models.question import Question
@@ -30,6 +33,66 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
+
+
+@router.post("/users/{user_id}/reset-learning-data")
+def reset_user_learning_data(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User tidak ditemukan")
+    if user.role == "admin":
+        raise HTTPException(status_code=400, detail="Data admin tidak boleh direset dari endpoint ini")
+
+    attempt_ids = [
+        row.id
+        for row in db.query(AssessmentAttempt.id).filter(AssessmentAttempt.user_id == user_id).all()
+    ]
+    if attempt_ids:
+        db.query(AssessmentAnswer).filter(AssessmentAnswer.attempt_id.in_(attempt_ids)).delete(
+            synchronize_session=False
+        )
+    deleted_attempts = db.query(AssessmentAttempt).filter(AssessmentAttempt.user_id == user_id).delete()
+    deleted_logs = db.query(InteractionLog).filter(InteractionLog.user_id == user_id).delete()
+    deleted_q_values = db.query(QValue).filter(QValue.user_id == user_id).delete()
+    deleted_knowledge = db.query(KnowledgeState).filter(KnowledgeState.user_id == user_id).delete()
+    deleted_cognitive_responses = db.query(CognitiveResponse).filter(CognitiveResponse.user_id == user_id).delete()
+    deleted_cognitive_profiles = db.query(CognitiveProfile).filter(CognitiveProfile.user_id == user_id).delete()
+
+    updated_progress = 0
+    for progress in db.query(UserProgress).filter(UserProgress.user_id == user_id).all():
+        progress.mastery = 0.0
+        progress.status = "learning"
+        progress.p_known = 0.0
+        progress.p_learn = 0.2
+        progress.p_guess = 0.25
+        progress.p_slip = 0.1
+        updated_progress += 1
+
+    user.xp = 0
+    user.combo = 0
+    user.total_score = 0
+    user.reward_points = 0
+    user.current_streak = 0
+    user.longest_streak = 0
+    user.last_study_date = None
+    user.redeemed_rewards = []
+
+    db.commit()
+    return {
+        "reset": True,
+        "user_id": user_id,
+        "deleted_attempts": deleted_attempts,
+        "deleted_logs": deleted_logs,
+        "deleted_q_values": deleted_q_values,
+        "deleted_knowledge_states": deleted_knowledge,
+        "deleted_cognitive_responses": deleted_cognitive_responses,
+        "deleted_cognitive_profiles": deleted_cognitive_profiles,
+        "reset_progress_rows": updated_progress,
+    }
 
 
 @router.get("/prerequisites", response_model=List[PrerequisiteResponse])
@@ -145,6 +208,7 @@ def create_question(
         correct_answer=payload.correct_answer,
         explanation=payload.explanation,
         difficulty=payload.difficulty,
+        assessment_type=payload.assessment_type,
     )
     db.add(question)
     db.commit()
@@ -186,6 +250,8 @@ def update_question(
         question.explanation = payload.explanation
     if payload.difficulty is not None:
         question.difficulty = payload.difficulty
+    if payload.assessment_type is not None:
+        question.assessment_type = payload.assessment_type
 
     db.commit()
     db.refresh(question)

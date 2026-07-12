@@ -62,6 +62,14 @@ export const useModulesStore = defineStore('modules', () => {
     try {
       const data = await modulesService.getModules()
       modules.value = data
+      if (activeModule.value) {
+        const freshActiveModule = data.find((module) => module.id === activeModule.value.id)
+        if (!freshActiveModule || freshActiveModule.status === 'locked') {
+          clearActiveModule()
+        } else {
+          activeModule.value = freshActiveModule
+        }
+      }
     } catch (err) {
       error.value = err.message
     } finally {

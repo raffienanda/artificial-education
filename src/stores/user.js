@@ -71,11 +71,25 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function setSession(authPayload) {
+    localStorage.removeItem('completed_pretests')
+    localStorage.removeItem('completed_posttests')
+    localStorage.removeItem('completed_subtopic_quizzes')
+    localStorage.removeItem('passed_modules')
     token.value = authPayload.access_token
     currentUser.value = authPayload.user
     localStorage.setItem('auth_token', token.value)
     localStorage.setItem('auth_user', JSON.stringify(currentUser.value))
     syncProfile(currentUser.value)
+    import('./quiz').then(({ useQuizStore }) => {
+      const quizStore = useQuizStore()
+      quizStore.hydrateGateCache()
+      quizStore.fetchGateStatus()
+    })
+    import('./modules').then(({ useModulesStore }) => {
+      const modulesStore = useModulesStore()
+      modulesStore.clearActiveModule()
+      modulesStore.fetchModules()
+    })
   }
 
   async function login(credentials) {
@@ -129,6 +143,20 @@ export const useUserStore = defineStore('user', () => {
     currentUser.value = null
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
+    localStorage.removeItem('completed_pretests')
+    localStorage.removeItem('completed_posttests')
+    localStorage.removeItem('completed_subtopic_quizzes')
+    localStorage.removeItem('passed_modules')
+    
+    // Clear Pinia store state (using dynamic import/lazy call to avoid circular dependency)
+    import('./quiz').then(({ useQuizStore }) => {
+      const quizStore = useQuizStore()
+      quizStore.resetStoreState()
+    })
+    import('./cognitive').then(({ useCognitiveStore }) => {
+      const cognitiveStore = useCognitiveStore()
+      cognitiveStore.resetStoreState()
+    })
   }
 
   function markNotificationRead(notifId) {

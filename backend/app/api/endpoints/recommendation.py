@@ -5,7 +5,11 @@ from app.core.database import get_db
 from app.core.security import get_optional_current_user
 from app.models.learning_path import InteractionLog
 from app.models.user import User
-from app.schemas.api_schemas import InteractionLogResponse, RecommendationRequest, RecommendationResponse
+from app.schemas.api_schemas import (
+    InteractionLogResponse,
+    RecommendationRequest,
+    RecommendationResponse,
+)
 from app.services.learning_path import recommend_next_step
 from typing import List
 

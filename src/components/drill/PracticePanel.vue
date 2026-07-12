@@ -18,12 +18,12 @@
       <!-- Quiz Complete -->
       <div v-if="quizFinished" class="flex-1 flex flex-col items-center justify-center text-center animate-fade-in-up py-6">
         <div class="text-5xl mb-3">🏆</div>
-        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Drill Selesai!</h3>
+        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">{{ finishedTitle }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
           Skor kamu: <span class="font-bold text-gray-800 dark:text-gray-200">{{ score }}/{{ totalQuestions }}</span> ({{ scorePercentage }}%)
         </p>
-        <button class="bg-primary-500 text-white px-4 py-2 rounded" @click="resetQuiz">
-          Latihan Lagi
+        <button class="bg-primary-500 text-white px-4 py-2 rounded" @click="handleFinishedAction">
+          {{ finishedButtonLabel }}
         </button>
       </div>
 
@@ -128,7 +128,7 @@
         </div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">Pilih materi dulu</h3>
         <p class="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
-          Drill soal akan muncul setelah kamu memilih modul dan materi dari sidebar.
+          Latihan soal akan muncul setelah pre test modul selesai dan kamu memilih materi yang sedang dipelajari.
         </p>
       </div>
     </div>
@@ -146,6 +146,7 @@
 </template>
 
 <script setup>
+import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useQuizStore } from '@/stores/quiz'
 import { useModulesStore } from '@/stores/modules'
@@ -169,11 +170,45 @@ const {
   score, 
   scorePercentage, 
   combo,
+  assessmentType,
   loading
 } = storeToRefs(quizStore)
 
 // Mapping actions (tanpa ref)
 const { submitAnswer, nextQuestion, resetQuiz } = quizStore
+
+const panelTitle = computed(() => {
+  const labels = {
+    pre_test: 'Pre Test Modul',
+    drill: 'Latihan Drill Soal',
+    quiz: 'Quiz Subtopik',
+    post_test: 'Post Test Modul',
+  }
+
+  return labels[assessmentType.value] || 'Quiz Subtopik'
+})
+
+const finishedTitle = computed(() => {
+  const labels = {
+    pre_test: 'Pre Test Selesai!',
+    drill: 'Latihan Selesai!',
+    quiz: 'Quiz Selesai!',
+    post_test: 'Post Test Selesai!',
+  }
+
+  return labels[assessmentType.value] || 'Quiz Selesai!'
+})
+
+const finishedButtonLabel = computed(() => {
+  const labels = {
+    pre_test: 'Mulai Materi',
+    drill: 'Latihan Lagi',
+    quiz: 'Latihan Lagi',
+    post_test: 'Selesai Modul',
+  }
+
+  return labels[assessmentType.value] || 'Latihan Lagi'
+})
 
 // Logika kelas CSS untuk visual feedback
 function getOptionClasses(optionId) {
@@ -227,21 +262,42 @@ function formatAction(action) {
     easy_quiz: 'Quiz mudah',
     hard_quiz: 'Quiz tantangan',
     review_previous: 'Review sebelumnya',
+    pre_test: 'Pre test modul',
+    drill: 'Latihan drill',
+    quiz: 'Quiz subtopik',
+    subtopic_quiz: 'Quiz subtopik',
+    post_test: 'Post test modul',
   }
 
   return labels[action] || action || '-'
 }
 
-import { watch } from 'vue'
+function handleFinishedAction() {
+  const moduleId = modulesStore.activeModule?.id
 
-watch(() => [modulesStore.activeModule?.id, recommendationStore.microAction], ([moduleId, action]) => {
-  const newMod = modulesStore.activeModule
+  if (assessmentType.value === 'pre_test') {
+    quizStore.markAssessmentDone(moduleId)
+    quizStore.fetchQuestions(moduleId, recommendationStore.microAction, 'drill', modulesStore.activeSubtopic?.id)
+    return
+  }
+
+  if (assessmentType.value === 'post_test') {
+    quizStore.markAssessmentDone(moduleId)
+    quizStore.clearQuestions()
+    return
+  }
+
+  quizStore.fetchQuestions(moduleId, recommendationStore.microAction, 'drill', modulesStore.activeSubtopic?.id)
+}
+
+watch(() => [modulesStore.activeModule?.id, modulesStore.activeSubtopic?.id, recommendationStore.microAction], ([moduleId, subtopicId, action]) => {
   if (isSubmitted.value) return
 
-  if (newMod && newMod.status !== 'locked') {
-    quizStore.fetchQuestions(moduleId, action)
-  } else {
-    quizStore.resetQuiz()
+  if (!moduleId || !subtopicId || !quizStore.hasCompletedPretest(moduleId)) {
+    quizStore.clearQuestions()
+    return
   }
+
+  quizStore.fetchQuestions(moduleId, action, 'drill', subtopicId)
 }, { immediate: true })
 </script>

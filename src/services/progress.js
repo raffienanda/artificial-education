@@ -1,36 +1,29 @@
 /**
  * Progress Service — Connected to FastAPI Backend
- * Uses centralized axios instance with interceptors.
+ * All data is now fetched from backend endpoints per user.
  */
 import api from './api'
-import { radarChartData, recentActivities, weeklyProgress } from '@/data/progress'
-import { recommendations } from '@/data/recommendations'
 
 export const progressService = {
   /** Fetch overall mastery and subtopic mastery from backend */
-  async getMastery() {
-    const subtopics = await api.get('/progress')
-    const overall = await api.get('/progress/overall')
+  async getMastery(userId) {
+    const subtopics = await api.get('/progress', { params: { user_id: userId } })
+    const overall = await api.get('/progress/overall', { params: { user_id: userId } })
     return { overall: overall.overall, subtopics }
   },
 
-  /** Fetch radar chart data (uses local data as layout, filled with backend mastery) */
-  async getRadarChartData() {
-    return { ...radarChartData }
+  /** Fetch recent learning activities from backend (per user) */
+  async getRecentActivities(userId, limit = 10) {
+    return api.get('/progress/history', { params: { user_id: userId, limit } })
   },
 
-  /** Fetch recent activities (mock — no backend endpoint yet) */
-  async getRecentActivities() {
-    return [...recentActivities]
+  /** Fetch weekly study time from backend (per user) */
+  async getWeeklyProgress(userId) {
+    return api.get('/progress/weekly', { params: { user_id: userId } })
   },
 
-  /** Fetch AI recommendations (mock — no backend endpoint yet) */
-  async getRecommendations() {
-    return { ...recommendations }
-  },
-
-  /** Fetch weekly progress data (mock — no backend endpoint yet) */
-  async getWeeklyProgress() {
-    return [...weeklyProgress]
+  /** Fetch dynamic status message from backend (per user) */
+  async getStatusMessage(userId) {
+    return api.get('/progress/status-message', { params: { user_id: userId } })
   },
 }

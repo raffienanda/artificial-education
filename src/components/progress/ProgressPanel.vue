@@ -1,8 +1,15 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="mb-4 flex-shrink-0">
+    <div class="mb-4 flex flex-shrink-0 items-center justify-between gap-3">
       <h2 class="text-lg font-bold text-gray-900 dark:text-white">Progress Modul</h2>
+      <button
+        class="rounded-lg px-3 py-1.5 text-xs font-bold text-gray-500 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+        type="button"
+        @click="uiStore.toggleProgressPanel()"
+      >
+        Sembunyikan
+      </button>
     </div>
 
     <div class="flex-1 overflow-y-auto pr-1 -mr-1 scrollbar-hide space-y-4">
@@ -38,7 +45,7 @@
           <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <p class="text-xs font-semibold text-gray-500 mb-1">Status</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-              {{ recommendations?.statusMessage || 'Kamu perlu fokus pada 2 materi yang belum dikuasai.' }}
+              {{ recommendations?.statusMessage || 'Mulai belajar untuk melihat status kamu!' }}
             </p>
           </div>
         </div>
@@ -47,6 +54,9 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-4 shadow-soft">
           <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3">Riwayat Belajar</p>
           <div class="space-y-3">
+            <p v-if="!recentActivities || recentActivities.length === 0" class="text-xs text-gray-400 dark:text-gray-500 text-center py-4">
+              Belum ada riwayat belajar. Mulai belajar untuk melihat aktivitas kamu!
+            </p>
             <div
               v-for="act in recentActivities"
               :key="act.id"
@@ -93,13 +103,16 @@
 <script setup>
 /**
  * ProgressPanel — Redesigned to match reference with 3-card row layout
+ * All data is now fetched from backend per user (no more hardcoded dummy data)
  */
 import { computed, onMounted } from 'vue'
 import { useProgressStore } from '@/stores/progress'
+import { useUiStore } from '@/stores/ui'
 import RadarChart from './RadarChart.vue'
 import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const progressStore = useProgressStore()
+const uiStore = useUiStore()
 
 const overallMastery = computed(() => progressStore.overallMastery)
 const subtopicMastery = computed(() => progressStore.subtopicMastery)

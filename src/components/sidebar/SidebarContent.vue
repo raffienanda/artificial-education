@@ -39,7 +39,7 @@
       <div class="relative">
         <div v-for="(mod, index) in modules" :key="mod.id">
           <SidebarItem
-            :module="mod"
+            :module="moduleDisplay(mod)"
             :number="index + 1"
             :is-active="activeModule?.id === mod.id"
             :is-expanded="isExpanded(mod)"
@@ -58,13 +58,16 @@
                 :key="subtopic.id"
                 type="button"
                 class="mb-1 flex w-full items-start gap-2 rounded-lg px-2 py-2 text-left text-xs transition-colors"
-                :class="activeSubtopic?.id === subtopic.id
-                  ? 'bg-primary-50 font-bold text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-gray-200'"
+                :class="subtopicLocked(mod, subtopicIndex)
+                  ? 'cursor-not-allowed text-gray-300 opacity-60 dark:text-gray-600'
+                  : activeSubtopic?.id === subtopic.id
+                    ? 'bg-primary-50 font-bold text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-gray-200'"
+                :disabled="subtopicLocked(mod, subtopicIndex)"
                 @click="selectSubtopic(mod, subtopic)"
               >
                 <span class="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-black text-gray-500 dark:bg-gray-700 dark:text-gray-300">
-                  {{ subtopicIndex + 1 }}
+                  {{ subtopicLocked(mod, subtopicIndex) ? '🔒' : subtopicIndex + 1 }}
                 </span>
                 <span class="min-w-0 flex-1 leading-snug">{{ subtopic.title }}</span>
               </button>
@@ -184,8 +187,32 @@ function isExpanded(mod) {
   return expandedModuleIds.value.has(mod.id)
 }
 
+function moduleLocked(mod) {
+  if (mod.status === 'locked') return true
+  
+  const index = modules.value.findIndex(m => m.id === mod.id)
+  if (index > 0) {
+    const prevMod = modules.value[index - 1]
+    if (prevMod.status !== 'completed') {
+      return true
+    }
+  }
+  
+  return false
+}
+
+function moduleDisplay(mod) {
+  return mod
+}
+
+function subtopicLocked(mod, subtopicIndex) {
+  if (moduleLocked(mod)) return true
+  if (!quizStore.hasCompletedPretest(mod.id)) return true
+  return !quizStore.isSubtopicUnlocked(mod.id, mod.subtopics || [], subtopicIndex)
+}
+
 async function toggleModule(mod) {
-  if (mod.status === 'locked') return
+  if (moduleLocked(mod)) return
 
   const next = new Set(expandedModuleIds.value)
   if (next.has(mod.id)) {
@@ -201,7 +228,8 @@ async function toggleModule(mod) {
 }
 
 async function selectSubtopic(mod, subtopic) {
-  if (mod.status === 'locked') return
+  const index = (mod.subtopics || []).findIndex((item) => item.id === subtopic.id)
+  if (subtopicLocked(mod, index)) return
   await modulesStore.goToModuleSubtopic(mod.id, subtopic.id)
 }
 

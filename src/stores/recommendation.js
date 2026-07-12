@@ -5,9 +5,9 @@ import { recommendationService } from '@/services/recommendation'
 const actionLabels = {
   show_text: 'Baca ringkasan',
   show_video: 'Tonton video',
-  easy_quiz: 'Kerjakan quiz mudah',
-  hard_quiz: 'Kerjakan quiz tantangan',
-  review_previous: 'Review materi sebelumnya',
+  easy_quiz: 'Latihan ringan',
+  hard_quiz: 'Tantangan',
+  review_previous: 'Ulang materi',
 }
 
 const macroLabels = {
@@ -21,13 +21,15 @@ export const useRecommendationStore = defineStore('recommendation', () => {
   const loading = ref(false)
   const logsLoading = ref(false)
   const error = ref(null)
+  const activeLearningAction = ref(null)
+  const learningActionTrace = ref([])
 
   const microAction = computed(() => current.value?.micro_action || 'easy_quiz')
   const microActionLabel = computed(() => actionLabels[microAction.value] || microAction.value)
   const macroActionLabel = computed(() => macroLabels[current.value?.macro_action] || 'Menunggu analisis')
   const shouldBackTrace = computed(() => current.value?.macro_action === 'back_trace')
 
-  async function fetchNext({ userId = 1, currentModuleId, currentSubtopicId }) {
+  async function fetchNext({ userId, currentModuleId, currentSubtopicId }) {
     if (!currentModuleId || !currentSubtopicId) return null
 
     loading.value = true
@@ -40,6 +42,9 @@ export const useRecommendationStore = defineStore('recommendation', () => {
         currentSubtopicId,
       })
       current.value = data
+      if (!activeLearningAction.value) {
+        activeLearningAction.value = data.micro_action || null
+      }
       return data
     } catch (err) {
       error.value = err.message || 'Gagal memuat rekomendasi'
@@ -49,7 +54,7 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     }
   }
 
-  async function fetchLogs({ userId = 1, limit = 8 } = {}) {
+  async function fetchLogs({ userId, limit = 8 } = {}) {
     logsLoading.value = true
 
     try {
@@ -63,9 +68,28 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     }
   }
 
+  function setActiveLearningAction(action) {
+    activeLearningAction.value = action || null
+    if (!action) return
+    const lastAction = learningActionTrace.value[learningActionTrace.value.length - 1]
+    if (lastAction !== action) {
+      learningActionTrace.value.push(action)
+    }
+  }
+
+  function resetLearningActionTrace(initialAction = null) {
+    learningActionTrace.value = []
+    activeLearningAction.value = null
+    if (initialAction) {
+      setActiveLearningAction(initialAction)
+    }
+  }
+
   function clear() {
     current.value = null
     error.value = null
+    activeLearningAction.value = null
+    learningActionTrace.value = []
   }
 
   return {
@@ -74,12 +98,16 @@ export const useRecommendationStore = defineStore('recommendation', () => {
     loading,
     logsLoading,
     error,
+    activeLearningAction,
+    learningActionTrace,
     microAction,
     microActionLabel,
     macroActionLabel,
     shouldBackTrace,
     fetchNext,
     fetchLogs,
+    setActiveLearningAction,
+    resetLearningActionTrace,
     clear,
   }
 })

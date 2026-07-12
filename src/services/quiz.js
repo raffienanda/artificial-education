@@ -15,9 +15,9 @@ export const quizService = {
   },
 
   /**
-   * Submit an answer and get feedback with BKT update from backend.
+ * Submit an answer and get feedback with Q-learning update from backend.
    */
-  async submitAnswer(questionId, selectedAnswer, userId = 1) {
+  async submitAnswer(questionId, selectedAnswer, userId) {
     const data = await api.post('/quiz/submit', {
       question_id: questionId,
       selected_option_id: selectedAnswer,

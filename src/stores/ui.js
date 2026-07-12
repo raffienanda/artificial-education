@@ -23,6 +23,7 @@ export const useUiStore = defineStore('ui', () => {
   // Mobile chatbot overlay
   const chatbotMobileOpen = ref(false)
   const chatbotDesktopVisible = ref(localStorage.getItem('chatbotDesktopVisible') !== 'false')
+  const progressPanelVisible = ref(localStorage.getItem('progressPanelVisible') !== 'false')
 
   // Loading states
   const globalLoading = ref(false)
@@ -89,6 +90,11 @@ export const useUiStore = defineStore('ui', () => {
     localStorage.setItem('chatbotDesktopVisible', String(chatbotDesktopVisible.value))
   }
 
+  function toggleProgressPanel() {
+    progressPanelVisible.value = !progressPanelVisible.value
+    localStorage.setItem('progressPanelVisible', String(progressPanelVisible.value))
+  }
+
   return {
     sidebarCollapsed,
     sidebarMobileOpen,
@@ -98,6 +104,7 @@ export const useUiStore = defineStore('ui', () => {
     searchModalOpen,
     chatbotMobileOpen,
     chatbotDesktopVisible,
+    progressPanelVisible,
     globalLoading,
     toggleSidebar,
     toggleMobileSidebar,
@@ -109,5 +116,6 @@ export const useUiStore = defineStore('ui', () => {
     toggleSearchModal,
     toggleChatbotMobile,
     toggleChatbotDesktop,
+    toggleProgressPanel,
   }
 })

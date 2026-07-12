@@ -11,6 +11,40 @@ import { useUserStore } from './user'
 import api from '@/services/api'
 
 export const useQuizStore = defineStore('quiz', () => {
+  const gateStorageKeys = [
+    'completed_pretests',
+    'completed_posttests',
+    'completed_subtopic_quizzes',
+    'passed_modules',
+  ]
+
+  function currentUserPrefix() {
+    const rawUser = localStorage.getItem('auth_user')
+    if (!rawUser) return 'guest'
+    try {
+      const user = JSON.parse(rawUser)
+      return user?.id ? `user_${user.id}` : 'guest'
+    } catch {
+      return 'guest'
+    }
+  }
+
+  function scopedGateKey(key) {
+    return `${currentUserPrefix()}:${key}`
+  }
+
+  function readGateCache(key) {
+    return JSON.parse(localStorage.getItem(scopedGateKey(key)) || '{}')
+  }
+
+  function writeGateCache(key, value) {
+    localStorage.setItem(scopedGateKey(key), JSON.stringify(value))
+  }
+
+  function clearLegacyGateCache() {
+    gateStorageKeys.forEach((key) => localStorage.removeItem(key))
+  }
+
   // State
   const questions = ref([]) 
   const currentQuestionIndex = ref(0)
@@ -22,7 +56,13 @@ export const useQuizStore = defineStore('quiz', () => {
   const quizFinished = ref(false)
   const combo = ref(0)
   const loading = ref(false)
+  const error = ref(null)
   const activeQuizAction = ref('easy_quiz')
+  const assessmentType = ref('quiz')
+  const completedPretests = ref(readGateCache('completed_pretests'))
+  const completedPosttests = ref(readGateCache('completed_posttests'))
+  const completedSubtopicQuizzes = ref(readGateCache('completed_subtopic_quizzes'))
+  const passedModules = ref(readGateCache('passed_modules'))
 
   // Computed
   const currentQuestion = computed(() =>
@@ -52,23 +92,43 @@ export const useQuizStore = defineStore('quiz', () => {
     return null
   }
 
-  async function fetchQuestions(moduleId = null, action = activeQuizAction.value) {
+  async function fetchQuestions(moduleId = null, action = activeQuizAction.value, type = 'quiz', subtopicId = null) {
     loading.value = true
+    error.value = null
+    questions.value = []
+    resetQuiz()
     try {
       if (moduleId) {
         activeQuizAction.value = action || 'easy_quiz'
+        assessmentType.value = type || 'quiz'
         const difficulty = difficultyFromAction(activeQuizAction.value)
+        const params = { assessment_type: assessmentType.value }
+        if (difficulty && ['drill', 'quiz'].includes(assessmentType.value)) {
+          params.difficulty = difficulty
+        }
+        if (subtopicId && ['drill', 'quiz'].includes(assessmentType.value)) {
+          params.subtopic_id = subtopicId
+        }
         const data = await api.get(`/quiz/${moduleId}`, {
-          params: difficulty ? { difficulty } : {},
+          params,
         })
         questions.value = data
       }
       resetQuiz()
     } catch (error) {
       console.error("Error fetching questions:", error)
+      questions.value = []
+      resetQuiz()
+      const message = error?.response?.data?.detail || error?.message || 'Gagal memuat soal'
+      quizStoreError(message)
+      throw error
     } finally {
       loading.value = false
     }
+  }
+
+  function quizStoreError(message) {
+    error.value = message
   }
 
   async function submitAnswer(questionId, optionId) {
@@ -86,12 +146,19 @@ export const useQuizStore = defineStore('quiz', () => {
     try {
       const userStore = useUserStore()
       const recommendationStore = useRecommendationStore()
+      const submittedAction = assessmentType.value === 'quiz'
+        ? (recommendationStore.activeLearningAction || recommendationStore.microAction || 'quiz')
+        : assessmentType.value
+      const actionSequence = assessmentType.value === 'quiz'
+        ? recommendationStore.learningActionTrace
+        : [assessmentType.value]
       // Call backend via centralized API
       const result = await api.post('/quiz/submit', {
         question_id: questionId,
         selected_option_id: optionId,
         user_id: userStore.userId,
-        action: recommendationStore.microAction,
+        action: submittedAction,
+        action_sequence: actionSequence,
       })
 
       submissionResult.value = {
@@ -102,7 +169,7 @@ export const useQuizStore = defineStore('quiz', () => {
         qValue: result.q_value,
         learningState: result.learning_state,
         nextLearningState: result.next_learning_state,
-        action: recommendationStore.microAction,
+        action: submittedAction,
         newMastery: result.new_mastery,
       }
       userStore.applyQuizUserUpdate(result.user)
@@ -110,19 +177,18 @@ export const useQuizStore = defineStore('quiz', () => {
       isSubmitted.value = true
       totalAnswered.value++
 
+      const progressStore = useProgressStore()
+      progressStore.updateProgress(question.subtopic_id, result.new_mastery)
+
       if (result.correct) {
         score.value++
         combo.value++
-        
-        // Update Progress State directly from Backend's returned mastery
-        const progressStore = useProgressStore()
-        progressStore.updateProgress(question.subtopic_id, result.new_mastery)
       } else {
         combo.value = 0
       }
 
       const modulesStore = useModulesStore()
-      if (modulesStore.activeModule?.id && modulesStore.activeSubtopic?.id) {
+      if (assessmentType.value === 'quiz' && modulesStore.activeModule?.id && modulesStore.activeSubtopic?.id) {
         recommendationStore.fetchNext({
           userId: userStore.userId,
           currentModuleId: modulesStore.activeModule.id,
@@ -159,6 +225,105 @@ export const useQuizStore = defineStore('quiz', () => {
     combo.value = 0
   }
 
+  function clearQuestions() {
+    questions.value = []
+    resetQuiz()
+  }
+
+  function markAssessmentDone(moduleId = null) {
+    if (!moduleId) return
+    if (assessmentType.value === 'pre_test') {
+      completedPretests.value[moduleId] = true
+      writeGateCache('completed_pretests', completedPretests.value)
+    }
+    if (assessmentType.value === 'post_test') {
+      completedPosttests.value[moduleId] = true
+      writeGateCache('completed_posttests', completedPosttests.value)
+    }
+  }
+
+  function hasCompletedPretest(moduleId) {
+    return Boolean(completedPretests.value[moduleId])
+  }
+
+  function hasCompletedPosttest(moduleId) {
+    return Boolean(completedPosttests.value[moduleId])
+  }
+
+  function markSubtopicQuizDone(moduleId, subtopicId) {
+    if (!moduleId || !subtopicId) return
+    completedSubtopicQuizzes.value[`${moduleId}:${subtopicId}`] = true
+    writeGateCache('completed_subtopic_quizzes', completedSubtopicQuizzes.value)
+  }
+
+  function hasCompletedSubtopicQuiz(moduleId, subtopicId) {
+    return Boolean(completedSubtopicQuizzes.value[`${moduleId}:${subtopicId}`])
+  }
+
+  function markModulePassed(moduleId) {
+    if (!moduleId) return
+    passedModules.value[moduleId] = true
+    writeGateCache('passed_modules', passedModules.value)
+  }
+
+  function hasPassedModule(moduleId) {
+    return Boolean(passedModules.value[moduleId])
+  }
+
+  function resetStoreState() {
+    questions.value = []
+    resetQuiz()
+    assessmentType.value = 'quiz'
+    activeQuizAction.value = 'easy_quiz'
+    error.value = null
+    completedPretests.value = {}
+    completedPosttests.value = {}
+    completedSubtopicQuizzes.value = {}
+    passedModules.value = {}
+    clearLegacyGateCache()
+    gateStorageKeys.forEach((key) => localStorage.removeItem(scopedGateKey(key)))
+  }
+
+  function hydrateGateCache() {
+    clearLegacyGateCache()
+    completedPretests.value = readGateCache('completed_pretests')
+    completedPosttests.value = readGateCache('completed_posttests')
+    completedSubtopicQuizzes.value = readGateCache('completed_subtopic_quizzes')
+    passedModules.value = readGateCache('passed_modules')
+  }
+
+  async function fetchGateStatus() {
+    try {
+      const data = await api.get('/progress/gates')
+      completedPretests.value = data.completed_pretests || {}
+      completedPosttests.value = data.completed_posttests || {}
+      completedSubtopicQuizzes.value = data.completed_subtopic_quizzes || {}
+      passedModules.value = data.passed_modules || {}
+      clearLegacyGateCache()
+      writeGateCache('completed_pretests', completedPretests.value)
+      writeGateCache('completed_posttests', completedPosttests.value)
+      writeGateCache('completed_subtopic_quizzes', completedSubtopicQuizzes.value)
+      writeGateCache('passed_modules', passedModules.value)
+    } catch (error) {
+      console.error('Error fetching gate status:', error)
+    }
+  }
+
+  function isModuleUnlocked(module, modules = []) {
+    if (!module) return false
+    if ((module.order || 1) <= 1) return true
+    const previousModule = modules.find((item) => item.order === module.order - 1)
+    return Boolean(previousModule && hasPassedModule(previousModule.id))
+  }
+
+  function isSubtopicUnlocked(moduleId, subtopics = [], index = 0) {
+    if (index <= 0) return true
+    const previousSubtopics = subtopics.slice(0, index)
+    return previousSubtopics.every((subtopic) =>
+      hasCompletedSubtopicQuiz(moduleId, subtopic.id)
+    )
+  }
+
   return {
     questions,
     currentQuestionIndex,
@@ -170,6 +335,12 @@ export const useQuizStore = defineStore('quiz', () => {
     quizFinished,
     combo,
     activeQuizAction,
+    assessmentType,
+    error,
+    completedPretests,
+    completedPosttests,
+    completedSubtopicQuizzes,
+    passedModules,
     loading,
     currentQuestion,
     totalQuestions,
@@ -179,6 +350,19 @@ export const useQuizStore = defineStore('quiz', () => {
     submitAnswer,
     nextQuestion,
     resetQuiz,
+    clearQuestions,
     fetchQuestions,
+    markAssessmentDone,
+    hasCompletedPretest,
+    hasCompletedPosttest,
+    markSubtopicQuizDone,
+    hasCompletedSubtopicQuiz,
+    markModulePassed,
+    hasPassedModule,
+    isModuleUnlocked,
+    isSubtopicUnlocked,
+    resetStoreState,
+    hydrateGateCache,
+    fetchGateStatus,
   }
 })

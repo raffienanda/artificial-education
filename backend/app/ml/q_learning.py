@@ -44,9 +44,18 @@ class QLearningAgent:
 
         return max(actions, key=lambda action: (q_values.get(action, 0.0), -actions.index(action)))
 
-    def calculate_reward(self, is_correct: bool, mastery_before: float, mastery_after: float, first_attempt: bool = True) -> float:
+    def calculate_reward(
+        self,
+        is_correct: bool,
+        mastery_before: float,
+        mastery_after: float,
+        first_attempt: bool = True,
+        attempt_accuracy: float | None = None,
+    ) -> float:
         reward = 100.0 if is_correct and first_attempt else 35.0 if is_correct else -10.0
         reward += max(-20.0, min(20.0, mastery_after - mastery_before))
+        if attempt_accuracy is not None:
+            reward += max(-20.0, min(20.0, (attempt_accuracy - 60.0) / 2.0))
 
         if mastery_after >= self.config.mastery_pass_threshold and mastery_before < self.config.mastery_pass_threshold:
             reward += 25.0

@@ -42,6 +42,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/cognitive-profile',
+      name: 'CognitiveProfile',
+      component: () => import('@/pages/CognitiveProfilePage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/',
       component: DashboardLayout,
       meta: { requiresAuth: true },
@@ -50,6 +56,11 @@ const router = createRouter({
           path: '',
           name: 'Dashboard',
           component: () => import('@/pages/DashboardPage.vue'),
+        },
+        {
+          path: 'assessment/:moduleId/:type',
+          name: 'Assessment',
+          component: () => import('@/pages/AssessmentPage.vue'),
         },
       ],
     },

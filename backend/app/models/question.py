@@ -12,5 +12,6 @@ class Question(Base):
     correct_answer = Column(String)
     explanation = Column(String)
     difficulty = Column(String)
+    assessment_type = Column(String, default="quiz") # pre_test, drill, quiz, post_test
     
     subtopic = relationship("Subtopic", back_populates="questions")

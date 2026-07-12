@@ -63,7 +63,7 @@ def seed_database():
     
     user = db.query(User).first()
     
-    # Modules Data (from src/data/modules.js)
+    # Modules Data
     # We will hardcode a subset here to seed the DB
     mod1 = db.query(Module).filter(Module.id == "mod-001").first()
     if not mod1:

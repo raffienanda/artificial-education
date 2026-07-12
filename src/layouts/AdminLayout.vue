@@ -55,6 +55,6 @@ const title = computed(() => {
 const description = computed(() => {
   if (route.path === '/admin/questions') return 'soal dan difficulty ini dipakai q-learning untuk easy quiz dan hard quiz.'
   if (route.path === '/admin/materials') return 'content json ini langsung dipakai oleh module viewer di dashboard mahasiswa.'
-  return 'relasi ini dipakai gkt untuk menentukan back trace learning path.'
+  return 'relasi ini dipakai graph prasyarat untuk menentukan gating learning path.'
 })
 </script>

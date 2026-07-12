@@ -53,7 +53,6 @@
  */
 import { ref, computed } from 'vue'
 import { useModulesStore } from '@/stores/modules'
-import { modules } from '@/data/modules'
 
 const props = defineProps({
   placeholder: { type: String, default: 'Search modules...' },
@@ -66,18 +65,20 @@ const focused = ref(false)
 const inputRef = ref(null)
 const modulesStore = useModulesStore()
 
-// Build searchable items from modules data
-const searchableItems = modules.map((mod) => ({
-  id: mod.id,
-  title: mod.title,
-  description: mod.description,
-  icon: mod.icon,
-}))
+const searchableItems = computed(() =>
+  modulesStore.modules.map((mod) => ({
+    id: mod.id,
+    title: mod.title,
+    description: mod.description,
+    icon: mod.icon,
+    status: mod.status,
+  }))
+)
 
 const filteredResults = computed(() => {
   if (!query.value.trim()) return []
   const q = query.value.toLowerCase()
-  return searchableItems.filter(
+  return searchableItems.value.filter(
     (item) =>
       item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)
   )
@@ -88,6 +89,11 @@ function onInput() {
 }
 
 function selectResult(result) {
+  if (result.status === 'locked') {
+    query.value = ''
+    focused.value = false
+    return
+  }
   query.value = result.title
   focused.value = false
   modulesStore.fetchModuleById(result.id)

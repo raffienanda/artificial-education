@@ -13,6 +13,7 @@ def ensure_runtime_columns(engine):
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS redeemed_rewards JSON DEFAULT '[]'",
         "ALTER TABLE modules ADD COLUMN IF NOT EXISTS course_id VARCHAR",
         "ALTER TABLE topic_prerequisites ADD COLUMN IF NOT EXISTS mastery_threshold FLOAT DEFAULT 60.0",
+        "ALTER TABLE questions ADD COLUMN IF NOT EXISTS assessment_type VARCHAR DEFAULT 'quiz'",
     ]
 
     with engine.begin() as connection:

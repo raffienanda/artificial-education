@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import app.models
 from app.core.database import engine, Base
 from app.core.migrations import ensure_runtime_columns
-from app.api.endpoints import admin, auth, gamification, modules, progress, quiz, recommendation
+from app.api.endpoints import admin, auth, chatbot, cognitive, gamification, modules, progress, quiz, recommendation
 
 # Create DB Tables
 Base.metadata.create_all(bind=engine)
@@ -22,6 +23,8 @@ app.add_middleware(
 # Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(chatbot.router, prefix="/api/chatbot", tags=["Chatbot"])
+app.include_router(cognitive.router, prefix="/api/cognitive", tags=["Cognitive"])
 app.include_router(gamification.router, prefix="/api/gamification", tags=["Gamification"])
 app.include_router(modules.router, prefix="/api/modules", tags=["Modules"])
 app.include_router(quiz.router, prefix="/api/quiz", tags=["Quiz"])

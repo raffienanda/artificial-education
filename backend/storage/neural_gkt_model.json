@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "node_ids": [
+    "mod-001",
+    "mod-002",
+    "mod-003"
+  ],
+  "global_bias": -1.7251288436324983,
+  "self_weight": 4.600314190709933,
+  "prerequisite_weight": 1.1830501658876804,
+  "node_bias": {
+    "mod-001": -0.1039409168866148,
+    "mod-002": -0.7417811117797196,
+    "mod-003": -0.6794068149662253
+  },
+  "edge_weight": {
+    "mod-001->mod-002": 1.132940793053461,
+    "mod-002->mod-003": 1.0809703990856319
+  },
+  "trained_samples": 731,
+  "trained_at": "2026-07-09T17:16:25.133901+00:00",
+  "metrics": {
+    "mae": 0.1218,
+    "rmse": 0.145,
+    "accuracy_at_60": 0.8331,
+    "real_samples": 11,
+    "synthetic_samples": 720
+  }
+}

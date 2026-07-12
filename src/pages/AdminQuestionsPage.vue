@@ -48,6 +48,9 @@
                     <span class="rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600 dark:bg-gray-900 dark:text-gray-300">
                       {{ question.difficulty }}
                     </span>
+                    <span class="rounded-lg bg-primary-50 px-2 py-0.5 text-xs font-bold text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
+                      {{ assessmentLabel(question.assessment_type) }}
+                    </span>
                     <span class="text-xs text-gray-400">{{ question.subtopic_id }}</span>
                   </div>
                   <p class="whitespace-pre-wrap text-sm font-semibold text-gray-800 dark:text-gray-100">{{ question.question_text }}</p>
@@ -102,7 +105,7 @@
             </label>
           </div>
 
-          <div class="mb-3 grid grid-cols-2 gap-3">
+          <div class="mb-3 grid gap-3 md:grid-cols-3">
             <label>
               <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">jawaban benar</span>
               <select v-model="form.correct_answer" class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
@@ -117,6 +120,15 @@
                 <option value="mudah">mudah</option>
                 <option value="sedang">sedang</option>
                 <option value="sulit">sulit</option>
+              </select>
+            </label>
+            <label>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">jenis asesmen</span>
+              <select v-model="form.assessment_type" class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900">
+                <option value="pre_test">pre test</option>
+                <option value="drill">drill</option>
+                <option value="quiz">quiz</option>
+                <option value="post_test">post test</option>
               </select>
             </label>
           </div>
@@ -172,6 +184,7 @@ const form = reactive({
   correct_answer: 'a',
   explanation: '',
   difficulty: 'mudah',
+  assessment_type: 'quiz',
 })
 
 const allSubtopics = computed(() => modules.value.flatMap((module) => module.subtopics || []))
@@ -207,6 +220,7 @@ function resetForm() {
   form.correct_answer = 'a'
   form.explanation = ''
   form.difficulty = 'mudah'
+  form.assessment_type = 'quiz'
 }
 
 function openCreateQuestion() {
@@ -246,7 +260,19 @@ function editQuestion(question) {
   form.correct_answer = question.correct_answer
   form.explanation = question.explanation
   form.difficulty = question.difficulty
+  form.assessment_type = question.assessment_type || 'quiz'
   showFormModal.value = true
+}
+
+function assessmentLabel(type) {
+  const labels = {
+    pre_test: 'pre test',
+    drill: 'drill',
+    quiz: 'quiz',
+    post_test: 'post test',
+  }
+
+  return labels[type] || 'quiz'
 }
 
 async function deleteQuestion(questionId) {

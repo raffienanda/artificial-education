@@ -11,18 +11,49 @@
       </div>
     </div>
 
+    <div v-else-if="needsPretest" class="flex flex-1 items-center justify-center">
+      <div class="w-full max-w-xl rounded-2xl border border-primary-100 bg-primary-50/70 p-6 text-center dark:border-primary-900/40 dark:bg-primary-900/10">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-primary-600 shadow-sm dark:bg-gray-800 dark:text-primary-300">
+          <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p class="text-sm font-bold uppercase text-primary-600 dark:text-primary-300">Pre Test Modul</p>
+        <h2 class="mt-1 text-2xl font-black text-gray-900 dark:text-white">{{ activeModule.title }}</h2>
+        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          Kerjakan pre test terlebih dahulu supaya sistem bisa membaca kemampuan awal sebelum materi modul dibuka.
+        </p>
+        <button
+          class="mt-6 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition hover:bg-primary-700"
+          type="button"
+          @click="startAssessment('pre_test')"
+        >
+          Mulai Pre Test
+        </button>
+      </div>
+    </div>
+
+    <div v-else-if="moduleLocked" class="flex flex-1 items-center justify-center">
+      <div class="w-full max-w-xl rounded-2xl border border-gray-100 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800/70">
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-gray-400 shadow-sm dark:bg-gray-900">
+          <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <p class="text-sm font-bold uppercase text-gray-500 dark:text-gray-400">Modul terkunci</p>
+        <h2 class="mt-1 text-2xl font-black text-gray-900 dark:text-white">{{ activeModule.title }}</h2>
+        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          Selesaikan modul prasyarat terlebih dahulu sebelum membuka pre test modul ini.
+        </p>
+      </div>
+    </div>
+
     <!-- Module Content -->
     <template v-else>
       <div class="min-h-0 flex-1 overflow-y-auto pr-2 -mr-2">
-      <!-- Header Row: Title + Tandai Selesai -->
-      <div class="flex items-center justify-between mb-1 flex-shrink-0">
+      <!-- Header Row -->
+      <div class="mb-1 flex-shrink-0">
         <h2 class="text-lg font-bold text-gray-900 dark:text-white">Materi Modul</h2>
-        <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 text-sm font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-          </svg>
-          Tandai Selesai
-        </button>
       </div>
 
       <!-- Module Title -->
@@ -43,7 +74,7 @@
               ? 'bg-primary-600 text-white shadow-sm'
               : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 dark:text-gray-400',
           ]"
-          @click="activeTab = idx"
+          @click="handleTabClick(idx)"
         >
           <span>{{ tab.icon }}</span>
           {{ tab.label }}
@@ -166,10 +197,11 @@
  * ModuleViewer — Redesigned to match reference with tab bar, number line SVG, and Indonesian labels
  */
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useModulesStore } from '@/stores/modules'
 import { useRecommendationStore } from '@/stores/recommendation'
 import { useUserStore } from '@/stores/user'
-import { useToast } from '@/composables/useToast'
+import { useQuizStore } from '@/stores/quiz'
 import BaseCard from '@/components/common/BaseCard.vue'
 import AdaptiveRecommendationPanel from '@/components/recommendation/AdaptiveRecommendationPanel.vue'
 import VideoPlayer from './VideoPlayer.vue'
@@ -178,13 +210,18 @@ import NumberLineSVG from './NumberLineSVG.vue'
 const modulesStore = useModulesStore()
 const recommendationStore = useRecommendationStore()
 const userStore = useUserStore()
-const toast = useToast()
+const quizStore = useQuizStore()
+const router = useRouter()
 
 const activeTab = ref(0)
 
 const activeModule = computed(() => modulesStore.activeModule)
 const activeSubtopic = computed(() => modulesStore.activeSubtopic)
 const activeContent = computed(() => modulesStore.activeContent)
+const moduleLocked = computed(() => activeModule.value?.status === 'locked')
+const needsPretest = computed(() =>
+  Boolean(activeModule.value?.id && !moduleLocked.value && !quizStore.hasCompletedPretest(activeModule.value.id))
+)
 
 const tabs = computed(() => {
   return activeContent.value?.tabs || [
@@ -211,12 +248,52 @@ const contentSections = computed(() => {
 })
 
 function handleNext() {
-  if (modulesStore.hasNextSubtopic) {
+  const currentQuizPassed = quizStore.hasCompletedSubtopicQuiz(activeModule.value.id, activeSubtopic.value.id)
+  if (currentQuizPassed && modulesStore.hasNextSubtopic) {
     modulesStore.nextSubtopic()
-    activeTab.value = 0
-  } else {
-    toast.success('Bagian modul selesai! 🎉')
+    return
   }
+
+  if (currentQuizPassed && !modulesStore.hasNextSubtopic) {
+    startAssessment('post_test')
+    return
+  }
+
+  if (modulesStore.hasNextSubtopic) {
+    startAssessment('quiz', { subtopic_id: activeSubtopic.value.id, next: '1' })
+    return
+  }
+
+  startAssessment('quiz', { subtopic_id: activeSubtopic.value.id, final: '1' })
+}
+
+function startAssessment(type, query = {}) {
+  if (!activeModule.value?.id) return
+  router.push({
+    name: 'Assessment',
+    params: {
+      moduleId: activeModule.value.id,
+      type,
+    },
+    query,
+  })
+}
+
+function actionFromTab(tabId) {
+  if (tabId === 'ringkasan') {
+    return recommendationStore.microAction === 'review_previous' ? 'review_previous' : 'show_text'
+  }
+  if (tabId === 'video') return 'show_video'
+  if (tabId === 'contoh') {
+    return recommendationStore.microAction === 'hard_quiz' ? 'hard_quiz' : 'easy_quiz'
+  }
+  return null
+}
+
+async function handleTabClick(index) {
+  activeTab.value = index
+  const action = actionFromTab(tabs.value[index]?.id)
+  recommendationStore.setActiveLearningAction(action)
 }
 
 // Reset tab on subtopic change
@@ -252,6 +329,7 @@ watch(
       return
     }
 
+    recommendationStore.resetLearningActionTrace(actionFromTab(tabs.value[activeTab.value]?.id) || 'show_text')
     recommendationStore.fetchNext({
       userId: userStore.userId,
       currentModuleId: moduleId,

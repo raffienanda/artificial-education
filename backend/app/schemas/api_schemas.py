@@ -56,6 +56,8 @@ class SubtopicBase(BaseModel):
     content: Dict[str, Any]
 
 class SubtopicResponse(SubtopicBase):
+    completed: bool = False
+
     class Config:
         from_attributes = True
 
@@ -87,6 +89,7 @@ class QuestionResponse(BaseModel):
     subtopic_id: str
     question: str = Field(validation_alias='question_text')
     options: List[OptionSchema]
+    assessment_type: str = "quiz"
     # correct_answer and explanation are hidden from public fetch
     
     class Config:
@@ -101,6 +104,7 @@ class AdminQuestionCreate(BaseModel):
     correct_answer: str
     explanation: str
     difficulty: str = "mudah"
+    assessment_type: str = "quiz"
 
 
 class AdminQuestionUpdate(BaseModel):
@@ -110,6 +114,7 @@ class AdminQuestionUpdate(BaseModel):
     correct_answer: Optional[str] = None
     explanation: Optional[str] = None
     difficulty: Optional[str] = None
+    assessment_type: Optional[str] = None
 
 
 class AdminQuestionResponse(BaseModel):
@@ -120,6 +125,7 @@ class AdminQuestionResponse(BaseModel):
     correct_answer: str
     explanation: str
     difficulty: str
+    assessment_type: str = "quiz"
 
     class Config:
         from_attributes = True
@@ -150,8 +156,9 @@ class AdminSubtopicResponse(BaseModel):
 class AnswerSubmission(BaseModel):
     question_id: str
     selected_option_id: str
-    user_id: int = 1 # hardcoded default for dummy user
+    user_id: Optional[int] = None
     action: str = "easy_quiz"
+    action_sequence: List[str] = []
     duration_seconds: int = 0
 
 class AnswerFeedback(BaseModel):
@@ -222,7 +229,12 @@ class RecommendationResponse(BaseModel):
     micro_action: str
     state: str
     q_values: Dict[str, float]
+    q_value_states: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     reason: str
+    macro_model: Optional[str] = None
+    neural_gkt_state: Dict[str, float] = Field(default_factory=dict)
+    cognitive_stage: Optional[str] = None
+    cognitive_strategy: Optional[str] = None
 
 
 class InteractionLogResponse(BaseModel):
@@ -235,6 +247,20 @@ class InteractionLogResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# --- Chatbot ---
+class ChatbotMessageRequest(BaseModel):
+    message: str
+    module_id: Optional[str] = None
+    subtopic_id: Optional[str] = None
+
+
+class ChatbotMessageResponse(BaseModel):
+    id: str
+    role: str
+    content: str
+    timestamp: str
 
 
 # --- Admin Prerequisites ---
@@ -253,6 +279,38 @@ class PrerequisiteResponse(BaseModel):
     topic_id: str
     prerequisite_id: str
     mastery_threshold: float
+
+    class Config:
+        from_attributes = True
+
+
+# --- Cognitive Profile / Perry Scheme ---
+class CognitiveItemResponse(BaseModel):
+    id: int
+    code: str
+    stage: str
+    statement: str
+
+    class Config:
+        from_attributes = True
+
+
+class CognitiveAnswerInput(BaseModel):
+    item_id: int
+    score: int
+
+
+class CognitiveSubmitRequest(BaseModel):
+    responses: List[CognitiveAnswerInput]
+
+
+class CognitiveProfileResponse(BaseModel):
+    user_id: int
+    dualism_score: float
+    multiplicity_score: float
+    relativism_score: float
+    commitment_score: float
+    dominant_stage: str
 
     class Config:
         from_attributes = True
