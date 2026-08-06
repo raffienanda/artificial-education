@@ -15,10 +15,10 @@
 
 **Artificial Education** adalah *Intelligent Tutoring System* (ITS) full-stack yang dirancang untuk memberikan pengalaman belajar mandiri yang adaptif. Sistem ini menggunakan model adaptif yang saat ini menggabungkan:
 
-- **Graph Knowledge Tracing (GKT)** — *Macro Layer* untuk memetakan relasi prasyarat antar topik/modul dan melakukan *back-tracking* otomatis ketika skor pemahaman mahasiswa menurun.
+- **Neural Graph Knowledge Tracing (Neural GKT)** — *Macro Layer* untuk memprediksi penguasaan topik/modul dari pre test, quiz, post test, data seed kurikulum, data sintetis, dan graph prasyarat.
 - **Q-Learning Agent** — *Micro Layer* untuk menentukan aksi pembelajaran optimal (teks, video, atau kuis drill) di level sub-topik berdasarkan riwayat interaksi.
 
-Catatan: Q-Learning sudah aktif sebagai machine learning utama. Neural GKT trainable awal sudah ditambahkan untuk level modul dengan pre test sebagai initial state dan graph prasyarat sebagai struktur hubungan. Model ini masih tahap bootstrap karena data mahasiswa nyata masih sedikit, jadi belum boleh diklaim sebagai hasil neural GKT yang sudah tervalidasi penuh.
+Catatan: Neural GKT sudah aktif sebagai model makro berbasis artifact `backend/storage/neural_gkt_model.json`. Model dilatih dari data seed, data sintetis, dan hasil pre test, quiz, serta post test yang sudah masuk database. Karena data mahasiswa nyata masih sedikit, klaim yang aman adalah Neural GKT bootstrap/trainable, belum model final yang tervalidasi kelas nyata.
 
 Pilot project saat ini diterapkan pada mata kuliah **Algoritma dan Pemrograman**.
 
@@ -30,7 +30,7 @@ Pilot project saat ini diterapkan pada mata kuliah **Algoritma dan Pemrograman**
 |-------|-----------|
 | 🔐 **Autentikasi** | Login/register dengan role-based access (Mahasiswa & Admin) |
 | 📚 **Adaptive Module Viewer** | Menampilkan materi teks/video secara dinamis sesuai rekomendasi AI |
-| 🧠 **GKT Engine** | Pelacakan pemahaman level makro dengan propagasi mundur ke modul prasyarat |
+| 🧠 **Neural GKT Engine** | Prediksi penguasaan level makro berdasarkan graph prasyarat dan data assessment |
 | 🤖 **Q-Learning Agent** | Penentuan aksi pembelajaran optimal di level sub-topik |
 | 📝 **Interactive Drill & Practice** | Kuis interaktif sebagai environment pengumpul reward untuk Q-Learning |
 | 📊 **Mastery Radar Tracker** | Visualisasi real-time tingkat pemahaman per topik (Radar Chart) |
@@ -61,7 +61,7 @@ Pilot project saat ini diterapkan pada mata kuliah **Algoritma dan Pemrograman**
 - **Server:** Uvicorn (ASGI)
 
 ### AI / ML Engine
-- **GKT (Graph Knowledge Tracing):** Graph traversal untuk deteksi kelemahan prasyarat
+- **Neural GKT:** Model trainable untuk prediksi penguasaan topik/modul dari graph prasyarat, pre test, quiz, post test, data seed, dan data sintetis
 - **Q-Learning:** Reinforcement Learning agent dengan Bellman update equation
 
 ---
@@ -293,7 +293,7 @@ npm run preview
 | `cognitive_responses` | Jawaban mahasiswa terhadap instrumen kognitif |
 | `cognitive_profiles` | Profil kognitif ringkas mahasiswa berdasarkan hasil instrumen |
 
-Catatan rancangan: pre test dipakai sebagai initial state mahasiswa di awal modul, quiz subtopik memperbarui state subtopik dan Q-Learning, sedangkan post test dipakai sebagai evaluasi akhir untuk membuka modul berikutnya. Tabel `knowledge_edges` dan `knowledge_states` disiapkan supaya implementasi sekarang tetap bisa berjalan, tetapi datanya tetap siap dikembangkan ke Neural GKT saat interaksi mahasiswa sudah cukup.
+Catatan rancangan: pre test dipakai sebagai initial state mahasiswa di awal modul, quiz subtopik memperbarui state subtopik dan Q-Learning sekaligus menjadi sinyal training Neural GKT, sedangkan post test dipakai sebagai target evaluasi akhir. Model Neural GKT saat ini dilatih dari kombinasi data seed, data sintetis, dan hasil assessment yang sudah tersimpan.
 
 Instrumen perkembangan kognitif Perry dipakai sebagai profil tambahan mahasiswa. Jawaban instrumen disimpan di `cognitive_responses`, diringkas ke `cognitive_profiles`, lalu tahap dominannya ikut masuk ke state Q-Learning, misalnya `low:stable:dualism`. Dengan begitu sistem tidak hanya membaca benar/salah jawaban, tetapi juga mulai membedakan pola rekomendasi berdasarkan cara berpikir mahasiswa.
 
@@ -316,7 +316,7 @@ Instrumen perkembangan kognitif Perry dipakai sebagai profil tambahan mahasiswa.
           ┌──────────┴──────────┐
           ▼                     ▼
 ┌──────────────────┐  ┌──────────────────┐
-│   GKT Engine     │  │  Q-Learning Agent│
+│ Neural GKT Engine│  │  Q-Learning Agent│
 │  (Macro Layer)   │  │  (Micro Layer)   │
 │                  │  │                  │
 │ • Graph Traversal│  │ • Bellman Update │

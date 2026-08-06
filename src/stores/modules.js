@@ -4,10 +4,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { modulesService } from '@/services/modules'
+import { useUserStore } from './user'
 
 export const useModulesStore = defineStore('modules', () => {
   // State
   const course = ref(null)
+  const courses = ref([])
+  const selectedCourse = ref(null)
   const modules = ref([])
   const activeModule = ref(null)
   const activeSubtopicIndex = ref(0)
@@ -51,16 +54,35 @@ export const useModulesStore = defineStore('modules', () => {
     error.value = null
     try {
       course.value = await modulesService.getCourse()
+      if (!selectedCourse.value) selectedCourse.value = course.value
     } catch (err) {
       error.value = err.message
     }
   }
 
-  async function fetchModules() {
+  async function fetchCourses() {
+    error.value = null
+    try {
+      const data = await modulesService.getCourses()
+      courses.value = data
+      if (!selectedCourse.value) {
+        selectedCourse.value = data.find((item) => item.id === course.value?.id) || data[0] || null
+      }
+      if (!course.value && selectedCourse.value) {
+        course.value = selectedCourse.value
+      }
+    } catch (err) {
+      error.value = err.message
+      courses.value = course.value ? [course.value] : []
+    }
+  }
+
+  async function fetchModules(courseId = selectedCourse.value?.id || null) {
     loading.value = true
     error.value = null
     try {
-      const data = await modulesService.getModules()
+      const userStore = useUserStore()
+      const data = await modulesService.getModules(courseId, userStore.currentUser?.id || null)
       modules.value = data
       if (activeModule.value) {
         const freshActiveModule = data.find((module) => module.id === activeModule.value.id)
@@ -81,7 +103,8 @@ export const useModulesStore = defineStore('modules', () => {
     loading.value = true
     error.value = null
     try {
-      const data = await modulesService.getModuleById(moduleId)
+      const userStore = useUserStore()
+      const data = await modulesService.getModuleById(moduleId, userStore.currentUser?.id || null)
       activeModule.value = data
       activeSubtopicIndex.value = 0
     } catch (err) {
@@ -99,6 +122,24 @@ export const useModulesStore = defineStore('modules', () => {
   function clearActiveModule() {
     activeModule.value = null
     activeSubtopicIndex.value = 0
+  }
+
+  function resetStoreState() {
+    course.value = null
+    courses.value = []
+    selectedCourse.value = null
+    modules.value = []
+    activeModule.value = null
+    activeSubtopicIndex.value = 0
+    loading.value = false
+    error.value = null
+  }
+
+  async function selectCourse(courseItem) {
+    selectedCourse.value = courseItem
+    course.value = courseItem
+    clearActiveModule()
+    await fetchModules(courseItem?.id || null)
   }
 
   function nextSubtopic() {
@@ -132,6 +173,8 @@ export const useModulesStore = defineStore('modules', () => {
 
   return {
     course,
+    courses,
+    selectedCourse,
     modules,
     activeModule,
     activeSubtopicIndex,
@@ -145,10 +188,13 @@ export const useModulesStore = defineStore('modules', () => {
     completedModules,
     currentModuleProgress,
     fetchCourse,
+    fetchCourses,
     fetchModules,
     fetchModuleById,
     setActiveModule,
     clearActiveModule,
+    resetStoreState,
+    selectCourse,
     nextSubtopic,
     previousSubtopic,
     goToSubtopic,

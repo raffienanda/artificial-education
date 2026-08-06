@@ -110,6 +110,38 @@ def seed_all():
             db.commit()
             print("[=] Course 'Algoritma dan Pemrograman' already exists")
 
+        additional_courses = [
+            {
+                "id": "course-db-01",
+                "title": "Basis Data",
+                "description": "Pelajari konsep database, relasi tabel, SQL dasar, dan perancangan data.",
+                "icon": "database",
+            },
+            {
+                "id": "course-web-01",
+                "title": "Pemrograman Web",
+                "description": "Pelajari struktur web, HTML, CSS, JavaScript, dan dasar pengembangan frontend.",
+                "icon": "globe",
+            },
+            {
+                "id": "course-ml-01",
+                "title": "Pengantar Machine Learning",
+                "description": "Kenali konsep data, model, training, evaluasi, dan penerapan machine learning sederhana.",
+                "icon": "brain",
+            },
+        ]
+        for course_data in additional_courses:
+            extra_course = db.query(Course).filter(Course.id == course_data["id"]).first()
+            if not extra_course:
+                db.add(Course(**course_data))
+                print(f"[+] Course '{course_data['title']}' created")
+            else:
+                extra_course.title = course_data["title"]
+                extra_course.description = course_data["description"]
+                extra_course.icon = course_data["icon"]
+                print(f"[=] Course '{course_data['title']}' already exists")
+        db.commit()
+
         modules_data = [
             {
                 "id": "mod-001",

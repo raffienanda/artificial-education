@@ -6,7 +6,7 @@
     "subtopic_count": 15,
     "data_type": "synthetic_simulation"
   },
-  "neural_gkt_proxy": {
+  "neural_gkt_bootstrap": {
     "baseline_no_graph": {
       "accuracy": 0.6917,
       "precision": 0.715,
@@ -15,7 +15,7 @@
       "mae": 0.3699,
       "rmse": 0.4589
     },
-    "gkt_graph_proxy": {
+    "neural_gkt_bootstrap": {
       "accuracy": 0.695,
       "precision": 0.7355,
       "recall": 0.6236,

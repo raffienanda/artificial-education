@@ -486,7 +486,7 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
         "q_values": q_values,
         "q_value_states": q_value_states,
         "reason": reason,
-        "macro_model": "neural_gkt" if neural_gkt and neural_gkt.is_trained else "graph_prerequisite",
+        "macro_model": "neural_gkt" if neural_gkt and neural_gkt.is_trained else "graph_fallback",
         "neural_gkt_state": macro.get("neural_state", {}),
         "cognitive_stage": cognitive_stage,
         "cognitive_strategy": cognitive_strategy,

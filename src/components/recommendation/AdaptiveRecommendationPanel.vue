@@ -35,13 +35,15 @@
             <span v-if="nextStepLabel" class="rounded-lg bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-gray-600 shadow-sm dark:bg-gray-800/80 dark:text-gray-300">
               {{ nextStepLabel }}
             </span>
+            <span class="rounded-lg bg-white/80 px-2.5 py-1.5 text-xs font-bold text-sky-700 shadow-sm dark:bg-gray-800/80 dark:text-sky-300">
+              q-value {{ formatNumber(currentActionQValue) }}
+            </span>
             <button
-              v-if="canViewDebug"
               class="rounded-lg border border-sky-200 bg-white/70 px-2.5 py-1.5 text-xs font-bold text-sky-700 transition hover:bg-white dark:border-sky-800 dark:bg-gray-800/70 dark:text-sky-300 dark:hover:bg-gray-800"
               type="button"
               @click="debugOpen = !debugOpen"
             >
-              Detail teknis
+              {{ debugOpen ? 'Tutup Q-value' : 'Lihat Q-value' }}
             </button>
           </div>
 
@@ -57,7 +59,7 @@
               </div>
               <div class="rounded-lg bg-gray-50 px-2.5 py-1.5 dark:bg-gray-900/50">
                 <span class="font-bold text-gray-400">macro model</span>
-                <p class="mt-0.5 font-semibold">{{ recommendation.macro_model || 'graph_prerequisite' }}</p>
+                <p class="mt-0.5 font-semibold">{{ recommendation.macro_model || 'neural_gkt' }}</p>
               </div>
               <div class="rounded-lg bg-gray-50 px-2.5 py-1.5 dark:bg-gray-900/50">
                 <span class="font-bold text-gray-400">cognitive</span>
@@ -121,18 +123,12 @@ import { BookOpen, ClipboardCheck, Dumbbell, PlayCircle, RotateCcw, Route } from
 import BaseBadge from '@/components/common/BaseBadge.vue'
 import { useModulesStore } from '@/stores/modules'
 import { useRecommendationStore } from '@/stores/recommendation'
-import { useUserStore } from '@/stores/user'
 
 const modulesStore = useModulesStore()
 const recommendationStore = useRecommendationStore()
-const userStore = useUserStore()
 const debugOpen = ref(false)
 
 const recommendation = computed(() => recommendationStore.current)
-const canViewDebug = computed(() => (
-  userStore.currentUser?.role === 'admin' ||
-  localStorage.getItem('demo_debug') === '1'
-))
 const canApplyBackTrace = computed(() => (
   recommendationStore.shouldBackTrace &&
   recommendation.value?.recommended_module_id &&
@@ -244,6 +240,11 @@ const qValueItems = computed(() => {
     value: values[action] ?? 0,
     selected: action === recommendationStore.microAction,
   }))
+})
+
+const currentActionQValue = computed(() => {
+  const stateValues = recommendation.value?.q_value_states?.[recommendation.value?.state] || {}
+  return stateValues[recommendationStore.microAction] ?? recommendation.value?.q_values?.[recommendationStore.microAction] ?? 0
 })
 
 function labelForAction(action) {

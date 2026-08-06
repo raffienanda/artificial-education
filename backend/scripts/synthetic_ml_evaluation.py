@@ -151,7 +151,7 @@ def binary_metrics(y_true: list[int], y_score: list[float], threshold: float = 0
     }
 
 
-def evaluate_gkt_proxy(
+def evaluate_neural_gkt_bootstrap(
     rng: random.Random,
     students: list[Student],
     rows: list[dict],
@@ -190,7 +190,7 @@ def evaluate_gkt_proxy(
     rows.extend(test_rows)
     return {
         "baseline_no_graph": binary_metrics(y_true, baseline_scores),
-        "gkt_graph_proxy": binary_metrics(y_true, graph_scores),
+        "neural_gkt_bootstrap": binary_metrics(y_true, graph_scores),
         "test_samples": len(y_true),
     }, rows
 
@@ -319,7 +319,7 @@ def write_outputs(gkt_metrics: dict, q_metrics: dict, rows: list[dict]) -> None:
             "subtopic_count": sum(len(items) for items in MODULES.values()),
             "data_type": "synthetic_simulation",
         },
-        "neural_gkt_proxy": gkt_metrics,
+        "neural_gkt_bootstrap": gkt_metrics,
         "q_learning": {
             key: value
             for key, value in q_metrics.items()
@@ -337,11 +337,11 @@ def main() -> None:
     rng = random.Random(RANDOM_SEED)
     students = build_students(rng)
     rows, pretest_state, _ = simulate_pretest_and_true_mastery(rng, students)
-    gkt_metrics, rows = evaluate_gkt_proxy(rng, students, rows, pretest_state)
+    gkt_metrics, rows = evaluate_neural_gkt_bootstrap(rng, students, rows, pretest_state)
     q_metrics = simulate_q_learning(students)
     write_outputs(gkt_metrics, q_metrics, rows)
     print(json.dumps({
-        "neural_gkt_proxy": gkt_metrics,
+        "neural_gkt_bootstrap": gkt_metrics,
         "q_learning": {
             "adaptive": q_metrics["adaptive"],
             "random_baseline": q_metrics["random_baseline"],

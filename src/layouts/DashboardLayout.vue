@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen w-full flex bg-surface-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 overflow-hidden font-sans">
     <!-- Sidebar -->
-    <TheSidebar />
+    <TheSidebar v-if="showLearningSidebar" />
 
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
@@ -40,6 +40,16 @@ import ToastNotification from '@/components/common/ToastNotification.vue'
 import ConfettiEffect from '@/components/common/ConfettiEffect.vue'
 import AchievementModal from '@/components/common/AchievementModal.vue'
 import { useUserStore } from '@/stores/user'
+import { useModulesStore } from '@/stores/modules'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 const userStore = useUserStore()
+const modulesStore = useModulesStore()
+const route = useRoute()
+
+const showLearningSidebar = computed(() => (
+  route.name === 'Assessment' ||
+  (route.name === 'Dashboard' && Boolean(modulesStore.activeModule))
+))
 </script>

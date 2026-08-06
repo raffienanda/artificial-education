@@ -70,7 +70,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('auth_user', JSON.stringify(user))
   }
 
-  function setSession(authPayload) {
+  async function setSession(authPayload) {
     localStorage.removeItem('completed_pretests')
     localStorage.removeItem('completed_posttests')
     localStorage.removeItem('completed_subtopic_quizzes')
@@ -80,16 +80,35 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('auth_token', token.value)
     localStorage.setItem('auth_user', JSON.stringify(currentUser.value))
     syncProfile(currentUser.value)
-    import('./quiz').then(({ useQuizStore }) => {
-      const quizStore = useQuizStore()
-      quizStore.hydrateGateCache()
-      quizStore.fetchGateStatus()
-    })
-    import('./modules').then(({ useModulesStore }) => {
-      const modulesStore = useModulesStore()
-      modulesStore.clearActiveModule()
-      modulesStore.fetchModules()
-    })
+    const [
+      { useQuizStore },
+      { useModulesStore },
+      { useProgressStore },
+      { useCognitiveStore },
+    ] = await Promise.all([
+      import('./quiz'),
+      import('./modules'),
+      import('./progress'),
+      import('./cognitive'),
+    ])
+
+    const quizStore = useQuizStore()
+    const modulesStore = useModulesStore()
+    const progressStore = useProgressStore()
+    const cognitiveStore = useCognitiveStore()
+
+    quizStore.resetStoreState()
+    modulesStore.resetStoreState()
+    cognitiveStore.resetStoreState()
+    progressStore.resetStoreState()
+
+    await Promise.all([
+      modulesStore.fetchCourse(),
+      modulesStore.fetchCourses(),
+      quizStore.fetchGateStatus(),
+      progressStore.fetchAll(),
+      cognitiveStore.fetchProfile(),
+    ])
   }
 
   async function login(credentials) {
@@ -97,7 +116,7 @@ export const useUserStore = defineStore('user', () => {
     authError.value = null
     try {
       const data = await authService.login(credentials)
-      setSession(data)
+      await setSession(data)
       return true
     } catch (error) {
       authError.value = error.response?.data?.detail || 'Login gagal'
@@ -112,7 +131,7 @@ export const useUserStore = defineStore('user', () => {
     authError.value = null
     try {
       const data = await authService.register(payload)
-      setSession(data)
+      await setSession(data)
       return true
     } catch (error) {
       authError.value = error.response?.data?.detail || 'Registrasi gagal'
@@ -156,6 +175,14 @@ export const useUserStore = defineStore('user', () => {
     import('./cognitive').then(({ useCognitiveStore }) => {
       const cognitiveStore = useCognitiveStore()
       cognitiveStore.resetStoreState()
+    })
+    import('./modules').then(({ useModulesStore }) => {
+      const modulesStore = useModulesStore()
+      modulesStore.resetStoreState()
+    })
+    import('./progress').then(({ useProgressStore }) => {
+      const progressStore = useProgressStore()
+      progressStore.resetStoreState()
     })
   }
 

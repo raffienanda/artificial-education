@@ -16,6 +16,7 @@ export const useProgressStore = defineStore('progress', () => {
   const recentActivities = ref([])
   const weeklyProgress = ref([])
   const recommendations = ref(null)
+  const moduleDiagnoses = ref({})
   const loading = ref(false)
 
   // Computed
@@ -121,6 +122,22 @@ export const useProgressStore = defineStore('progress', () => {
     }
   }
 
+  async function fetchModuleDiagnosis(moduleId) {
+    if (!moduleId) return null
+    try {
+      const userStore = useUserStore()
+      const data = await api.get(`/progress/module-diagnosis/${moduleId}`, {
+        params: { user_id: userStore.userId },
+      })
+      moduleDiagnoses.value[moduleId] = data
+      return data
+    } catch (e) {
+      console.error("Error fetching module diagnosis:", e)
+      moduleDiagnoses.value[moduleId] = null
+      return null
+    }
+  }
+
   // Fetch all progress data in parallel
   async function fetchAll() {
     await Promise.all([
@@ -131,6 +148,17 @@ export const useProgressStore = defineStore('progress', () => {
     ])
   }
 
+  function resetStoreState() {
+    overallMastery.value = 0
+    subtopicMastery.value = []
+    radarChartData.value = JSON.parse(JSON.stringify(initialRadar))
+    recentActivities.value = []
+    weeklyProgress.value = []
+    recommendations.value = null
+    moduleDiagnoses.value = {}
+    loading.value = false
+  }
+
   return {
     overallMastery,
     subtopicMastery,
@@ -138,6 +166,7 @@ export const useProgressStore = defineStore('progress', () => {
     recentActivities,
     weeklyProgress,
     recommendations,
+    moduleDiagnoses,
     loading,
     weakSubtopics,
     masteredSubtopics,
@@ -147,6 +176,8 @@ export const useProgressStore = defineStore('progress', () => {
     fetchHistory,
     fetchWeeklyProgress,
     fetchStatusMessage,
+    fetchModuleDiagnosis,
     fetchAll,
+    resetStoreState,
   }
 })

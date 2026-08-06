@@ -1,0 +1,115 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alur Sistem Learning Path Adaptif</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #f8fafc;
+      font-family: Arial, sans-serif;
+      color: #0f172a;
+    }
+    .wrap {
+      width: 1400px;
+      min-height: 1800px;
+      margin: 0 auto;
+      padding: 48px 56px;
+      box-sizing: border-box;
+      background: #ffffff;
+    }
+    h1 {
+      margin: 0 0 28px;
+      text-align: center;
+      font-size: 42px;
+      line-height: 1.15;
+      color: #12306b;
+      letter-spacing: 0;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      font-size: 19px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Alur Sistem Learning Path Adaptif</h1>
+    <pre class="mermaid">
+flowchart TD
+    A["login / register mahasiswa"] --> B["pilih mata kuliah"]
+    B --> C["dashboard learning path mata kuliah"]
+
+    C --> D{"modul terbuka?"}
+    D -- "belum" --> E["modul terkunci"]
+    E --> F["selesaikan prasyarat modul sebelumnya"]
+    F --> C
+
+    D -- "ya" --> G["pilih modul"]
+    G --> H{"pre test sudah dikerjakan?"}
+
+    H -- "belum" --> I["pre test modul"]
+    I --> J["initial state neural gkt"]
+
+    H -- "sudah" --> K["materi subtopik"]
+    J --> K
+
+    K --> L["q-learning: saran belajar"]
+    L --> M["ringkasan / video / drill / review"]
+    M --> N["quiz subtopik"]
+
+    N --> O["reward jawaban"]
+    O --> P["update q-value dengan bellman"]
+
+    P --> Q{"quiz subtopik lulus?"}
+    Q -- "belum" --> R["review / ulang materi"]
+    R --> K
+
+    Q -- "ya" --> S{"masih ada subtopik?"}
+    S -- "ya" --> T["subtopik berikutnya terbuka"]
+    T --> K
+
+    S -- "tidak" --> U["post test modul"]
+    U --> V["learning diagnosis report"]
+
+    V --> W["rekomendasi akhir"]
+    W --> X{"modul lulus?"}
+
+    X -- "ya" --> Y["modul berikutnya terbuka"]
+    Y --> C
+
+    X -- "belum" --> Z["review ringan / latihan tambahan / pendampingan"]
+    Z --> K
+
+    classDef start fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#0f172a;
+    classDef process fill:#ffffff,stroke:#475569,stroke-width:1.5px,color:#0f172a;
+    classDef decision fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#0f172a;
+    classDef ml fill:#ecfdf5,stroke:#047857,stroke-width:2px,color:#0f172a;
+    classDef warn fill:#fff1f2,stroke:#be123c,stroke-width:1.8px,color:#0f172a;
+
+    class A,B,C start;
+    class D,H,Q,S,X decision;
+    class J,L,P,V,W ml;
+    class E,F,R,Z warn;
+    class G,I,K,M,N,O,T,U,Y process;
+    </pre>
+  </main>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      flowchart: { curve: 'basis', nodeSpacing: 52, rankSpacing: 62 },
+      themeVariables: {
+        fontFamily: 'Arial, sans-serif',
+        primaryColor: '#ffffff',
+        primaryTextColor: '#0f172a',
+        lineColor: '#334155',
+        edgeLabelBackground: '#ffffff'
+      }
+    });
+  </script>
+</body>
+</html>

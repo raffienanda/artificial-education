@@ -45,6 +45,7 @@ class CourseResponse(BaseModel):
     title: str
     description: str
     icon: str
+    module_count: int = 0
 
     class Config:
         from_attributes = True
@@ -168,6 +169,7 @@ class AnswerFeedback(BaseModel):
     reward_xp: int
     new_mastery: float
     q_value: float = 0.0
+    updated_q_values: Dict[str, float] = Field(default_factory=dict)
     learning_state: str = ""
     next_learning_state: str = ""
     user: UserResponse

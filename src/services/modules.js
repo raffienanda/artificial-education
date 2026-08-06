@@ -11,15 +11,28 @@ export const modulesService = {
     return data
   },
 
+  /** Fetch all available courses */
+  async getCourses() {
+    const data = await api.get('/modules/courses')
+    return data
+  },
+
   /** Fetch all modules */
-  async getModules() {
-    const data = await api.get('/modules')
+  async getModules(courseId = null, userId = null) {
+    const data = await api.get('/modules', {
+      params: {
+        ...(courseId ? { course_id: courseId } : {}),
+        ...(userId ? { user_id: userId } : {}),
+      },
+    })
     return data
   },
 
   /** Fetch a single module by ID with full subtopic content */
-  async getModuleById(moduleId) {
-    const data = await api.get(`/modules/${moduleId}`)
+  async getModuleById(moduleId, userId = null) {
+    const data = await api.get(`/modules/${moduleId}`, {
+      params: userId ? { user_id: userId } : {},
+    })
     return data
   },
 

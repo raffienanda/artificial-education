@@ -406,6 +406,7 @@ def submit_answer(
         reward_xp=xp_delta,
         new_mastery=learning_update["new_mastery"],
         q_value=learning_update["q_value"],
+        updated_q_values=learning_update.get("updated_q_values", {}),
         learning_state=learning_update["state"],
         next_learning_state=learning_update["next_state"],
         user=user,

@@ -167,6 +167,7 @@ export const useQuizStore = defineStore('quiz', () => {
         explanation: result.explanation,
         rewardXp: result.reward_xp,
         qValue: result.q_value,
+        updatedQValues: result.updated_q_values || {},
         learningState: result.learning_state,
         nextLearningState: result.next_learning_state,
         action: submittedAction,

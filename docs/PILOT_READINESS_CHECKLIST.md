@@ -6,23 +6,23 @@ Dokumen ini dipakai sebagai pegangan sebelum aplikasi dipakai demo ke dosen atau
 
 Yang sudah berjalan:
 
+- neural gkt bootstrap untuk adaptasi level topik/modul.
 - q-learning untuk adaptasi level subtopik.
 - update q-value memakai persamaan bellman setiap mahasiswa menjawab pre test, quiz, drill, atau post test.
 - state q-learning memakai mastery, riwayat gagal terbaru, dan cognitive profile.
-- graph prasyarat untuk membuka atau mengunci modul berikutnya.
-- neural gkt trainable awal untuk memprediksi state penguasaan modul dari pre test dan graph prasyarat.
+- neural gkt trainable untuk memprediksi state penguasaan modul dari pre test, quiz, post test, data seed, data sintetis, dan graph prasyarat.
 - pre test menjadi initial assessment pada awal modul.
 - post test menjadi evaluasi akhir modul.
 
 Yang belum boleh diklaim penuh:
 
-- neural gkt sudah bisa dilatih, tetapi model saat ini masih bootstrap karena data nyata masih sedikit.
-- hasil training awal masih memakai campuran data nyata dan data sintetis.
+- neural gkt sudah aktif, tetapi model saat ini masih bootstrap karena data nyata masih sedikit.
+- hasil training awal memakai campuran data seed, data nyata, dan data sintetis.
 - neural gkt baru layak diklaim tervalidasi penuh setelah ada data interaksi mahasiswa nyata yang cukup untuk training dan evaluasi.
 
 Kalimat aman untuk demo:
 
-> untuk saat ini q-learning sudah berjalan sebagai machine learning utama pada learning path subtopik. untuk level modul, saya sudah menambahkan neural gkt trainable awal yang memakai pre test sebagai initial state dan graph prasyarat sebagai struktur hubungan antar modul. karena data mahasiswa nyata masih sedikit, model ini masih tahap bootstrap dan perlu divalidasi lagi setelah uji coba kelas.
+> untuk saat ini neural gkt sudah berjalan pada level topik/modul dengan data seed, data sintetis, dan hasil pre test, quiz, serta post test sebagai data training awal. q-learning tetap dipakai pada level subtopik untuk memilih strategi belajar dan memperbarui q-value dengan persamaan bellman. karena data mahasiswa nyata masih sedikit, neural gkt ini masih tahap bootstrap dan perlu divalidasi lagi setelah uji coba kelas.
 
 ## training neural gkt
 
@@ -43,14 +43,15 @@ Hasil training terakhir:
 
 | metrik | nilai |
 | --- | ---: |
-| trained samples | 731 |
-| real samples | 11 |
+| trained samples | 761 |
+| seed samples | 9 |
+| real samples | 32 |
 | synthetic samples | 720 |
-| MAE | 0.1218 |
-| RMSE | 0.1450 |
-| accuracy at 60% threshold | 0.8331 |
+| MAE | 0.1216 |
+| RMSE | 0.1480 |
+| accuracy at 60% threshold | 0.8292 |
 
-Catatan: angka ini cocok untuk demo teknis awal, tetapi belum boleh dianggap hasil penelitian final karena data nyata baru 11 sample.
+Catatan: angka ini cocok untuk demo teknis awal, tetapi belum boleh dianggap hasil penelitian final karena data nyata masih sedikit.
 
 ## hasil smoke test terakhir
 

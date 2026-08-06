@@ -101,6 +101,95 @@
             </div>
           </div>
 
+          <div
+            v-if="moduleDiagnosis?.available"
+            class="mt-5 rounded-2xl border border-sky-100 bg-sky-50/80 p-4 dark:border-sky-900/40 dark:bg-sky-950/20"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-bold uppercase text-sky-600 dark:text-sky-300">Learning Diagnosis Report</p>
+                <h3 class="mt-1 text-lg font-black capitalize text-gray-900 dark:text-white">
+                  {{ moduleDiagnosis.category }}
+                </h3>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-right text-xs">
+                <div class="rounded-xl bg-white px-3 py-2 shadow-sm dark:bg-gray-800">
+                  <p class="font-bold text-gray-400">Effort</p>
+                  <p class="font-black capitalize text-gray-800 dark:text-gray-100">{{ moduleDiagnosis.effort_level }}</p>
+                </div>
+                <div class="rounded-xl bg-white px-3 py-2 shadow-sm dark:bg-gray-800">
+                  <p class="font-bold text-gray-400">Hasil</p>
+                  <p class="font-black capitalize text-gray-800 dark:text-gray-100">{{ moduleDiagnosis.outcome_level }}</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="mt-3 text-sm font-semibold leading-relaxed text-gray-700 dark:text-gray-200">
+              {{ moduleDiagnosis.summary }}
+            </p>
+            <p
+              v-if="moduleDiagnosis.personal_pattern"
+              class="mt-2 rounded-xl bg-white px-3 py-2 text-sm font-semibold leading-relaxed text-sky-800 shadow-sm dark:bg-gray-800 dark:text-sky-200"
+            >
+              {{ moduleDiagnosis.personal_pattern }}
+            </p>
+
+            <div class="mt-4 grid gap-2 sm:grid-cols-3">
+              <div class="rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800">
+                <p class="font-bold uppercase text-gray-400">Post Test</p>
+                <p class="mt-1 text-lg font-black text-gray-900 dark:text-white">{{ formatPercent(moduleDiagnosis.post_test_score) }}</p>
+              </div>
+              <div class="rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800">
+                <p class="font-bold uppercase text-gray-400">Quiz Rata-rata</p>
+                <p class="mt-1 text-lg font-black text-gray-900 dark:text-white">{{ formatPercent(moduleDiagnosis.quiz_average) }}</p>
+              </div>
+              <div class="rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800">
+                <p class="font-bold uppercase text-gray-400">Profil Kognitif</p>
+                <p class="mt-1 text-lg font-black capitalize text-gray-900 dark:text-white">{{ moduleDiagnosis.cognitive_stage }}</p>
+              </div>
+            </div>
+
+            <div v-if="moduleDiagnosis.weak_subtopics?.length" class="mt-4">
+              <p class="text-xs font-bold uppercase text-gray-500">Materi prioritas</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span
+                  v-for="item in moduleDiagnosis.weak_subtopics"
+                  :key="item.id"
+                  class="rounded-lg bg-white px-3 py-1 text-xs font-bold text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+                >
+                  {{ item.title }} · {{ formatPercent(item.mastery) }}
+                </span>
+              </div>
+            </div>
+
+            <div v-if="qActionScoreItems.length" class="mt-4">
+              <p class="text-xs font-bold uppercase text-gray-500">Q-value strategi belajar</p>
+              <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                <div
+                  v-for="item in qActionScoreItems"
+                  :key="item.action"
+                  class="flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800"
+                >
+                  <span class="font-bold text-gray-600 dark:text-gray-200">{{ labelForAction(item.action) }}</span>
+                  <span class="font-black tabular-nums text-sky-700 dark:text-sky-300">{{ formatNumber(item.value) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <p class="text-xs font-bold uppercase text-gray-500">Saran personal</p>
+              <ul class="mt-2 space-y-2">
+                <li
+                  v-for="item in personalDiagnosisItems"
+                  :key="item"
+                  class="rounded-xl bg-white px-3 py-2 text-sm font-semibold leading-relaxed text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+                >
+                  {{ item }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <div class="mt-6 flex flex-wrap justify-center gap-3">
             <button
               class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-black text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -185,6 +274,51 @@
           <p class="mt-1 text-sm leading-relaxed text-gray-700">{{ submissionResult.explanation }}</p>
         </div>
 
+        <div
+          v-if="isSubmitted"
+          class="mt-3 rounded-2xl border border-sky-100 bg-sky-50/80 p-4 dark:border-sky-900/40 dark:bg-sky-950/20"
+        >
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-xs font-bold uppercase text-sky-600 dark:text-sky-300">Q-Value Update</p>
+              <p class="mt-1 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                Nilai adaptasi setelah jawaban ini dipakai untuk rekomendasi berikutnya.
+              </p>
+            </div>
+            <div class="rounded-xl bg-white px-3 py-2 text-right shadow-sm dark:bg-gray-800">
+              <p class="text-[11px] font-bold uppercase text-gray-400">Action utama</p>
+              <p class="text-sm font-black text-gray-900 dark:text-white">
+                {{ submissionResult.action }} = {{ formatNumber(submissionResult.qValue) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-3 grid gap-2 sm:grid-cols-2">
+            <div class="rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800">
+              <p class="font-bold uppercase text-gray-400">State Awal</p>
+              <p class="mt-1 font-black text-gray-900 dark:text-white">{{ submissionResult.learningState || '-' }}</p>
+            </div>
+            <div class="rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800">
+              <p class="font-bold uppercase text-gray-400">State Berikutnya</p>
+              <p class="mt-1 font-black text-gray-900 dark:text-white">{{ submissionResult.nextLearningState || '-' }}</p>
+            </div>
+          </div>
+
+          <div v-if="updatedQValueItems.length" class="mt-3">
+            <p class="text-xs font-bold uppercase text-gray-500">Action yang ikut ter-update</p>
+            <div class="mt-2 grid gap-2 sm:grid-cols-2">
+              <div
+                v-for="item in updatedQValueItems"
+                :key="item.action"
+                class="flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 text-xs shadow-sm dark:bg-gray-800"
+              >
+                <span class="font-bold text-gray-600 dark:text-gray-200">{{ labelForAction(item.action) }}</span>
+                <span class="font-black tabular-nums text-sky-700 dark:text-sky-300">{{ formatNumber(item.value) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="mt-auto flex justify-end pt-6">
           <button
             v-if="isSubmitted"
@@ -234,6 +368,23 @@ const assessmentType = computed(() => route.params.type)
 const subtopicId = computed(() => route.query.subtopic_id || null)
 const moduleTitle = computed(() => modulesStore.activeModule?.title || 'Asesmen Modul')
 const passThreshold = 60
+const moduleDiagnosis = computed(() => progressStore.moduleDiagnoses[moduleId.value] || null)
+const personalDiagnosisItems = computed(() =>
+  moduleDiagnosis.value?.personal_recommendations?.length
+    ? moduleDiagnosis.value.personal_recommendations
+    : moduleDiagnosis.value?.recommendations || []
+)
+const updatedQValueItems = computed(() =>
+  Object.entries(submissionResult.value?.updatedQValues || {}).map(([action, value]) => ({
+    action,
+    value,
+  }))
+)
+const qActionScoreItems = computed(() =>
+  Object.entries(moduleDiagnosis.value?.q_action_scores || {})
+    .map(([action, value]) => ({ action, value }))
+    .sort((a, b) => Number(b.value || 0) - Number(a.value || 0))
+)
 const moduleSubtopics = computed(() => modulesStore.activeModule?.subtopics || [])
 const moduleSubtopicMasteries = computed(() => {
   return moduleSubtopics.value.map((subtopic) => {
@@ -269,6 +420,32 @@ const reportMessage = computed(() => {
 
   return `Penguasaan modul masih di bawah threshold ${passThreshold}%, jadi sistem menyarankan review materi sebelum lanjut.`
 })
+
+function formatPercent(value) {
+  const numericValue = Number(value || 0)
+  return `${Math.round(numericValue)}%`
+}
+
+function formatNumber(value) {
+  const numericValue = Number(value)
+  if (Number.isNaN(numericValue)) return '0.00'
+  return numericValue.toFixed(2)
+}
+
+function labelForAction(action) {
+  const labels = {
+    show_text: 'Ringkasan',
+    show_video: 'Video',
+    easy_quiz: 'Latihan ringan',
+    hard_quiz: 'Tantangan',
+    review_previous: 'Review',
+    pre_test: 'Pre test',
+    quiz: 'Quiz',
+    drill: 'Drill',
+    post_test: 'Post test',
+  }
+  return labels[action] || action
+}
 
 const assessmentLabel = computed(() => {
   const labels = {
@@ -436,6 +613,9 @@ watch(
     if (finished) {
       // Refresh progress data so computed properties (like moduleMastery) update
       await progressStore.fetchAll()
+      if (assessmentType.value === 'post_test') {
+        await progressStore.fetchModuleDiagnosis(moduleId.value)
+      }
     }
   }
 )

@@ -36,25 +36,75 @@ def build_prerequisites(db) -> dict[str, list[dict]]:
 
 def fetch_real_samples(db) -> list[dict]:
     attempts = db.query(AssessmentAttempt).filter(
-        AssessmentAttempt.assessment_type.in_(["pre_test", "post_test"]),
+        AssessmentAttempt.assessment_type.in_(["pre_test", "quiz", "post_test"]),
         AssessmentAttempt.finished_at.isnot(None),
     ).all()
 
-    grouped: dict[tuple[int, str], dict[str, float]] = defaultdict(dict)
+    grouped: dict[tuple[int, str], dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     for attempt in attempts:
-        grouped[(attempt.user_id, attempt.module_id)][attempt.assessment_type] = (attempt.percentage or 0.0) / 100.0
+        grouped[(attempt.user_id, attempt.module_id)][attempt.assessment_type].append((attempt.percentage or 0.0) / 100.0)
 
     samples = []
     for (user_id, module_id), scores in grouped.items():
-        if "pre_test" not in scores or "post_test" not in scores:
+        if "pre_test" not in scores:
             continue
+        pre_score = sum(scores["pre_test"]) / len(scores["pre_test"])
+        quiz_score = (
+            sum(scores["quiz"]) / len(scores["quiz"])
+            if scores.get("quiz")
+            else None
+        )
+        post_score = (
+            sum(scores["post_test"]) / len(scores["post_test"])
+            if scores.get("post_test")
+            else None
+        )
+
+        if post_score is None and quiz_score is None:
+            continue
+
+        if post_score is not None and quiz_score is not None:
+            target = (post_score * 0.65) + (quiz_score * 0.35)
+        else:
+            target = post_score if post_score is not None else quiz_score
+
         samples.append({
             "user_id": user_id,
             "module_id": module_id,
-            "initial": scores["pre_test"],
-            "target": scores["post_test"],
+            "initial": pre_score,
+            "target": target,
             "source": "real",
         })
+    return samples
+
+
+def build_seed_samples(node_ids: list[str], prerequisites: dict[str, list[dict]]) -> list[dict]:
+    samples = []
+    patterns = [
+        ("seed-low", 0.25, 0.35),
+        ("seed-medium", 0.55, 0.68),
+        ("seed-high", 0.82, 0.9),
+    ]
+
+    for pattern_name, initial_base, target_base in patterns:
+        previous_target = target_base
+        for index, node_id in enumerate(node_ids):
+            prereq_ids = [
+                prerequisite["id"] if isinstance(prerequisite, dict) else prerequisite
+                for prerequisite in prerequisites.get(node_id, [])
+            ]
+            prerequisite_signal = previous_target if prereq_ids else target_base
+            initial = min(1.0, max(0.0, initial_base - (index * 0.04) + (prerequisite_signal * 0.08)))
+            target = min(1.0, max(0.0, (target_base * 0.72) + (prerequisite_signal * 0.28) - (index * 0.03)))
+            samples.append({
+                "user_id": f"{pattern_name}-{index}",
+                "module_id": node_id,
+                "initial": initial,
+                "target": target,
+                "source": "seed",
+            })
+            previous_target = target
+
     return samples
 
 
@@ -175,6 +225,7 @@ def train_model(
         "mae": round(absolute_error / total, 4),
         "rmse": round((squared_error / total) ** 0.5, 4),
         "accuracy_at_60": round(correct / total, 4),
+        "seed_samples": sum(1 for item in samples if item["source"] == "seed"),
         "real_samples": sum(1 for item in samples if item["source"] == "real"),
         "synthetic_samples": sum(1 for item in samples if item["source"] == "synthetic"),
     }
@@ -183,7 +234,7 @@ def train_model(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train lightweight Neural GKT model from assessment data.")
-    parser.add_argument("--min-real-samples", type=int, default=30)
+    parser.add_argument("--synthetic-count", type=int, default=240)
     parser.add_argument("--epochs", type=int, default=600)
     parser.add_argument("--learning-rate", type=float, default=0.04)
     parser.add_argument("--no-synthetic", action="store_true")
@@ -194,10 +245,16 @@ def main() -> None:
         modules = db.query(Module).order_by(Module.order).all()
         node_ids = [module.id for module in modules]
         prerequisites = build_prerequisites(db)
-        samples = fetch_real_samples(db)
+        samples = build_seed_samples(node_ids=node_ids, prerequisites=prerequisites)
+        real_samples = fetch_real_samples(db)
+        samples.extend(real_samples)
 
-        if len(samples) < args.min_real_samples and not args.no_synthetic:
-            samples.extend(build_synthetic_samples(node_ids=node_ids, prerequisites=prerequisites))
+        if not args.no_synthetic:
+            samples.extend(build_synthetic_samples(
+                node_ids=node_ids,
+                prerequisites=prerequisites,
+                count=args.synthetic_count,
+            ))
 
         if not samples:
             raise SystemExit("Tidak ada sample training. Jalankan pre/post test dulu atau hapus --no-synthetic.")

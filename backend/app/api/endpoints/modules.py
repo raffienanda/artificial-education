@@ -50,7 +50,10 @@ def _module_unlocked(module: Module, db: Session, user_id: int, prereq_graph: di
             if module_by_id.get(prereq["id"])
         )
 
-    previous_module = db.query(Module).filter(Module.order == (module.order or 1) - 1).first()
+    previous_module = db.query(Module).filter(
+        Module.course_id == module.course_id,
+        Module.order == (module.order or 1) - 1,
+    ).first()
     return bool(previous_module and _module_passed(
         module=previous_module,
         mastery_by_topic=mastery_by_topic,
@@ -144,6 +147,12 @@ def _enrich_module_with_user_progress(module: Module, db: Session, user_id: int,
     # Always unlock the first module (order 1)
     if module.order == 1:
         is_unlocked = True
+    elif not module_prereqs:
+        previous_module = db.query(Module).filter(
+            Module.course_id == module.course_id,
+            Module.order == (module.order or 1) - 1,
+        ).first()
+        is_unlocked = bool(previous_module and module_passed_status.get(previous_module.id, False))
         
     # 3. Populate subtopics and their completed status
     subtopics_completed = 0
@@ -179,16 +188,42 @@ def get_current_course(db: Session = Depends(get_db)):
     course = db.query(Course).order_by(Course.id).first()
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
-    return course
+    return {
+        "id": course.id,
+        "title": course.title,
+        "description": course.description,
+        "icon": course.icon,
+        "module_count": db.query(Module).filter(Module.course_id == course.id).count(),
+    }
+
+@router.get("/courses", response_model=List[CourseResponse])
+def get_courses(db: Session = Depends(get_db)):
+    courses = db.query(Course).order_by(Course.id).all()
+    if not courses:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return [
+        {
+            "id": course.id,
+            "title": course.title,
+            "description": course.description,
+            "icon": course.icon,
+            "module_count": db.query(Module).filter(Module.course_id == course.id).count(),
+        }
+        for course in courses
+    ]
 
 @router.get("/", response_model=List[ModuleResponse])
 def get_modules(
+    course_id: str | None = None,
     user_id: int = 1,
     db: Session = Depends(get_db),
     current_user: User | None = Depends(get_optional_current_user),
 ):
     user_id = current_user.id if current_user else user_id
-    modules = db.query(Module).order_by(Module.order).all()
+    query = db.query(Module)
+    if course_id:
+        query = query.filter(Module.course_id == course_id)
+    modules = query.order_by(Module.order).all()
     prereq_graph = build_prerequisite_graph(db)
     
     response = []

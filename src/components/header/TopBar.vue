@@ -3,6 +3,7 @@
     <!-- Left: Hamburger & Breadcrumb -->
     <div class="flex items-center gap-4">
       <button
+        v-if="showLearningSidebar"
         class="xl:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
         @click="uiStore.toggleMobileSidebar()"
       >
@@ -88,6 +89,7 @@
  * TopBar — Main application header with search, stats, and profile dropdown
  */
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
 import { useModulesStore } from '@/stores/modules'
@@ -98,9 +100,14 @@ import UserProfileDropdown from './UserProfileDropdown.vue'
 const uiStore = useUiStore()
 const userStore = useUserStore()
 const modulesStore = useModulesStore()
+const route = useRoute()
 
 const profile = computed(() => userStore.profile)
 const activeModule = computed(() => modulesStore.activeModule)
+const showLearningSidebar = computed(() => (
+  route.name === 'Assessment' ||
+  (route.name === 'Dashboard' && Boolean(activeModule.value))
+))
 
 const breadcrumbItems = computed(() => {
   const items = [

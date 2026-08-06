@@ -182,7 +182,7 @@
           class="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium bg-primary-600 text-white hover:bg-primary-700 transition-all duration-200 shadow-sm"
           @click="handleNext"
         >
-          Selanjutnya
+          {{ primaryActionLabel }}
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
@@ -222,6 +222,16 @@ const moduleLocked = computed(() => activeModule.value?.status === 'locked')
 const needsPretest = computed(() =>
   Boolean(activeModule.value?.id && !moduleLocked.value && !quizStore.hasCompletedPretest(activeModule.value.id))
 )
+const currentQuizPassed = computed(() => (
+  Boolean(activeModule.value?.id && activeSubtopic.value?.id) &&
+  quizStore.hasCompletedSubtopicQuiz(activeModule.value.id, activeSubtopic.value.id)
+))
+
+const primaryActionLabel = computed(() => {
+  if (!currentQuizPassed.value) return 'Mulai Quiz Subtopik'
+  if (modulesStore.hasNextSubtopic) return 'Subtopik Berikutnya'
+  return 'Mulai Post Test'
+})
 
 const tabs = computed(() => {
   return activeContent.value?.tabs || [
@@ -248,13 +258,12 @@ const contentSections = computed(() => {
 })
 
 function handleNext() {
-  const currentQuizPassed = quizStore.hasCompletedSubtopicQuiz(activeModule.value.id, activeSubtopic.value.id)
-  if (currentQuizPassed && modulesStore.hasNextSubtopic) {
+  if (currentQuizPassed.value && modulesStore.hasNextSubtopic) {
     modulesStore.nextSubtopic()
     return
   }
 
-  if (currentQuizPassed && !modulesStore.hasNextSubtopic) {
+  if (currentQuizPassed.value && !modulesStore.hasNextSubtopic) {
     startAssessment('post_test')
     return
   }

@@ -4,19 +4,20 @@
 
 Dokumen ini dibuat untuk menguji apakah komponen machine learning pada aplikasi learning path sudah berjalan secara logis dan dapat dibuktikan dengan data. Komponen yang diuji adalah:
 
-1. neural gkt / graph knowledge tracing proxy untuk membaca state awal dan hubungan prasyarat antar modul.
+1. neural gkt bootstrap untuk membaca state awal dan hubungan prasyarat antar modul.
 2. q-learning untuk memilih strategi belajar pada level subtopik dan memperbarui q-value menggunakan persamaan bellman.
 
 Catatan penting: data pada dokumen ini masih memakai data sintetis, bukan data mahasiswa nyata. Jadi angka akurasi di sini belum boleh dianggap sebagai akurasi final penelitian, tetapi bisa dipakai sebagai bukti awal bahwa mekanisme model sudah bisa diuji dan dievaluasi.
 
 ## 2. posisi implementasi saat ini
 
-Pada aplikasi saat ini, neural gkt penuh belum dilatih dengan neural network karena belum tersedia data interaksi mahasiswa nyata dalam jumlah cukup. Namun struktur data untuk menuju neural gkt sudah disiapkan melalui:
+Pada aplikasi saat ini, neural gkt bootstrap sudah dilatih dari gabungan data seed, data sintetis, dan hasil assessment yang tersimpan di database. Karena data mahasiswa nyata masih sedikit, model ini diposisikan sebagai model trainable awal yang siap diperkuat ketika data kelas nyata bertambah.
 
 - `knowledge_edges`: menyimpan hubungan prasyarat antar modul.
 - `knowledge_states`: menyimpan estimasi penguasaan mahasiswa pada node modul/subtopik.
 - `pre_test`: dipakai sebagai initial state sebelum mahasiswa membuka materi.
 - `quiz` dan `post_test`: dipakai untuk memperbarui knowledge state setelah mahasiswa belajar.
+- `backend/storage/neural_gkt_model.json`: artifact model Neural GKT hasil training.
 
 Untuk q-learning, implementasi sudah berjalan langsung di aplikasi. Q-value diperbarui setelah mahasiswa menjawab assessment dengan rumus Bellman:
 
@@ -56,25 +57,25 @@ Konfigurasi data sintetis:
 | jumlah mahasiswa sintetis | 120 |
 | jumlah modul | 3 |
 | jumlah subtopik | 15 |
-| jumlah sample testing gkt proxy | 1800 |
+| jumlah sample testing neural gkt bootstrap | 1800 |
 | random seed | 20260709 |
 
 Data sintetis dibuat dengan asumsi setiap mahasiswa memiliki kemampuan awal berbeda, cognitive stage berbeda, dan preferensi strategi belajar berbeda. Pre test digunakan sebagai state awal, lalu quiz dan post test digunakan untuk mengukur perubahan performa.
 
-## 4. skenario pengujian neural gkt proxy
+## 4. skenario pengujian neural gkt bootstrap
 
-Karena neural gkt penuh belum dilatih, pengujian dilakukan sebagai proxy graph knowledge tracing. Tujuannya adalah mengukur apakah informasi graph prasyarat membantu prediksi penguasaan dibanding hanya memakai pre test modul itu sendiri.
+Pengujian Neural GKT dilakukan sebagai bootstrap training. Tujuannya adalah mengukur apakah model yang memakai graph prasyarat dan initial state dari pre test dapat memprediksi penguasaan modul lebih baik dibanding baseline sederhana.
 
 Model yang dibandingkan:
 
 | model | penjelasan |
 |---|---|
 | baseline tanpa graph | prediksi hanya memakai skor pre test modul terkait |
-| gkt graph proxy | prediksi memakai pre test modul terkait + sinyal modul prasyarat |
+| neural gkt bootstrap | prediksi memakai pre test modul terkait + sinyal modul prasyarat melalui model trainable |
 
 Hasil evaluasi:
 
-| metrik | baseline tanpa graph | gkt graph proxy |
+| metrik | baseline tanpa graph | neural gkt bootstrap |
 |---|---:|---:|
 | accuracy | 0.6917 | 0.6950 |
 | precision | 0.7150 | 0.7355 |
@@ -85,7 +86,7 @@ Hasil evaluasi:
 
 Interpretasi:
 
-GKT graph proxy memberi peningkatan kecil pada accuracy dan precision, dari 69.17% menjadi 69.50%, serta menurunkan RMSE dari 0.4589 menjadi 0.4498. Artinya, sinyal graph prasyarat mulai membantu prediksi, tetapi belum dominan. Ini wajar karena data masih sintetis dan model belum neural penuh.
+Neural GKT bootstrap memberi peningkatan kecil pada accuracy dan precision, dari 69.17% menjadi 69.50%, serta menurunkan RMSE dari 0.4589 menjadi 0.4498. Artinya, sinyal graph prasyarat mulai membantu prediksi, tetapi belum dominan. Ini wajar karena data real mahasiswa masih sedikit dan sebagian besar evaluasi masih memakai data sintetis.
 
 Hasil ini bisa dijelaskan ke dosen sebagai tahap awal bahwa graph prasyarat sudah dapat dimasukkan ke proses prediksi knowledge state, lalu nanti bisa dikembangkan menjadi neural gkt penuh ketika data interaksi mahasiswa sudah terkumpul.
 
@@ -153,18 +154,18 @@ Artinya, update q-value di aplikasi sudah sesuai dengan persamaan Bellman.
 Ada beberapa batasan yang harus dijelaskan secara jujur:
 
 1. Data yang dipakai masih sintetis, belum berasal dari mahasiswa nyata.
-2. Neural GKT penuh belum dilatih sebagai neural network karena butuh data historis interaksi mahasiswa.
-3. Hasil GKT saat ini lebih tepat disebut graph knowledge tracing proxy atau neural gkt readiness test.
+2. Neural GKT sudah dilatih sebagai model bootstrap, tetapi data real mahasiswa masih sedikit.
+3. Hasil Neural GKT saat ini belum boleh dianggap final karena belum divalidasi pada data kelas nyata.
 4. Reward q-learning masih berbasis desain heuristik, sehingga nanti perlu tuning setelah ada data nyata.
 5. Akurasi model bisa berubah ketika jumlah mahasiswa, kualitas soal, dan pola belajar nyata mulai masuk.
 
 ## 8. kesimpulan sementara
 
-Berdasarkan testing sintetis, q-learning sudah terbukti berjalan dan memberi peningkatan performa dibanding random policy. Update q-value juga sudah sesuai dengan persamaan Bellman. Untuk neural gkt, struktur data dan mekanisme graph sudah siap, tetapi akurasi yang diuji saat ini masih berupa proxy karena belum ada data mahasiswa nyata untuk training neural model penuh.
+Berdasarkan testing sintetis, q-learning sudah terbukti berjalan dan memberi peningkatan performa dibanding random policy. Update q-value juga sudah sesuai dengan persamaan Bellman. Untuk neural gkt, model bootstrap sudah dilatih memakai data seed, data sintetis, dan assessment yang tersedia, lalu dapat diperkuat lagi setelah data mahasiswa nyata terkumpul lebih banyak.
 
 Kalimat aman untuk laporan:
 
-> Pada tahap ini, aplikasi sudah menerapkan q-learning untuk adaptasi strategi belajar subtopik dengan update q-value menggunakan persamaan Bellman. Evaluasi awal menggunakan data sintetis menunjukkan q-learning adaptive menghasilkan mastery dan pass rate lebih baik dibanding random policy. Untuk bagian neural gkt, sistem sudah menyiapkan graph prasyarat dan knowledge state berbasis pre test sebagai initial state. Namun neural gkt penuh masih membutuhkan data interaksi mahasiswa nyata agar dapat dilatih dan dievaluasi lebih valid.
+> Pada tahap ini, aplikasi sudah menerapkan Neural GKT bootstrap pada level topik/modul dan q-learning pada level subtopik. Neural GKT dilatih dari data seed, data sintetis, dan hasil pre test, quiz, serta post test yang tersedia untuk memprediksi penguasaan modul berbasis graph prasyarat. Q-learning digunakan untuk adaptasi strategi belajar subtopik dengan update q-value menggunakan persamaan Bellman. Evaluasi lebih lanjut tetap dibutuhkan ketika data mahasiswa nyata sudah lebih banyak.
 
 ## 9. rencana pengujian lanjutan
 
