@@ -7,10 +7,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+# Bagian lokasi file model neural GKT yang sudah dilatih.
 MODEL_PATH = Path(__file__).resolve().parents[2] / "storage" / "neural_gkt_model.json"
 
 
+# Bagian fungsi aktivasi untuk mengubah nilai mentah menjadi probabilitas mastery.
 def sigmoid(value: float) -> float:
+    # Sigmoid mengubah logit menjadi probabilitas mastery 0..1.
     if value < -60:
         return 0.0
     if value > 60:
@@ -18,6 +21,7 @@ def sigmoid(value: float) -> float:
     return 1.0 / (1.0 + math.exp(-value))
 
 
+# Bagian model neural GKT untuk level modul/topik.
 @dataclass
 class NeuralGKTModel:
     """
@@ -51,6 +55,7 @@ class NeuralGKTModel:
     def edge_key(self, source_node_id: str, target_node_id: str) -> str:
         return f"{source_node_id}->{target_node_id}"
 
+    # Bagian prediksi hidden state mastery tiap modul.
     def predict_states(
         self,
         initial_state: dict[str, float],
@@ -60,6 +65,8 @@ class NeuralGKTModel:
         if not self.node_ids:
             return {}
 
+        # Initial state berasal dari pre test atau rata-rata mastery modul.
+        # Setiap node merepresentasikan satu modul/topik pada graph GKT.
         states = {
             node_id: min(1.0, max(0.0, initial_state.get(node_id, 0.0)))
             for node_id in self.node_ids
@@ -72,6 +79,7 @@ class NeuralGKTModel:
                 for prerequisite in prerequisites.get(node_id, []):
                     source_id = prerequisite["id"] if isinstance(prerequisite, dict) else prerequisite
                     weight = self.edge_weight.get(self.edge_key(source_id, node_id), 1.0)
+                    # Message passing: mastery prasyarat ikut memengaruhi prediksi node tujuan.
                     messages.append(weight * states.get(source_id, initial_state.get(source_id, 0.0)))
 
                 prerequisite_message = sum(messages) / len(messages) if messages else 0.0
@@ -86,6 +94,7 @@ class NeuralGKTModel:
 
         return states
 
+    # Bagian evaluasi apakah mahasiswa boleh lanjut modul atau perlu review prasyarat.
     def evaluate_mastery(
         self,
         current_topic_id: str,
@@ -111,6 +120,7 @@ class NeuralGKTModel:
         )
 
         if weak_prerequisite:
+            # Jika prasyarat diprediksi lemah, learning path diarahkan mundur/review dulu.
             return {
                 "action": "back_trace",
                 "recommended_topic": weak_prerequisite,
@@ -118,6 +128,7 @@ class NeuralGKTModel:
                 "neural_state": states,
             }
 
+        # Jika semua prasyarat cukup kuat, mahasiswa boleh lanjut pada modul saat ini.
         return {
             "action": "continue",
             "recommended_topic": current_topic_id,
@@ -125,6 +136,7 @@ class NeuralGKTModel:
             "neural_state": states,
         }
 
+    # Bagian pencarian prasyarat terlemah pada graph modul.
     def _find_weakest_prerequisite(
         self,
         current_topic_id: str,
@@ -133,6 +145,7 @@ class NeuralGKTModel:
         mastery_threshold: float,
         visited: set[str],
     ) -> str | None:
+        # Traversal rekursif dipakai agar prasyarat bertingkat tetap dicek dari akar terlemah.
         if current_topic_id in visited:
             return None
 
@@ -154,6 +167,7 @@ class NeuralGKTModel:
 
         return None
 
+    # Bagian serialisasi model agar bisa disimpan ke file JSON.
     def to_dict(self) -> dict:
         return {
             "version": 1,
@@ -168,6 +182,7 @@ class NeuralGKTModel:
             "metrics": self.metrics,
         }
 
+    # Bagian load model dari data JSON yang sudah tersimpan.
     @classmethod
     def from_dict(cls, payload: dict) -> "NeuralGKTModel":
         return cls(
@@ -189,6 +204,7 @@ class NeuralGKTModel:
         path.write_text(json.dumps(self.to_dict(), indent=2), encoding="utf-8")
 
 
+# Bagian memuat model neural GKT dari storage saat backend berjalan.
 def load_neural_gkt_model(path: Path = MODEL_PATH) -> NeuralGKTModel | None:
     if not path.exists():
         return None

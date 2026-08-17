@@ -16,6 +16,27 @@ from typing import List
 
 router = APIRouter()
 
+MODULE_MASTERY_PASS_THRESHOLD = 60.0
+QUIZ_PASSED_MASTERY_FLOOR = 70.0
+POST_TEST_PASSED_MASTERY_FLOOR = 60.0
+POST_TEST_CORRECT_MASTERY_FLOOR = 70.0
+GAMIFICATION_XP_CORRECT = {
+    "pre_test": 5,
+    "drill": 5,
+    "quiz": 15,
+    "post_test": 25,
+}
+GAMIFICATION_POINTS_CORRECT = {
+    "pre_test": 1,
+    "drill": 2,
+    "quiz": 3,
+    "post_test": 5,
+}
+GAMIFICATION_COMPLETION_BONUS = {
+    "quiz": {"xp": 10, "points": 2},
+    "post_test": {"xp": 30, "points": 10},
+}
+
 
 def _get_question_module(db: Session, question: Question) -> Subtopic:
     subtopic = db.query(Subtopic).filter(Subtopic.id == question.subtopic_id).first()
@@ -127,32 +148,132 @@ def _upsert_knowledge_state(db: Session, user_id: int, node_id: str, node_type: 
     state.source = source
 
 
+def _sync_progress_status(progress: UserProgress) -> None:
+    progress.p_known = progress.mastery / 100.0
+    if progress.mastery >= 80.0:
+        progress.status = "proficient"
+    elif progress.mastery <= 30.0:
+        progress.status = "needs-review"
+    else:
+        progress.status = "learning"
+
+
+def _raise_mastery_floor(db: Session, user_id: int, subtopic_id: str, floor: float) -> float:
+    progress = db.query(UserProgress).filter(
+        UserProgress.user_id == user_id,
+        UserProgress.topic_id == subtopic_id,
+    ).first()
+    if not progress:
+        progress = UserProgress(user_id=user_id, topic_id=subtopic_id, mastery=0.0, status="learning")
+        db.add(progress)
+
+    progress.mastery = max(progress.mastery or 0.0, min(100.0, floor))
+    _sync_progress_status(progress)
+    return progress.mastery
+
+
+def _calibrate_finished_assessment_mastery(db: Session, user_id: int, attempt: AssessmentAttempt) -> dict[str, float]:
+    if not attempt.finished_at:
+        return {}
+
+    calibrated: dict[str, float] = {}
+    if attempt.assessment_type == "quiz" and attempt.subtopic_id and attempt.passed:
+        calibrated[attempt.subtopic_id] = _raise_mastery_floor(
+            db=db,
+            user_id=user_id,
+            subtopic_id=attempt.subtopic_id,
+            floor=QUIZ_PASSED_MASTERY_FLOOR,
+        )
+        return calibrated
+
+    if attempt.assessment_type != "post_test" or not attempt.passed:
+        return calibrated
+
+    answers = db.query(AssessmentAnswer).filter(AssessmentAnswer.attempt_id == attempt.id).all()
+    question_ids = [answer.question_id for answer in answers]
+    questions = db.query(Question).filter(Question.id.in_(question_ids)).all() if question_ids else []
+    question_by_id = {question.id: question for question in questions}
+    stats: dict[str, dict[str, int]] = {}
+    for answer in answers:
+        question = question_by_id.get(answer.question_id)
+        if not question:
+            continue
+        stat = stats.setdefault(question.subtopic_id, {"correct": 0, "total": 0})
+        stat["total"] += 1
+        if answer.is_correct:
+            stat["correct"] += 1
+
+    subtopics = db.query(Subtopic).filter(Subtopic.module_id == attempt.module_id).all()
+    for subtopic in subtopics:
+        stat = stats.get(subtopic.id)
+        local_score = (stat["correct"] / stat["total"] * 100.0) if stat and stat["total"] else (attempt.percentage or 0.0)
+        floor = POST_TEST_PASSED_MASTERY_FLOOR
+        if local_score >= 60.0:
+            floor = max(POST_TEST_CORRECT_MASTERY_FLOOR, attempt.percentage or 0.0)
+        calibrated[subtopic.id] = _raise_mastery_floor(
+            db=db,
+            user_id=user_id,
+            subtopic_id=subtopic.id,
+            floor=floor,
+        )
+
+    return calibrated
+
+
+def _calculate_gamification_reward(
+    assessment_type: str,
+    is_correct: bool,
+    combo: int,
+    attempt: AssessmentAttempt,
+) -> tuple[int, int]:
+    if not is_correct:
+        return 0, 0
+
+    xp = GAMIFICATION_XP_CORRECT.get(assessment_type, GAMIFICATION_XP_CORRECT["quiz"])
+    points = GAMIFICATION_POINTS_CORRECT.get(assessment_type, GAMIFICATION_POINTS_CORRECT["quiz"])
+
+    # Combo dibuat kecil agar leaderboard tidak naik terlalu cepat dari spam jawaban.
+    xp += min(combo, 3)
+
+    bonus = GAMIFICATION_COMPLETION_BONUS.get(assessment_type)
+    if bonus and attempt.finished_at and attempt.passed:
+        xp += bonus["xp"]
+        points += bonus["points"]
+
+    return xp, points
+
+
 def _module_passed(db: Session, user_id: int, module_id: str) -> bool:
     module = db.query(Module).filter(Module.id == module_id).first()
     if not module:
         return False
 
-    subtopic_ids = [subtopic.id for subtopic in module.subtopics]
-    if not subtopic_ids:
-        return False
-
-    post_test_done = db.query(AssessmentAttempt).filter(
+    latest_post_test = db.query(AssessmentAttempt).filter(
         AssessmentAttempt.user_id == user_id,
         AssessmentAttempt.module_id == module_id,
         AssessmentAttempt.assessment_type == "post_test",
         AssessmentAttempt.finished_at.isnot(None),
-        AssessmentAttempt.passed.is_(True),
-    ).first() is not None
-    if not post_test_done:
+    ).order_by(
+        AssessmentAttempt.finished_at.desc(),
+        AssessmentAttempt.id.desc(),
+    ).first()
+    if not latest_post_test or not latest_post_test.passed:
         return False
+
+    return _module_average_mastery(db=db, user_id=user_id, module=module) >= MODULE_MASTERY_PASS_THRESHOLD
+
+
+def _module_average_mastery(db: Session, user_id: int, module: Module) -> float:
+    subtopic_ids = [subtopic.id for subtopic in module.subtopics]
+    if not subtopic_ids:
+        return 0.0
 
     progress_rows = db.query(UserProgress).filter(
         UserProgress.user_id == user_id,
         UserProgress.topic_id.in_(subtopic_ids),
     ).all()
     progress_by_subtopic = {row.topic_id: row.mastery for row in progress_rows}
-    average_mastery = sum(progress_by_subtopic.get(subtopic_id, 0.0) for subtopic_id in subtopic_ids) / len(subtopic_ids)
-    return average_mastery >= 60.0
+    return sum(progress_by_subtopic.get(subtopic_id, 0.0) for subtopic_id in subtopic_ids) / len(subtopic_ids)
 
 
 def _module_unlocked(db: Session, user_id: int, module_id: str) -> bool:
@@ -196,6 +317,27 @@ def _passed_assessment(
     if assessment_type in ("quiz", "drill"):
         query = query.filter(AssessmentAttempt.subtopic_id == subtopic_id)
     return query.first() is not None
+
+
+def _latest_assessment_attempt(
+    db: Session,
+    user_id: int,
+    module_id: str,
+    assessment_type: str,
+    subtopic_id: str | None = None,
+) -> AssessmentAttempt | None:
+    query = db.query(AssessmentAttempt).filter(
+        AssessmentAttempt.user_id == user_id,
+        AssessmentAttempt.module_id == module_id,
+        AssessmentAttempt.assessment_type == assessment_type,
+        AssessmentAttempt.finished_at.isnot(None),
+    )
+    if assessment_type in ("quiz", "drill"):
+        query = query.filter(AssessmentAttempt.subtopic_id == subtopic_id)
+    return query.order_by(
+        AssessmentAttempt.finished_at.desc(),
+        AssessmentAttempt.id.desc(),
+    ).first()
 
 
 def _completed_previous_quizzes(db: Session, user_id: int, module_id: str, subtopic_id: str | None) -> bool:
@@ -244,13 +386,17 @@ def _ensure_assessment_unlocked(
     ):
         raise HTTPException(status_code=403, detail="Quiz subtopik ini sudah lulus dan tidak bisa diulang")
 
-    if assessment_type == "post_test" and _passed_assessment(
+    latest_post_test = _latest_assessment_attempt(
         db=db,
         user_id=user_id,
         module_id=module_id,
         assessment_type="post_test",
-    ):
-        raise HTTPException(status_code=403, detail="Post test modul ini sudah lulus dan tidak bisa diulang")
+    ) if assessment_type == "post_test" else None
+    if latest_post_test and latest_post_test.passed:
+        module = db.query(Module).filter(Module.id == module_id).first()
+        average_mastery = _module_average_mastery(db=db, user_id=user_id, module=module) if module else 0.0
+        if average_mastery >= MODULE_MASTERY_PASS_THRESHOLD:
+            raise HTTPException(status_code=403, detail="Post test modul ini sudah lulus dan tidak bisa diulang")
 
     if assessment_type == "quiz" and not _completed_previous_quizzes(
         db=db,
@@ -348,11 +494,10 @@ def submit_answer(
         user.longest_streak = max(user.longest_streak or 0, user.current_streak)
         user.last_study_date = today
     
-    # Track combo and score
+    # Track combo and correct answer count. XP/points dihitung setelah attempt tercatat.
     if is_correct:
         user.combo = (user.combo or 0) + 1
         user.total_score = (user.total_score or 0) + 1
-        user.reward_points = (user.reward_points or 0) + 10 + min(user.combo, 5)
     else:
         user.combo = 0
         
@@ -375,6 +520,17 @@ def submit_answer(
         attempt_accuracy=assessment_attempt.percentage,
         assessment_type=question.assessment_type or "quiz",
     )
+
+    calibrated_masteries = {}
+    if assessment_attempt.finished_at:
+        calibrated_masteries = _calibrate_finished_assessment_mastery(
+            db=db,
+            user_id=user.id,
+            attempt=assessment_attempt,
+        )
+        if question.subtopic_id in calibrated_masteries:
+            learning_update["new_mastery"] = calibrated_masteries[question.subtopic_id]
+
     _upsert_knowledge_state(
         db=db,
         user_id=user.id,
@@ -393,8 +549,15 @@ def submit_answer(
             source=assessment_attempt.assessment_type,
         )
 
-    xp_delta = max(0, int(learning_update["reward"]))
+    assessment_type = question.assessment_type or "quiz"
+    xp_delta, points_delta = _calculate_gamification_reward(
+        assessment_type=assessment_type,
+        is_correct=is_correct,
+        combo=user.combo or 0,
+        attempt=assessment_attempt,
+    )
     user.xp = (user.xp or 0) + xp_delta
+    user.reward_points = (user.reward_points or 0) + points_delta
 
     db.commit()
     db.refresh(user)

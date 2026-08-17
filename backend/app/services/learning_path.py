@@ -9,7 +9,9 @@ from app.models.learning_path import InteractionLog, QValue, TopicPrerequisite
 from app.models.module import Module, Subtopic
 from app.models.progress import UserProgress
 
+# Bagian policy profil kognitif untuk membatasi/mengarahkan action q-learning.
 COGNITIVE_ACTION_POLICY = {
+    # Profil kognitif membatasi urutan prioritas action agar rekomendasi lebih personal.
     "dualism": ("show_text", "easy_quiz", "show_video", "review_previous"),
     "multiplicity": ("show_video", "easy_quiz", "show_text", "hard_quiz"),
     "relativism": ("easy_quiz", "hard_quiz", "show_video", "show_text"),
@@ -24,6 +26,7 @@ COGNITIVE_STRATEGIES = {
 }
 
 
+# Bagian membaca profil kognitif mahasiswa dari database.
 def get_cognitive_stage(db: Session, user_id: int) -> str:
     profile = db.query(CognitiveProfile).filter(CognitiveProfile.user_id == user_id).first()
     if not profile:
@@ -41,16 +44,20 @@ def get_cognitive_stage(db: Session, user_id: int) -> str:
     return profile.dominant_stage or "unknown"
 
 
+# Bagian menggabungkan state q-learning dengan profil kognitif.
 def build_cognitive_state(base_state: str, cognitive_stage: str) -> str:
+    # State q-learning diperluas dengan profil kognitif, misalnya "medium:stable:dualism".
     if cognitive_stage == "unknown":
         return base_state
     return f"{base_state}:{cognitive_stage}"
 
 
+# Bagian menentukan action yang boleh dipakai sesuai profil kognitif.
 def get_allowed_actions_for_stage(cognitive_stage: str) -> tuple[str, ...]:
     return COGNITIVE_ACTION_POLICY.get(cognitive_stage, q_agent.ACTIONS)
 
 
+# Bagian teks strategi belajar berdasarkan profil kognitif.
 def get_strategy_for_stage(cognitive_stage: str) -> str:
     return COGNITIVE_STRATEGIES.get(
         cognitive_stage,
@@ -58,10 +65,12 @@ def get_strategy_for_stage(cognitive_stage: str) -> str:
     )
 
 
+# Bagian pengecekan apakah q-value sudah punya pengalaman belajar.
 def has_learned_action_values(q_values: dict[str, float], allowed_actions: tuple[str, ...]) -> bool:
     return any(abs(q_values.get(action, 0.0)) > 0.0001 for action in allowed_actions)
 
 
+# Bagian pengecekan apakah mahasiswa bisa direkomendasikan review subtopik sebelumnya.
 def can_review_previous_subtopic(db: Session, subtopic_id: str) -> bool:
     subtopic = db.query(Subtopic).filter(Subtopic.id == subtopic_id).first()
     if not subtopic:
@@ -74,7 +83,9 @@ def can_review_previous_subtopic(db: Session, subtopic_id: str) -> bool:
     return subtopic_id in subtopic_ids and subtopic_ids.index(subtopic_id) > 0
 
 
+# Bagian cold start sebelum q-learning punya q-value yang cukup.
 def select_cold_start_action(mastery: float, failures: int, cognitive_stage: str, can_review_previous: bool = True) -> str:
+    # Cold start dipakai sebelum q-value punya pengalaman yang cukup untuk memilih action.
     if failures >= 2:
         return "review_previous" if can_review_previous else "show_text"
 
@@ -94,6 +105,7 @@ def select_cold_start_action(mastery: float, failures: int, cognitive_stage: str
     return "hard_quiz"
 
 
+# Bagian mengambil atau membuat q-value di database.
 def get_or_create_q_value(
     db: Session,
     user_id: int,
@@ -101,6 +113,8 @@ def get_or_create_q_value(
     state: str,
     action: str,
 ) -> QValue:
+    # Q-value disimpan per mahasiswa, subtopik, state, dan action.
+    # Jadi pengalaman belajar tiap akun tidak bercampur dengan akun lain.
     q_value = db.query(QValue).filter(
         QValue.user_id == user_id,
         QValue.subtopic_id == subtopic_id,
@@ -123,6 +137,7 @@ def get_or_create_q_value(
     return q_value
 
 
+# Bagian mengambil q-value pada satu state tertentu.
 def get_q_values_for_state(db: Session, user_id: int, subtopic_id: str, state: str) -> dict[str, float]:
     rows = db.query(QValue).filter(
         QValue.user_id == user_id,
@@ -132,6 +147,7 @@ def get_q_values_for_state(db: Session, user_id: int, subtopic_id: str, state: s
     return {row.action: row.value for row in rows}
 
 
+# Bagian mengambil semua q-value subtopik untuk kebutuhan debug/demo.
 def get_q_values_for_subtopic(db: Session, user_id: int, subtopic_id: str) -> dict[str, dict[str, float]]:
     rows = db.query(QValue).filter(
         QValue.user_id == user_id,
@@ -144,6 +160,7 @@ def get_q_values_for_subtopic(db: Session, user_id: int, subtopic_id: str) -> di
     return grouped
 
 
+# Bagian membaca mastery subtopik mahasiswa.
 def get_progress_mastery(db: Session, user_id: int, topic_id: str) -> float:
     progress = db.query(UserProgress).filter(
         UserProgress.user_id == user_id,
@@ -152,6 +169,7 @@ def get_progress_mastery(db: Session, user_id: int, topic_id: str) -> float:
     return progress.mastery if progress else 0.0
 
 
+# Bagian menghitung kegagalan terbaru sebagai komponen state q-learning.
 def get_recent_failures(db: Session, user_id: int, subtopic_id: str) -> int:
     logs = db.query(InteractionLog).filter(
         InteractionLog.user_id == user_id,
@@ -166,6 +184,7 @@ def get_recent_failures(db: Session, user_id: int, subtopic_id: str) -> int:
     return failures
 
 
+# Bagian mengambil atau membuat progress mastery subtopik.
 def get_or_create_progress(db: Session, user_id: int, topic_id: str) -> UserProgress:
     progress = db.query(UserProgress).filter(
         UserProgress.user_id == user_id,
@@ -181,7 +200,10 @@ def get_or_create_progress(db: Session, user_id: int, topic_id: str) -> UserProg
     return progress
 
 
+# Bagian konfigurasi perubahan mastery per jenis assessment.
 MASTERY_DELTAS = {
+    # Delta ini menaikkan/menurunkan mastery subtopik setiap jawaban masuk.
+    # Nilai formal assessment dibuat lebih besar daripada drill karena bobotnya lebih penting.
     "pre_test": (8.0, -3.0),
     "quiz": (18.0, -8.0),
     "post_test": (20.0, -10.0),
@@ -189,6 +211,7 @@ MASTERY_DELTAS = {
 }
 
 
+# Bagian update mastery setelah jawaban mahasiswa masuk.
 def update_progress_from_answer(
     db: Session,
     user_id: int,
@@ -216,11 +239,14 @@ def update_progress_from_answer(
     return progress, mastery_before
 
 
+# Bagian menyusun urutan action belajar yang akan diberi kredit reward.
 def normalize_action_sequence(
     action_sequence: list[str] | None,
     selected_action: str,
     assessment_type: str,
 ) -> list[str]:
+    # Untuk quiz, sistem bisa memberi kredit ke beberapa action yang sempat dipakai
+    # sebelum menjawab soal, misalnya ringkasan lalu video lalu quiz.
     raw_actions = action_sequence or []
     if assessment_type != "quiz":
         raw_actions = [assessment_type]
@@ -238,7 +264,9 @@ def normalize_action_sequence(
     return actions or [selected_action or assessment_type]
 
 
+# Bagian pembagian kredit reward ke action yang dipakai sebelum quiz.
 def build_action_credits(actions: list[str]) -> dict[str, float]:
+    # Action terakhir mendapat kredit terbesar karena paling dekat dengan jawaban mahasiswa.
     credits: dict[str, float] = {}
     total = len(actions)
     for index, action in enumerate(actions):
@@ -253,6 +281,7 @@ def build_action_credits(actions: list[str]) -> dict[str, float]:
     return credits
 
 
+# Bagian utama update q-learning dan q-value.
 def record_q_learning_update(
     db: Session,
     user_id: int,
@@ -264,6 +293,11 @@ def record_q_learning_update(
     attempt_accuracy: float | None = None,
     assessment_type: str = "quiz",
 ) -> dict:
+    # Alur utama q-learning:
+    # 1. bentuk state dari mastery, kegagalan, dan profil kognitif
+    # 2. update mastery dari jawaban
+    # 3. hitung reward
+    # 4. update q-value tiap action dengan persamaan Bellman
     cognitive_stage = get_cognitive_stage(db=db, user_id=user_id)
     mastery_before = get_progress_mastery(db, user_id=user_id, topic_id=subtopic_id)
     failures_before = get_recent_failures(db, user_id=user_id, subtopic_id=subtopic_id)
@@ -289,6 +323,8 @@ def record_q_learning_update(
     )
     next_max_q = max(next_q_values.values(), default=0.0)
 
+    # Reward menjadi target update q-value. Reward naik jika jawaban benar,
+    # mastery meningkat, dan akurasi assessment melewati batas.
     reward = q_agent.calculate_reward(
         is_correct=is_correct,
         mastery_before=mastery_before,
@@ -318,6 +354,7 @@ def record_q_learning_update(
         )
         updated_q_values[action] = q_value.value
 
+        # InteractionLog menjadi bukti historis untuk debug, rapor, dan analisis model.
         db.add(InteractionLog(
             user_id=user_id,
             subtopic_id=subtopic_id,
@@ -340,7 +377,9 @@ def record_q_learning_update(
     }
 
 
+# Bagian menghitung mastery modul untuk GKT dari mastery subtopik.
 def build_topic_mastery(db: Session, user_id: int) -> dict[str, float]:
+    # GKT bekerja pada level modul, maka mastery modul dihitung dari rata-rata mastery subtopik.
     modules = db.query(Module).all()
     topic_mastery = {}
 
@@ -361,7 +400,10 @@ def build_topic_mastery(db: Session, user_id: int) -> dict[str, float]:
     return topic_mastery
 
 
+# Bagian membuat initial state neural GKT dari pre test atau mastery modul.
 def build_topic_initial_state(db: Session, user_id: int) -> dict[str, float]:
+    # Neural GKT memakai pre test sebagai initial state jika tersedia.
+    # Kalau belum ada pre test, sistem memakai mastery modul saat ini sebagai fallback.
     modules = db.query(Module).all()
     initial_state: dict[str, float] = {}
     topic_mastery = build_topic_mastery(db=db, user_id=user_id)
@@ -382,7 +424,9 @@ def build_topic_initial_state(db: Session, user_id: int) -> dict[str, float]:
     return initial_state
 
 
+# Bagian membangun graph prasyarat antar modul/topik.
 def build_prerequisite_graph(db: Session) -> dict[str, list[dict]]:
+    # Graph prasyarat menentukan hubungan antar modul/topik pada layer GKT.
     rows = db.query(TopicPrerequisite).all()
     graph: dict[str, list[dict]] = {}
 
@@ -405,7 +449,11 @@ def build_prerequisite_graph(db: Session) -> dict[str, list[dict]]:
     }
 
 
+# Bagian rekomendasi learning path: neural GKT untuk modul, q-learning untuk subtopik.
 def recommend_next_step(db: Session, user_id: int, current_module_id: str, current_subtopic_id: str) -> dict:
+    # Fungsi ini menggabungkan dua layer learning path:
+    # macro layer: neural GKT / graph fallback memilih modul yang layak dipelajari
+    # micro layer: q-learning memilih action belajar pada subtopik
     current_subtopic = db.query(Subtopic).filter(Subtopic.id == current_subtopic_id).first()
     if not current_subtopic:
         return {
@@ -420,12 +468,14 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
     prerequisite_graph = build_prerequisite_graph(db=db)
     neural_gkt = load_neural_gkt_model()
     if neural_gkt and neural_gkt.is_trained:
+        # Jika model neural sudah tersedia, prediksi mastery modul memakai message passing GKT.
         macro = neural_gkt.evaluate_mastery(
             current_topic_id=current_module_id,
             initial_state=build_topic_initial_state(db=db, user_id=user_id),
             prerequisites=prerequisite_graph,
         )
     else:
+        # Jika belum ada model training, sistem tetap berjalan memakai graph prasyarat deterministik.
         macro = gkt_model.evaluate_mastery(
             current_topic_id=current_module_id,
             topic_mastery=topic_mastery,
@@ -460,8 +510,10 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
     )
     allowed_actions = get_allowed_actions_for_stage(cognitive_stage)
     if has_learned_action_values(q_values=q_values, allowed_actions=allowed_actions):
+        # Setelah q-value terbentuk, action dipilih dari nilai tertinggi pada state saat ini.
         action = q_agent.select_action(q_values, allowed_actions=allowed_actions)
     else:
+        # Pada awal penggunaan, gunakan aturan cold start sampai data interaksi cukup.
         action = select_cold_start_action(
             mastery=mastery,
             failures=failures,

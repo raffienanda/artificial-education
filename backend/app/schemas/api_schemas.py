@@ -188,6 +188,14 @@ class LeaderboardEntry(BaseModel):
     current_streak: int = 0
 
 
+class LeaderboardPageResponse(BaseModel):
+    items: List[LeaderboardEntry]
+    page: int
+    limit: int
+    total: int
+    total_pages: int
+
+
 class RewardItem(BaseModel):
     id: str
     title: str

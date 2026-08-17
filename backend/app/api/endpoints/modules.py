@@ -12,13 +12,31 @@ from typing import List
 
 router = APIRouter()
 
+MODULE_MASTERY_PASS_THRESHOLD = 60.0
 
-def _module_passed(module: Module, mastery_by_topic: dict[str, float], completed_post_test_modules: set[str]) -> bool:
+
+def _latest_post_test_passed_by_module(db: Session, user_id: int) -> dict[str, bool]:
+    attempts = db.query(AssessmentAttempt).filter(
+        AssessmentAttempt.user_id == user_id,
+        AssessmentAttempt.assessment_type == "post_test",
+        AssessmentAttempt.finished_at.isnot(None),
+    ).order_by(
+        AssessmentAttempt.finished_at.desc(),
+        AssessmentAttempt.id.desc(),
+    ).all()
+    latest_status: dict[str, bool] = {}
+    for attempt in attempts:
+        if attempt.module_id not in latest_status:
+            latest_status[attempt.module_id] = bool(attempt.passed)
+    return latest_status
+
+
+def _module_passed(module: Module, mastery_by_topic: dict[str, float], latest_post_test_passed: dict[str, bool]) -> bool:
     sub_ids = [subtopic.id for subtopic in module.subtopics]
     if not sub_ids:
         return False
     average_mastery = sum(mastery_by_topic.get(sub_id, 0.0) for sub_id in sub_ids) / len(sub_ids)
-    return module.id in completed_post_test_modules and average_mastery >= 60.0
+    return bool(latest_post_test_passed.get(module.id)) and average_mastery >= MODULE_MASTERY_PASS_THRESHOLD
 
 
 def _module_unlocked(module: Module, db: Session, user_id: int, prereq_graph: dict) -> bool:
@@ -27,15 +45,7 @@ def _module_unlocked(module: Module, db: Session, user_id: int, prereq_graph: di
 
     all_progress = db.query(UserProgress).filter(UserProgress.user_id == user_id).all()
     mastery_by_topic = {progress.topic_id: progress.mastery for progress in all_progress}
-    completed_post_test_modules = {
-        row.module_id
-        for row in db.query(AssessmentAttempt).filter(
-            AssessmentAttempt.user_id == user_id,
-            AssessmentAttempt.assessment_type == "post_test",
-            AssessmentAttempt.finished_at.isnot(None),
-            AssessmentAttempt.passed.is_(True),
-        ).all()
-    }
+    latest_post_test_passed = _latest_post_test_passed_by_module(db=db, user_id=user_id)
     module_by_id = {item.id: item for item in db.query(Module).all()}
 
     prerequisites = prereq_graph.get(module.id, [])
@@ -44,7 +54,7 @@ def _module_unlocked(module: Module, db: Session, user_id: int, prereq_graph: di
             _module_passed(
                 module=module_by_id.get(prereq["id"]),
                 mastery_by_topic=mastery_by_topic,
-                completed_post_test_modules=completed_post_test_modules,
+                latest_post_test_passed=latest_post_test_passed,
             )
             for prereq in prerequisites
             if module_by_id.get(prereq["id"])
@@ -57,7 +67,7 @@ def _module_unlocked(module: Module, db: Session, user_id: int, prereq_graph: di
     return bool(previous_module and _module_passed(
         module=previous_module,
         mastery_by_topic=mastery_by_topic,
-        completed_post_test_modules=completed_post_test_modules,
+        latest_post_test_passed=latest_post_test_passed,
     ))
 
 
@@ -117,11 +127,7 @@ def _enrich_module_with_user_progress(module: Module, db: Session, user_id: int,
         for attempt in attempts
         if attempt.assessment_type == "quiz" and attempt.subtopic_id and attempt.passed
     }
-    completed_post_test_modules = {
-        attempt.module_id
-        for attempt in attempts
-        if attempt.assessment_type == "post_test" and attempt.passed
-    }
+    latest_post_test_passed = _latest_post_test_passed_by_module(db=db, user_id=user_id)
     
     # A module only counts as passed after post test activity and enough average mastery.
     all_modules = db.query(Module).all()
@@ -132,8 +138,8 @@ def _enrich_module_with_user_progress(module: Module, db: Session, user_id: int,
             module_passed_status[m.id] = False
             continue
         average_mastery = sum(mastery_by_topic.get(sid, 0.0) for sid in sub_ids) / len(sub_ids)
-        has_post_test = m.id in completed_post_test_modules
-        module_passed_status[m.id] = has_post_test and average_mastery >= 60.0
+        has_latest_post_test_passed = bool(latest_post_test_passed.get(m.id))
+        module_passed_status[m.id] = has_latest_post_test_passed and average_mastery >= MODULE_MASTERY_PASS_THRESHOLD
         
     # 2. Check if prerequisites are met
     is_unlocked = True

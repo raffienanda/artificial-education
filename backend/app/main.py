@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import app.models
+from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.migrations import ensure_runtime_columns
 from app.api.endpoints import admin, auth, chatbot, cognitive, gamification, modules, progress, quiz, recommendation
@@ -14,7 +15,7 @@ app = FastAPI(title="Artificial Education API", version="1.0.0")
 # CORS Setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For dev only, restrict in production
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

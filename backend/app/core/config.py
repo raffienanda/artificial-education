@@ -6,8 +6,13 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-secret-change-me")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
+    BACKEND_CORS_ORIGINS: str = os.getenv(
+        "BACKEND_CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000"
+    )
     
     # Database
+    DATABASE_URL: str | None = os.getenv("DATABASE_URL")
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "123")
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
@@ -16,6 +21,20 @@ class Settings(BaseSettings):
     
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
+        if self.DATABASE_URL:
+            uri = self.DATABASE_URL.strip()
+            if uri.startswith("postgres://"):
+                uri = uri.replace("postgres://", "postgresql://", 1)
+            return uri
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    @property
+    def CORS_ORIGINS(self) -> list[str]:
+        origins = [
+            origin.strip()
+            for origin in self.BACKEND_CORS_ORIGINS.split(",")
+            if origin.strip()
+        ]
+        return origins or ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 settings = Settings()

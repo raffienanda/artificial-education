@@ -16,6 +16,8 @@ from typing import List
 
 router = APIRouter()
 
+MODULE_MASTERY_PASS_THRESHOLD = 60.0
+
 
 COGNITIVE_RECOMMENDATIONS = {
     "dualism": "Gunakan arahan belajar yang lebih terstruktur, contoh konkret, dan latihan bertahap.",
@@ -47,7 +49,23 @@ def _latest_attempt(
     )
     if subtopic_id:
         query = query.filter(AssessmentAttempt.subtopic_id == subtopic_id)
-    return query.order_by(AssessmentAttempt.finished_at.desc()).first()
+    return query.order_by(
+        AssessmentAttempt.finished_at.desc(),
+        AssessmentAttempt.id.desc(),
+    ).first()
+
+
+def _latest_post_test_status(attempts: list[AssessmentAttempt]) -> dict[str, bool]:
+    post_test_attempts = sorted(
+        [attempt for attempt in attempts if attempt.assessment_type == "post_test"],
+        key=lambda attempt: (attempt.finished_at or datetime.min.replace(tzinfo=timezone.utc), attempt.id or 0),
+        reverse=True,
+    )
+    latest_status: dict[str, bool] = {}
+    for attempt in post_test_attempts:
+        if attempt.module_id not in latest_status:
+            latest_status[attempt.module_id] = bool(attempt.passed)
+    return latest_status
 
 
 def _diagnosis_category(effort_level: str, outcome_level: str, post_score: float, average_mastery: float) -> tuple[str, str]:
@@ -93,13 +111,14 @@ def get_learning_gates(
     completed_posttests = {}
     completed_subtopic_quizzes = {}
     passed_modules = {}
+    latest_post_test_passed = _latest_post_test_status(attempts)
 
     raw_completed_subtopic_quizzes = {}
 
     for attempt in attempts:
         if attempt.assessment_type == "pre_test":
             completed_pretests[attempt.module_id] = True
-        elif attempt.assessment_type == "post_test" and attempt.passed:
+        elif attempt.assessment_type == "post_test":
             completed_posttests[attempt.module_id] = True
         elif attempt.assessment_type == "quiz" and attempt.subtopic_id and attempt.passed:
             raw_completed_subtopic_quizzes[f"{attempt.module_id}:{attempt.subtopic_id}"] = True
@@ -117,7 +136,7 @@ def get_learning_gates(
             passed_modules[module.id] = False
             continue
         average_mastery = sum(mastery_by_topic.get(subtopic_id, 0.0) for subtopic_id in subtopic_ids) / len(subtopic_ids)
-        passed_modules[module.id] = bool(completed_posttests.get(module.id)) and average_mastery >= 60.0
+        passed_modules[module.id] = bool(latest_post_test_passed.get(module.id)) and average_mastery >= MODULE_MASTERY_PASS_THRESHOLD
 
     return {
         "completed_pretests": completed_pretests,
@@ -366,6 +385,8 @@ def get_module_diagnosis(
     effort_level = "tinggi" if effort_score >= 70 else "sedang" if effort_score >= 35 else "rendah"
 
     post_score = latest_post_test.percentage or 0.0
+    post_test_passed = bool(latest_post_test.passed)
+    can_continue = post_test_passed and average_mastery >= MODULE_MASTERY_PASS_THRESHOLD
     outcome_score = round((post_score * 0.6) + (average_mastery * 0.4), 2)
     outcome_level = "tinggi" if outcome_score >= 70 else "sedang" if outcome_score >= 50 else "rendah"
     category, summary = _diagnosis_category(
@@ -454,6 +475,9 @@ def get_module_diagnosis(
         "quiz_average": round(quiz_average, 2),
         "post_test_score": round(post_score, 2),
         "average_mastery": round(average_mastery, 2),
+        "can_continue": can_continue,
+        "can_retake_post_test": not can_continue,
+        "module_mastery_threshold": MODULE_MASTERY_PASS_THRESHOLD,
         "effort_score": effort_score,
         "effort_level": effort_level,
         "outcome_score": outcome_score,

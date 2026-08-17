@@ -68,6 +68,37 @@ Pilot project saat ini diterapkan pada mata kuliah **Algoritma dan Pemrograman**
 
 ## 📁 Struktur Proyek
 
+Struktur terbaru untuk SUS test dan demo sudah dipisah menjadi dua bagian utama: `frontend` dan `backend`.
+
+```text
+artificial-education/
+├── frontend/                     # Frontend Vue + Vite
+│   ├── src/                      # Source code UI
+│   ├── public/                   # Asset publik frontend
+│   ├── index.html                # Entry HTML
+│   ├── package.json              # Dependency frontend
+│   ├── vite.config.js            # Konfigurasi Vite
+│   ├── tailwind.config.js        # Konfigurasi Tailwind
+│   └── postcss.config.js         # Konfigurasi PostCSS
+│
+├── backend/                      # Backend FastAPI
+│   ├── app/                      # Source code API, model, service, dan ML
+│   ├── scripts/                  # Script uji, training, dan evaluasi
+│   ├── storage/                  # Artifact model Neural GKT
+│   ├── requirements.txt          # Dependency backend
+│   ├── db_init.py                # Inisialisasi database
+│   └── seed_full.py              # Seed data demo
+│
+├── docs/                         # Dokumen RPL, proses bisnis, blackbox, dan SUS/support
+├── postman/                      # Koleksi pengujian API
+├── .venv/                        # Virtual environment lokal, tidak ikut hosting
+├── README.md                     # Panduan project
+├── ARCHITECTURE.md               # Dokumentasi arsitektur
+└── PRD.md                        # Product Requirements Document
+```
+
+Struktur detail lama di bawah ini menjelaskan isi komponen dan service utama.
+
 ```
 artificial-education/
 ├── src/                          # Frontend (Vue.js)
@@ -141,11 +172,7 @@ artificial-education/
 │   ├── seed_full.py              # Database seeder (data lengkap)
 │   └── requirements.txt          # Python dependencies
 │
-├── index.html                    # HTML entry point
-├── vite.config.js                # Vite configuration
-├── tailwind.config.js            # Tailwind CSS configuration
-├── postcss.config.js             # PostCSS configuration
-├── package.json                  # Node.js dependencies
+├── frontend/                     # Frontend app, config Vite, Tailwind, dan package.json
 ├── ARCHITECTURE.md               # Dokumentasi arsitektur sistem
 └── PRD.md                        # Product Requirements Document
 ```
@@ -226,10 +253,10 @@ pip install -r backend\requirements.txt
 
 ### 3. Setup Frontend
 
-Jalankan dari root project di CMD lain:
+Jalankan dari folder `frontend` di CMD lain:
 
 ```cmd
-cd /d D:\GITHUB\artificial-education
+cd /d D:\GITHUB\artificial-education\frontend
 
 REM Install dependensi Node.js
 npm install
@@ -258,6 +285,7 @@ Gunakan URL `https://...ngrok-free...` yang muncul dari ngrok untuk dibagikan ke
 Jika ngrok memberi domain lain dan Vite menolak host, jalankan frontend dengan tambahan host:
 
 ```cmd
+cd /d D:\GITHUB\artificial-education\frontend
 set VITE_ALLOWED_HOSTS=nama-domain-ngrok-kamu.ngrok-free.dev
 npm run dev
 ```
@@ -265,10 +293,102 @@ npm run dev
 ### 5. Build untuk Produksi
 
 ```cmd
-cd /d D:\GITHUB\artificial-education
+cd /d D:\GITHUB\artificial-education\frontend
 npm run build
 npm run preview
 ```
+
+### 6. Deployment Hemat untuk SUS Test
+
+Skema hosting yang disarankan untuk tahap SUS test:
+
+- **Frontend:** Hostinger Web Hosting
+- **Backend:** Koyeb free tier
+- **Database:** Supabase free tier
+
+#### A. Setup Database Supabase
+
+1. Buat project baru di Supabase.
+2. Buka menu **Connect** pada project Supabase.
+3. Salin connection string PostgreSQL dari bagian pooler.
+4. Pastikan connection string memakai format seperti ini:
+
+```text
+postgresql://postgres.[PROJECT_REF]:[PASSWORD]@[REGION].pooler.supabase.com:6543/postgres?sslmode=require
+```
+
+5. Simpan connection string tersebut untuk env `DATABASE_URL` di Koyeb.
+
+#### B. Deploy Backend ke Koyeb
+
+Deploy backend dari folder `backend`.
+
+Environment variable yang perlu diisi di Koyeb:
+
+```text
+SECRET_KEY=isi-dengan-random-secret-yang-panjang
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+DATABASE_URL=connection-string-supabase
+BACKEND_CORS_ORIGINS=https://domain-frontend-kamu
+```
+
+Jika Koyeb meminta run command, gunakan:
+
+```bash
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+File `backend/Procfile` juga sudah disiapkan untuk menjalankan command backend secara otomatis.
+
+Setelah backend berhasil deploy, cek URL:
+
+```text
+https://nama-backend.koyeb.app/
+https://nama-backend.koyeb.app/docs
+```
+
+#### C. Seed Database Production
+
+Setelah backend sudah memakai database Supabase, seed data awal dapat dijalankan dari lokal dengan env `DATABASE_URL` Supabase.
+
+PowerShell:
+
+```powershell
+cd D:\GITHUB\artificial-education\backend
+$env:DATABASE_URL="connection-string-supabase"
+..\.venv\Scripts\python.exe seed_full.py
+```
+
+CMD:
+
+```cmd
+cd /d D:\GITHUB\artificial-education\backend
+set DATABASE_URL=connection-string-supabase
+D:\GITHUB\artificial-education\.venv\Scripts\python.exe seed_full.py
+```
+
+#### D. Build Frontend untuk Hostinger
+
+Buat file `frontend/.env.production`:
+
+```text
+VITE_API_BASE_URL=https://nama-backend.koyeb.app/api
+```
+
+Lalu build frontend:
+
+```cmd
+cd /d D:\GITHUB\artificial-education\frontend
+npm run build
+```
+
+Upload isi folder berikut ke `public_html` Hostinger:
+
+```text
+frontend/dist/
+```
+
+File `.htaccess` untuk Vue Router sudah disiapkan di `frontend/public/.htaccess` dan akan ikut masuk ke hasil build.
 
 ---
 

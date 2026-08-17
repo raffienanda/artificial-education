@@ -1,3 +1,4 @@
+# Bagian fallback graph knowledge tracing jika neural GKT belum tersedia.
 class GraphKnowledgeTracing:
     """
     Macro-layer tracing over topic prerequisites.
@@ -7,12 +8,15 @@ class GraphKnowledgeTracing:
     def __init__(self, mastery_threshold: float = 60.0):
         self.mastery_threshold = mastery_threshold
 
+    # Bagian evaluasi prasyarat modul berbasis graph.
     def evaluate_mastery(
         self,
         current_topic_id: str,
         topic_mastery: dict[str, float],
         prerequisites: dict[str, list],
     ) -> dict:
+        # Fallback graph tracing: dipakai saat model neural GKT belum punya hasil training.
+        # Inputnya mastery per modul dan graph prasyarat antar modul.
         weak_prerequisite = self._find_weakest_prerequisite(
             current_topic_id=current_topic_id,
             topic_mastery=topic_mastery,
@@ -33,6 +37,7 @@ class GraphKnowledgeTracing:
             "reason": "Penguasaan prasyarat cukup untuk melanjutkan topik saat ini.",
         }
 
+    # Bagian pencarian modul prasyarat yang mastery-nya masih kurang.
     def _find_weakest_prerequisite(
         self,
         current_topic_id: str,
@@ -40,6 +45,7 @@ class GraphKnowledgeTracing:
         prerequisites: dict[str, list],
         visited: set[str],
     ) -> str | None:
+        # Cek prasyarat secara rekursif supaya modul tidak lanjut jika konsep dasar masih lemah.
         if current_topic_id in visited:
             return None
 
