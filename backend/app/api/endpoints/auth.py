@@ -14,8 +14,11 @@ router = APIRouter()
 @router.post("/register", response_model=AuthToken)
 def register(payload: AuthRegister, db: Session = Depends(get_db)):
     username = payload.username.strip().lower()
+    display_name = payload.display_name.strip() if payload.display_name else ""
     if len(username) < 3:
         raise HTTPException(status_code=400, detail="Username minimal 3 karakter")
+    if len(display_name) < 3:
+        raise HTTPException(status_code=400, detail="Nama lengkap wajib diisi")
     if len(payload.password) < 6:
         raise HTTPException(status_code=400, detail="Password minimal 6 karakter")
 
@@ -25,7 +28,7 @@ def register(payload: AuthRegister, db: Session = Depends(get_db)):
 
     user = User(
         username=username,
-        display_name=payload.display_name or username,
+        display_name=display_name,
         password_hash=hash_password(payload.password),
         role="student",
         xp=0,

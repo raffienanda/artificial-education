@@ -24,11 +24,12 @@
 
           <form class="space-y-4" @submit.prevent="submit">
             <label v-if="isRegisterMode" class="block">
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Nama tampilan</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Nama lengkap</span>
               <input
                 v-model="displayName"
                 class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary-500 dark:border-gray-700 dark:bg-gray-900"
-                placeholder="Nama kamu"
+                placeholder="Masukkan nama lengkap"
+                autocomplete="name"
               >
             </label>
 
@@ -37,7 +38,7 @@
               <input
                 v-model="username"
                 class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary-500 dark:border-gray-700 dark:bg-gray-900"
-                placeholder="2405714"
+                :placeholder="isRegisterMode ? 'Buat username' : 'Masukkan username'"
                 autocomplete="username"
               >
             </label>
@@ -49,7 +50,7 @@
                 type="password"
                 class="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary-500 dark:border-gray-700 dark:bg-gray-900"
                 placeholder="Minimal 6 karakter"
-                autocomplete="current-password"
+                :autocomplete="isRegisterMode ? 'new-password' : 'current-password'"
               >
             </label>
 
@@ -72,9 +73,6 @@
             {{ isRegisterMode ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar' }}
           </button>
 
-          <div class="mt-5 rounded-xl bg-gray-50 p-3 text-xs text-gray-500 dark:bg-gray-900/60 dark:text-gray-400">
-            Akun demo: <span class="font-bold">2405714</span> / <span class="font-bold">password123</span>
-          </div>
         </div>
       </section>
     </div>
@@ -95,15 +93,20 @@ const quizStore = useQuizStore()
 
 const isRegisterMode = ref(false)
 const displayName = ref('')
-const username = ref('2405714')
-const password = ref('password123')
+const username = ref('')
+const password = ref('')
 
 async function submit() {
+  if (isRegisterMode.value && !displayName.value.trim()) {
+    userStore.authError = 'Nama lengkap wajib diisi'
+    return
+  }
+
   const ok = isRegisterMode.value
     ? await userStore.register({
       username: username.value,
       password: password.value,
-      displayName: displayName.value,
+      displayName: displayName.value.trim(),
     })
     : await userStore.login({
       username: username.value,
