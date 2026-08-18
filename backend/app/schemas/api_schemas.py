@@ -271,6 +271,7 @@ class ChatbotMessageResponse(BaseModel):
     role: str
     content: str
     timestamp: str
+    source: Optional[str] = None
 
 
 # --- Admin Prerequisites ---

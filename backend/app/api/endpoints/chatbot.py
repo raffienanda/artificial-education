@@ -18,6 +18,7 @@ from app.models.user import User
 from app.schemas.api_schemas import ChatbotMessageRequest, ChatbotMessageResponse
 
 router = APIRouter()
+last_gemini_error: str | None = None
 
 
 def _now_iso() -> str:
@@ -175,7 +176,9 @@ def _extract_gemini_text(data: dict) -> str:
 
 
 def _ask_gemini(prompt: str) -> str | None:
+    global last_gemini_error
     if not settings.GEMINI_API_KEY:
+        last_gemini_error = "GEMINI_API_KEY belum terbaca di environment"
         return None
 
     endpoint = (
@@ -207,8 +210,16 @@ def _ask_gemini(prompt: str) -> str | None:
     try:
         with urlopen(request, timeout=20) as response:
             payload = json.loads(response.read().decode("utf-8"))
+            last_gemini_error = None
             return _extract_gemini_text(payload) or None
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
+    except HTTPError as exc:
+        error_body = exc.read().decode("utf-8", errors="replace")[:500]
+        last_gemini_error = f"HTTP {exc.code}: {error_body}"
+        print(f"Gemini API error: {last_gemini_error}")
+        return None
+    except (URLError, TimeoutError, json.JSONDecodeError) as exc:
+        last_gemini_error = f"{type(exc).__name__}: {exc}"
+        print(f"Gemini API error: {last_gemini_error}")
         return None
 
 
@@ -263,8 +274,18 @@ def get_conversation(
             role="ai",
             content="halo, aku tutor belajar kamu. kalau ada materi, quiz, q-value, atau modul yang terkunci, tanya saja di sini.",
             timestamp=_now_iso(),
+            source="system",
         )
     ]
+
+
+@router.get("/health")
+def chatbot_health():
+    return {
+        "gemini_configured": bool(settings.GEMINI_API_KEY),
+        "gemini_model": settings.GEMINI_MODEL,
+        "last_gemini_error": last_gemini_error,
+    }
 
 
 @router.post("/message", response_model=ChatbotMessageResponse)
@@ -280,10 +301,12 @@ def send_message(
         subtopic_id=payload.subtopic_id,
     )
     gemini_reply = _ask_gemini(_build_gemini_prompt(payload.message, context))
+    source = "gemini" if gemini_reply else "fallback"
 
     return ChatbotMessageResponse(
         id=_message_id(),
         role="ai",
         content=gemini_reply or _build_reply(payload.message),
         timestamp=_now_iso(),
+        source=source,
     )
