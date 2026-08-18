@@ -149,7 +149,18 @@ def _build_learning_context(
 
 def _build_gemini_prompt(message: str, context: str) -> str:
     return f"""
+konteks dari database:
+{context}
+
+pertanyaan mahasiswa:
+{message}
+""".strip()
+
+
+def _gemini_system_instruction() -> str:
+    return """
 kamu adalah chatbot tutor di aplikasi cogniVA, aplikasi learning path adaptif untuk mahasiswa.
+langsung jawab pertanyaan mahasiswa, tanpa meta-comment, tanpa "tone check", tanpa analisis internal, dan tanpa menyebut aturan prompt.
 
 aturan jawaban:
 - jawab dalam bahasa indonesia yang santai, jelas, dan tidak kaku.
@@ -158,12 +169,6 @@ aturan jawaban:
 - gunakan konteks progress, q-value, mastery, post test, dan profil kognitif kalau relevan.
 - jangan mengarang data di luar konteks yang tersedia.
 - jawaban maksimal 4 paragraf pendek.
-
-konteks dari database:
-{context}
-
-pertanyaan mahasiswa:
-{message}
 """.strip()
 
 
@@ -173,6 +178,21 @@ def _extract_gemini_text(data: dict) -> str:
         return ""
     parts = candidates[0].get("content", {}).get("parts", [])
     return "\n".join(part.get("text", "") for part in parts if part.get("text")).strip()
+
+
+def _clean_gemini_text(text: str) -> str:
+    cleaned = text.strip()
+    lower_text = cleaned.lower().lstrip("*_` \n")
+    blocked_prefixes = (
+        "tone check",
+        "analysis:",
+        "analisis:",
+        "reasoning:",
+        "catatan internal",
+    )
+    if lower_text.startswith(blocked_prefixes):
+        return ""
+    return cleaned
 
 
 def _ask_gemini(prompt: str) -> str | None:
@@ -186,6 +206,9 @@ def _ask_gemini(prompt: str) -> str | None:
         f"{settings.GEMINI_MODEL}:generateContent"
     )
     body = {
+        "systemInstruction": {
+            "parts": [{"text": _gemini_system_instruction()}],
+        },
         "contents": [
             {
                 "role": "user",
@@ -211,7 +234,7 @@ def _ask_gemini(prompt: str) -> str | None:
         with urlopen(request, timeout=20) as response:
             payload = json.loads(response.read().decode("utf-8"))
             last_gemini_error = None
-            return _extract_gemini_text(payload) or None
+            return _clean_gemini_text(_extract_gemini_text(payload)) or None
     except HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")[:500]
         last_gemini_error = f"HTTP {exc.code}: {error_body}"
