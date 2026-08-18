@@ -205,6 +205,18 @@ def _ask_gemini(prompt: str) -> str | None:
         "https://generativelanguage.googleapis.com/v1beta/models/"
         f"{settings.GEMINI_MODEL}:generateContent"
     )
+    generation_config = {
+        "candidateCount": 1,
+        "temperature": 0.4,
+        "maxOutputTokens": 1200,
+        "responseModalities": ["TEXT"],
+    }
+    if settings.GEMINI_MODEL.startswith("gemini-3"):
+        generation_config["thinkingConfig"] = {
+            "includeThoughts": False,
+            "thinkingLevel": "LOW",
+        }
+
     body = {
         "systemInstruction": {
             "parts": [{"text": _gemini_system_instruction()}],
@@ -215,10 +227,7 @@ def _ask_gemini(prompt: str) -> str | None:
                 "parts": [{"text": prompt}],
             }
         ],
-        "generationConfig": {
-            "temperature": 0.4,
-            "maxOutputTokens": 450,
-        },
+        "generationConfig": generation_config,
     }
     request = Request(
         endpoint,
