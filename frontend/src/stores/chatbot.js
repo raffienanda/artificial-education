@@ -4,6 +4,7 @@
 import { defineStore } from 'pinia'
 import { ref, nextTick } from 'vue'
 import { chatbotService } from '@/services/chatbot'
+import { useModulesStore } from './modules'
 
 export const useChatbotStore = defineStore('chatbot', () => {
   // State
@@ -38,7 +39,11 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
     try {
       // Get AI response (includes simulated delay)
-      const aiMessage = await chatbotService.sendMessage(content.trim())
+      const modulesStore = useModulesStore()
+      const aiMessage = await chatbotService.sendMessage(content.trim(), {
+        moduleId: modulesStore.activeModule?.id,
+        subtopicId: modulesStore.activeSubtopic?.id,
+      })
       messages.value.push(aiMessage)
     } catch (err) {
       // Add error message

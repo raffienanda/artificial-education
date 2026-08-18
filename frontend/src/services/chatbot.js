@@ -9,7 +9,11 @@ export const chatbotService = {
     return api.get('/chatbot/conversation')
   },
 
-  async sendMessage(message) {
-    return api.post('/chatbot/message', { message })
+  async sendMessage(message, context = {}) {
+    return api.post('/chatbot/message', {
+      message,
+      module_id: context.moduleId || null,
+      subtopic_id: context.subtopicId || null,
+    })
   },
 }
