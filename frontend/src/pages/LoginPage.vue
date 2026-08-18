@@ -59,9 +59,10 @@
             </p>
 
             <button
-              class="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
               :disabled="userStore.authLoading"
             >
+              <LoadingSpinner v-if="userStore.authLoading" size="sm" />
               {{ userStore.authLoading ? 'Memproses...' : isRegisterMode ? 'Daftar' : 'Masuk' }}
             </button>
           </form>
@@ -85,6 +86,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useModulesStore } from '@/stores/modules'
 import { useQuizStore } from '@/stores/quiz'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

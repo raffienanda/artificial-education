@@ -13,7 +13,8 @@
           </BaseBadge>
         </div>
 
-        <p v-if="recommendationStore.loading" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p v-if="recommendationStore.loading" class="mt-1 flex items-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+          <LoadingSpinner class="mr-2 text-sky-600 dark:text-sky-300" size="sm" />
           Menyiapkan saran belajar...
         </p>
         <p v-else-if="recommendationStore.error" class="mt-1 rounded-lg bg-white/70 px-2.5 py-2 text-xs font-semibold text-gray-500 shadow-sm dark:bg-gray-800/70 dark:text-gray-300">
@@ -121,6 +122,7 @@
 import { computed, ref } from 'vue'
 import { BookOpen, ClipboardCheck, Dumbbell, PlayCircle, RotateCcw, Route } from 'lucide-vue-next'
 import BaseBadge from '@/components/common/BaseBadge.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { useModulesStore } from '@/stores/modules'
 import { useRecommendationStore } from '@/stores/recommendation'
 

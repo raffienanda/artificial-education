@@ -31,6 +31,11 @@
 
     <!-- Messages Area -->
     <div class="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide bg-surface-50 dark:bg-gray-900/50" ref="messagesContainer">
+      <div v-if="isLoading && messages.length === 0" class="flex h-full items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+        <LoadingSpinner class="mr-2 text-primary-600 dark:text-primary-300" />
+        Memuat chatbot...
+      </div>
+
       <ChatBubble v-for="msg in messages" :key="msg.id" :message="msg" />
 
       <!-- Typing indicator -->
@@ -62,6 +67,7 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useChatbotStore } from '@/stores/chatbot'
 import { useUiStore } from '@/stores/ui'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ChatBubble from './ChatBubble.vue'
 import MessageInput from './MessageInput.vue'
 
@@ -73,6 +79,7 @@ const messagesContainer = ref(null)
 
 const messages = computed(() => chatbotStore.messages)
 const isTyping = computed(() => chatbotStore.isTyping)
+const isLoading = computed(() => chatbotStore.loading)
 
 async function sendMessage(text) {
   await chatbotStore.sendMessage(text)

@@ -18,7 +18,8 @@
         </button>
       </div>
 
-      <div v-if="loading" class="rounded-2xl bg-white p-8 text-center text-sm font-semibold text-gray-500 shadow-sm dark:bg-gray-900">
+      <div v-if="loading" class="flex items-center justify-center rounded-2xl bg-white p-8 text-sm font-semibold text-gray-500 shadow-sm dark:bg-gray-900">
+        <LoadingSpinner class="mr-2 text-primary-600" />
         Memuat rapor...
       </div>
 
@@ -152,6 +153,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useModulesStore } from '@/stores/modules'
 import { useProgressStore } from '@/stores/progress'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -13,7 +13,14 @@
         </div>
 
         <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div class="grid max-h-[min(560px,calc(100vh-280px))] gap-4 overflow-y-auto pr-1">
+          <div
+            v-if="modulesStore.loading && courseOptions.length === 1 && courseOptions[0].id === 'loading-course'"
+            class="flex min-h-[220px] items-center justify-center rounded-2xl border border-gray-100 bg-white p-8 text-sm font-semibold text-gray-500 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+          >
+            <LoadingSpinner class="mr-2 text-primary-600" />
+            Memuat mata kuliah...
+          </div>
+          <div v-else class="grid max-h-[min(560px,calc(100vh-280px))] gap-4 overflow-y-auto pr-1">
             <button
               v-for="course in courseOptions"
               :key="course.id"
@@ -88,11 +95,13 @@
             </button>
             <button
               class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+              :disabled="dashboardRefreshing"
               type="button"
               @click="refreshDashboard"
             >
-              <RefreshCw class="h-4 w-4" />
-              Refresh
+              <LoadingSpinner v-if="dashboardRefreshing" size="sm" />
+              <RefreshCw v-else class="h-4 w-4" />
+              {{ dashboardRefreshing ? 'Memuat...' : 'Refresh' }}
             </button>
             <button
               class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -173,7 +182,14 @@
             </div>
 
             <div class="max-h-[calc(100vh-360px)] min-h-[320px] overflow-y-auto p-4 sm:p-5">
-              <div v-if="modulesStore.modules.length === 0" class="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-950/40">
+              <div v-if="modulesStore.loading" class="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-950/40">
+                <LoadingSpinner size="lg" class="text-primary-600 dark:text-primary-300" />
+                <h3 class="mt-4 text-sm font-black text-gray-950 dark:text-white">Memuat modul...</h3>
+                <p class="mt-1 max-w-sm text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                  sistem sedang mengambil data learning path dari server.
+                </p>
+              </div>
+              <div v-else-if="modulesStore.modules.length === 0" class="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-950/40">
                 <GraduationCap class="h-10 w-10 text-gray-300 dark:text-gray-600" />
                 <h3 class="mt-3 text-sm font-black text-gray-950 dark:text-white">Modul belum tersedia</h3>
                 <p class="mt-1 max-w-sm text-xs leading-relaxed text-gray-500 dark:text-gray-400">
@@ -400,6 +416,7 @@ import ModuleViewer from '@/components/module/ModuleViewer.vue'
 import ProgressPanel from '@/components/progress/ProgressPanel.vue'
 import ChatbotPanel from '@/components/chatbot/ChatbotPanel.vue'
 import PracticePanel from '@/components/drill/PracticePanel.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const modulesStore = useModulesStore()
 const uiStore = useUiStore()
@@ -410,6 +427,7 @@ const cognitiveStore = useCognitiveStore()
 const userStore = useUserStore()
 const router = useRouter()
 const courseSelected = ref(false)
+const dashboardRefreshing = ref(false)
 
 const courseTitle = computed(() => modulesStore.selectedCourse?.title || modulesStore.course?.title || 'Algoritma dan Pemrograman')
 const courseOptions = computed(() => (
@@ -557,12 +575,17 @@ function changeCourse() {
 }
 
 async function refreshDashboard() {
-  await Promise.all([
-    quizStore.fetchGateStatus(),
-    modulesStore.fetchModules(),
-    progressStore.fetchAll(),
-    cognitiveStore.fetchProfile(),
-  ])
+  dashboardRefreshing.value = true
+  try {
+    await Promise.all([
+      quizStore.fetchGateStatus(),
+      modulesStore.fetchModules(),
+      progressStore.fetchAll(),
+      cognitiveStore.fetchProfile(),
+    ])
+  } finally {
+    dashboardRefreshing.value = false
+  }
 }
 
 onMounted(async () => {

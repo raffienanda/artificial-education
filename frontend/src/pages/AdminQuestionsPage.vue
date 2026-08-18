@@ -35,7 +35,10 @@
             </div>
           </div>
 
-          <div v-if="loading" class="py-10 text-center text-sm text-gray-500">memuat soal...</div>
+          <div v-if="loading" class="flex items-center justify-center py-10 text-sm font-semibold text-gray-500">
+            <LoadingSpinner class="mr-2 text-primary-600" />
+            memuat soal...
+          </div>
           <div v-else-if="questions.length === 0" class="rounded-xl bg-gray-50 p-4 text-sm text-gray-500 dark:bg-gray-900/50">
             belum ada soal.
           </div>
@@ -160,6 +163,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import { adminService } from '@/services/admin'
 import { modulesService } from '@/services/modules'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const modules = ref([])
 const questions = ref([])

@@ -43,7 +43,10 @@
       <div class="grid gap-4 lg:grid-cols-[1fr_420px]">
         <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-gray-700 dark:bg-gray-800">
           <h2 class="mb-4 text-base font-bold text-gray-900 dark:text-white">leaderboard</h2>
-          <div v-if="gamificationStore.loading || gamificationStore.leaderboardLoading" class="py-10 text-center text-sm text-gray-500">memuat data...</div>
+          <div v-if="gamificationStore.loading || gamificationStore.leaderboardLoading" class="flex items-center justify-center py-10 text-sm font-semibold text-gray-500">
+            <LoadingSpinner class="mr-2 text-primary-600" />
+            memuat data...
+          </div>
           <div v-else class="space-y-2">
             <article
               v-for="entry in gamificationStore.leaderboard"
@@ -154,6 +157,7 @@ import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useGamificationStore } from '@/stores/gamification'
 import { useUserStore } from '@/stores/user'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const gamificationStore = useGamificationStore()
 const userStore = useUserStore()

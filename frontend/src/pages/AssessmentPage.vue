@@ -20,6 +20,7 @@
       </div>
 
       <div v-if="loading" class="flex flex-1 items-center justify-center rounded-2xl bg-white p-8 text-sm font-semibold text-gray-500 shadow-card dark:bg-gray-800">
+        <LoadingSpinner class="mr-2 text-primary-600" />
         Memuat soal...
       </div>
 
@@ -349,6 +350,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useModulesStore } from '@/stores/modules'
 import { useQuizStore } from '@/stores/quiz'
 import { useProgressStore } from '@/stores/progress'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const route = useRoute()
 const router = useRouter()

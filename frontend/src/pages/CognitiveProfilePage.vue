@@ -71,7 +71,8 @@
           </div>
         </section>
 
-        <div v-if="cognitiveStore.loading && !cognitiveStore.items.length" class="rounded-2xl border border-gray-100 bg-white py-12 text-center text-sm font-semibold text-gray-500 shadow-card dark:border-gray-700 dark:bg-gray-800">
+        <div v-if="cognitiveStore.loading && !cognitiveStore.items.length" class="flex items-center justify-center rounded-2xl border border-gray-100 bg-white py-12 text-sm font-semibold text-gray-500 shadow-card dark:border-gray-700 dark:bg-gray-800">
+          <LoadingSpinner class="mr-2 text-primary-600" />
           memuat instrumen...
         </div>
 
@@ -128,11 +129,12 @@
           </p>
           <button
             v-else
-            class="w-full rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
             type="submit"
             :disabled="!canSubmit || cognitiveStore.loading"
           >
-            Simpan Profil
+            <LoadingSpinner v-if="cognitiveStore.loading" size="sm" />
+            {{ cognitiveStore.loading ? 'Menyimpan...' : 'Simpan Profil' }}
           </button>
         </div>
       </form>
@@ -145,6 +147,7 @@ import { computed, onMounted, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
 import { useCognitiveStore } from '@/stores/cognitive'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const cognitiveStore = useCognitiveStore()
