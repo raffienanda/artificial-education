@@ -19,6 +19,7 @@ from app.schemas.api_schemas import ChatbotMessageRequest, ChatbotMessageRespons
 
 router = APIRouter()
 last_gemini_error: str | None = None
+last_gemini_debug: dict | None = None
 
 
 def _now_iso() -> str:
@@ -196,9 +197,10 @@ def _clean_gemini_text(text: str) -> str:
 
 
 def _ask_gemini(prompt: str) -> str | None:
-    global last_gemini_error
+    global last_gemini_error, last_gemini_debug
     if not settings.GEMINI_API_KEY:
         last_gemini_error = "GEMINI_API_KEY belum terbaca di environment"
+        last_gemini_debug = None
         return None
 
     endpoint = (
@@ -242,15 +244,25 @@ def _ask_gemini(prompt: str) -> str | None:
     try:
         with urlopen(request, timeout=20) as response:
             payload = json.loads(response.read().decode("utf-8"))
+            candidate = (payload.get("candidates") or [{}])[0]
+            extracted_text = _extract_gemini_text(payload)
+            last_gemini_debug = {
+                "finish_reason": candidate.get("finishReason"),
+                "text_length": len(extracted_text),
+                "part_count": len(candidate.get("content", {}).get("parts", []) or []),
+                "usage_metadata": payload.get("usageMetadata"),
+            }
             last_gemini_error = None
-            return _clean_gemini_text(_extract_gemini_text(payload)) or None
+            return _clean_gemini_text(extracted_text) or None
     except HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")[:500]
         last_gemini_error = f"HTTP {exc.code}: {error_body}"
+        last_gemini_debug = None
         print(f"Gemini API error: {last_gemini_error}")
         return None
     except (URLError, TimeoutError, json.JSONDecodeError) as exc:
         last_gemini_error = f"{type(exc).__name__}: {exc}"
+        last_gemini_debug = None
         print(f"Gemini API error: {last_gemini_error}")
         return None
 
@@ -317,6 +329,7 @@ def chatbot_health():
         "gemini_configured": bool(settings.GEMINI_API_KEY),
         "gemini_model": settings.GEMINI_MODEL,
         "last_gemini_error": last_gemini_error,
+        "last_gemini_debug": last_gemini_debug,
     }
 
 
