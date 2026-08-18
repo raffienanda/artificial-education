@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full overflow-y-auto bg-slate-50/80 p-3 dark:bg-gray-950 sm:p-5 lg:overflow-hidden lg:p-6">
+  <div class="h-full w-full overflow-y-auto bg-slate-50/80 p-3 dark:bg-gray-950 sm:p-5 lg:p-6">
     <template v-if="!modulesStore.activeModule && !courseSelected">
       <section class="mx-auto flex min-h-full max-w-6xl flex-col justify-center gap-6 py-6">
         <div class="max-w-3xl">
@@ -13,7 +13,7 @@
         </div>
 
         <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div class="grid gap-4">
+          <div class="grid max-h-[min(560px,calc(100vh-280px))] gap-4 overflow-y-auto pr-1">
             <button
               v-for="course in courseOptions"
               :key="course.id"

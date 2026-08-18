@@ -19,17 +19,20 @@
 
       <div
         v-if="isCourseDropdownOpen"
-        class="absolute left-5 right-5 top-[82px] z-30 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-elevated dark:border-gray-700 dark:bg-gray-800"
+        class="absolute left-5 right-5 top-[82px] z-30 max-h-72 overflow-y-auto rounded-xl border border-gray-100 bg-white shadow-elevated dark:border-gray-700 dark:bg-gray-800"
       >
         <button
           v-for="courseItem in courseOptions"
           :key="courseItem.id"
           type="button"
-          class="flex w-full items-center justify-between gap-3 bg-primary-50 px-3 py-2 text-left text-sm font-bold text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:text-primary-300 dark:hover:bg-primary-900/30"
+          class="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm font-bold transition-colors"
+          :class="courseItem.id === selectedCourse.id
+            ? 'bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-900/20 dark:text-primary-300 dark:hover:bg-primary-900/30'
+            : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'"
           @click="selectCourse(courseItem)"
         >
           <span class="truncate">{{ courseItem.title }}</span>
-          <span class="text-xs font-semibold text-primary-500">aktif</span>
+          <span v-if="courseItem.id === selectedCourse.id" class="text-xs font-semibold text-primary-500">aktif</span>
         </button>
       </div>
     </div>
@@ -165,8 +168,14 @@ const isCourseDropdownOpen = ref(false)
 const modules = computed(() => modulesStore.modules)
 const activeModule = computed(() => modulesStore.activeModule)
 const activeSubtopic = computed(() => modulesStore.activeSubtopic)
-const courseOptions = computed(() => (modulesStore.course ? [modulesStore.course] : []))
-const selectedCourse = computed(() => modulesStore.course || {
+const courseOptions = computed(() => (
+  modulesStore.courses.length > 0
+    ? modulesStore.courses
+    : modulesStore.course
+      ? [modulesStore.course]
+      : []
+))
+const selectedCourse = computed(() => modulesStore.selectedCourse || modulesStore.course || {
   id: 'loading-course',
   title: 'Memuat mata kuliah...',
   description: '',
@@ -177,6 +186,9 @@ const expandedModuleIds = ref(new Set())
 onMounted(() => {
   if (!modulesStore.course) {
     modulesStore.fetchCourse()
+  }
+  if (modulesStore.courses.length === 0) {
+    modulesStore.fetchCourses()
   }
   if (modulesStore.modules.length === 0) {
     modulesStore.fetchModules()
@@ -233,7 +245,13 @@ async function selectSubtopic(mod, subtopic) {
   await modulesStore.goToModuleSubtopic(mod.id, subtopic.id)
 }
 
-function selectCourse(courseItem) {
+async function selectCourse(courseItem) {
+  if (!courseItem || courseItem.id === selectedCourse.value.id) {
+    isCourseDropdownOpen.value = false
+    return
+  }
+  expandedModuleIds.value = new Set()
+  await modulesStore.selectCourse(courseItem)
   isCourseDropdownOpen.value = false
 }
 
