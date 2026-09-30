@@ -75,6 +75,7 @@ class ModuleBase(BaseModel):
 
 class ModuleResponse(ModuleBase):
     subtopics: List[SubtopicResponse] = []
+    assessment_enabled: bool = True
     
     class Config:
         from_attributes = True
@@ -152,6 +153,11 @@ class AdminSubtopicResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AdminModuleUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
 
 
 class AnswerSubmission(BaseModel):

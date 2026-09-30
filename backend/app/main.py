@@ -2,13 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import app.models
 from app.core.config import settings
-from app.core.database import engine, Base
+from app.core.database import engine, Base, SessionLocal
 from app.core.migrations import ensure_runtime_columns
+from app.data.seed_official_course import seed_official_course
 from app.api.endpoints import admin, auth, chatbot, cognitive, gamification, modules, progress, quiz, recommendation
 
 # Create DB Tables
 Base.metadata.create_all(bind=engine)
 ensure_runtime_columns(engine)
+with SessionLocal() as db:
+    seed_official_course(db)
 
 app = FastAPI(title="Artificial Education API", version="1.0.0")
 

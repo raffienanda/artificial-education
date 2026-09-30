@@ -18,6 +18,7 @@ from app.schemas.api_schemas import (
     AdminQuestionCreate,
     AdminQuestionResponse,
     AdminQuestionUpdate,
+    AdminModuleUpdate,
     AdminSubtopicCreate,
     AdminSubtopicResponse,
     AdminSubtopicUpdate,
@@ -33,6 +34,27 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
+
+
+@router.patch("/modules/{module_id}")
+def update_module(
+    module_id: str,
+    payload: AdminModuleUpdate,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    module = db.query(Module).filter(Module.id == module_id).first()
+    if not module:
+        raise HTTPException(status_code=404, detail="Modul tidak ditemukan")
+    if payload.title is not None:
+        if not payload.title.strip():
+            raise HTTPException(status_code=400, detail="Judul modul tidak boleh kosong")
+        module.title = payload.title.strip()
+    if payload.description is not None:
+        module.description = payload.description.strip()
+    db.commit()
+    db.refresh(module)
+    return {"id": module.id, "title": module.title, "description": module.description}
 
 
 @router.post("/users/{user_id}/reset-learning-data")
