@@ -33,6 +33,14 @@ COGNITIVE_STUDENT_NOTES = {
     "commitment": "Kamu cenderung cocok dengan tantangan mandiri dan refleksi terhadap keputusan belajar yang kamu ambil.",
 }
 
+LEARNING_ACTION_LABELS = {
+    "show_text": "membaca ringkasan materi",
+    "show_video": "menonton video materi",
+    "easy_quiz": "mengerjakan latihan ringan",
+    "hard_quiz": "mengerjakan latihan menantang",
+    "review_previous": "mengulang materi sebelumnya",
+}
+
 
 def _latest_attempt(
     db: Session,
@@ -120,7 +128,7 @@ def get_learning_gates(
             completed_pretests[attempt.module_id] = True
         elif attempt.assessment_type == "post_test":
             completed_posttests[attempt.module_id] = True
-        elif attempt.assessment_type == "quiz" and attempt.subtopic_id and attempt.passed:
+        elif attempt.assessment_type == "quiz" and attempt.subtopic_id and attempt.passed and attempt.finished_at:
             raw_completed_subtopic_quizzes[f"{attempt.module_id}:{attempt.subtopic_id}"] = True
 
     for module in modules:
@@ -374,7 +382,6 @@ def get_module_diagnosis(
         sum(attempt.percentage or 0.0 for attempt in quiz_attempts) / len(quiz_attempts)
         if quiz_attempts else 0.0
     )
-
     logs = db.query(InteractionLog).filter(
         InteractionLog.user_id == user_id,
         InteractionLog.subtopic_id.in_(subtopic_ids),
@@ -384,8 +391,8 @@ def get_module_diagnosis(
     effort_score = min(100, round((total_interactions * 8) + (total_minutes * 2)))
     effort_level = "tinggi" if effort_score >= 70 else "sedang" if effort_score >= 35 else "rendah"
 
-    post_score = latest_post_test.percentage or 0.0
-    post_test_passed = bool(latest_post_test.passed)
+    post_score = (latest_post_test.percentage or 0.0) if latest_post_test else 0.0
+    post_test_passed = bool(latest_post_test.passed) if latest_post_test else False
     can_continue = post_test_passed and average_mastery >= MODULE_MASTERY_PASS_THRESHOLD
     outcome_score = round((post_score * 0.6) + (average_mastery * 0.4), 2)
     outcome_level = "tinggi" if outcome_score >= 70 else "sedang" if outcome_score >= 50 else "rendah"
@@ -414,6 +421,7 @@ def get_module_diagnosis(
         if values
     }
     most_effective_action = max(q_action_scores, key=q_action_scores.get) if q_action_scores else None
+    effective_action_label = LEARNING_ACTION_LABELS.get(most_effective_action, most_effective_action)
 
     profile = db.query(CognitiveProfile).filter(CognitiveProfile.user_id == user_id).first()
     cognitive_stage = profile.dominant_stage if profile else "unknown"
@@ -441,7 +449,7 @@ def get_module_diagnosis(
     elif effort_level == "rendah" and outcome_level != "tinggi":
         recommendations.append("Tingkatkan konsistensi belajar sebelum lanjut ke modul berikutnya.")
     if most_effective_action:
-        recommendations.append(f"Gunakan strategi yang relatif efektif untuk akun ini: {most_effective_action}.")
+        recommendations.append(f"Gunakan strategi yang relatif efektif untuk akun ini: {effective_action_label}.")
     recommendations.append(cognitive_recommendation)
 
     personal_recommendations = []
@@ -459,7 +467,7 @@ def get_module_diagnosis(
         )
     elif most_effective_action:
         personal_recommendations.append(
-            f"Untuk akun kamu, strategi yang sejauh ini paling membantu adalah {most_effective_action}. gunakan itu sebagai cara belajar utama."
+            f"Untuk akun kamu, strategi yang sejauh ini paling membantu adalah {effective_action_label}. Gunakan itu sebagai cara belajar utama."
         )
     personal_recommendations.append(cognitive_student_note)
 
@@ -467,6 +475,7 @@ def get_module_diagnosis(
         "available": True,
         "module_id": module.id,
         "module_title": module.title,
+        "assessment_mode": "full",
         "learner_name": learner_name,
         "category": category,
         "summary": summary,

@@ -287,7 +287,10 @@ def _module_unlocked(db: Session, user_id: int, module_id: str) -> bool:
     if prerequisites:
         return all(_module_passed(db=db, user_id=user_id, module_id=item.prerequisite_id) for item in prerequisites)
 
-    previous_module = db.query(Module).filter(Module.order == (module.order or 1) - 1).first()
+    previous_module = db.query(Module).filter(
+        Module.course_id == module.course_id,
+        Module.order == (module.order or 1) - 1,
+    ).first()
     return bool(previous_module and _module_passed(db=db, user_id=user_id, module_id=previous_module.id))
 
 
@@ -572,5 +575,10 @@ def submit_answer(
         updated_q_values=learning_update.get("updated_q_values", {}),
         learning_state=learning_update["state"],
         next_learning_state=learning_update["next_state"],
+        attempt_score=assessment_attempt.score or 0,
+        attempt_total_questions=assessment_attempt.total_questions or 0,
+        attempt_percentage=assessment_attempt.percentage or 0.0,
+        attempt_finished=assessment_attempt.finished_at is not None,
+        attempt_passed=bool(assessment_attempt.passed),
         user=user,
     )

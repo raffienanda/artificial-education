@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.ml.neural_gkt import load_neural_gkt_model
 from app.ml.gkt import gkt_model
+from app.data.seed_official_course import OFFICIAL_COURSE_ID
 from app.models.assessment import AssessmentAttempt
 from app.ml.q_learning import q_agent
 from app.models.cognitive import CognitiveProfile
@@ -425,12 +426,16 @@ def build_topic_initial_state(db: Session, user_id: int) -> dict[str, float]:
 
 
 # Bagian membangun graph prasyarat antar modul/topik.
-def build_prerequisite_graph(db: Session) -> dict[str, list[dict]]:
+def build_prerequisite_graph(db: Session, course_id: str | None = None) -> dict[str, list[dict]]:
     # Graph prasyarat menentukan hubungan antar modul/topik pada layer GKT.
+    modules = db.query(Module).filter(Module.course_id == course_id).order_by(Module.order).all() if course_id else db.query(Module).order_by(Module.order).all()
+    module_ids = {module.id for module in modules}
     rows = db.query(TopicPrerequisite).all()
     graph: dict[str, list[dict]] = {}
 
     for row in rows:
+        if row.topic_id not in module_ids or row.prerequisite_id not in module_ids:
+            continue
         graph.setdefault(row.topic_id, []).append({
             "id": row.prerequisite_id,
             "mastery_threshold": row.mastery_threshold or 60.0,
@@ -439,7 +444,6 @@ def build_prerequisite_graph(db: Session) -> dict[str, list[dict]]:
     if graph:
         return graph
 
-    modules = db.query(Module).order_by(Module.order).all()
     return {
         modules[index].id: [{
             "id": modules[index - 1].id,
@@ -464,10 +468,16 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
             "reason": "Subtopik belum ditemukan, gunakan materi teks sebagai fallback.",
         }
 
+    current_module = db.get(Module, current_subtopic.module_id)
+    current_module_id = current_module.id
     topic_mastery = build_topic_mastery(db=db, user_id=user_id)
-    prerequisite_graph = build_prerequisite_graph(db=db)
+    prerequisite_graph = build_prerequisite_graph(db=db, course_id=current_module.course_id)
     neural_gkt = load_neural_gkt_model()
-    if neural_gkt and neural_gkt.is_trained:
+    course_module_ids = {
+        module.id for module in db.query(Module.id).filter(Module.course_id == current_module.course_id).all()
+    }
+    use_neural_gkt = bool(neural_gkt and neural_gkt.is_trained and course_module_ids.issubset(neural_gkt.node_ids))
+    if use_neural_gkt:
         # Jika model neural sudah tersedia, prediksi mastery modul memakai message passing GKT.
         macro = neural_gkt.evaluate_mastery(
             current_topic_id=current_module_id,
@@ -509,6 +519,10 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
         subtopic_id=recommended_subtopic_id,
     )
     allowed_actions = get_allowed_actions_for_stage(cognitive_stage)
+    if current_module.course_id == OFFICIAL_COURSE_ID:
+        allowed_actions = tuple(action for action in allowed_actions if action in ("show_text", "easy_quiz", "review_previous"))
+        if not allowed_actions:
+            allowed_actions = ("show_text", "easy_quiz", "review_previous")
     if has_learned_action_values(q_values=q_values, allowed_actions=allowed_actions):
         # Setelah q-value terbentuk, action dipilih dari nilai tertinggi pada state saat ini.
         action = q_agent.select_action(q_values, allowed_actions=allowed_actions)
@@ -523,6 +537,8 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
                 subtopic_id=recommended_subtopic_id,
             ),
         )
+    if action not in allowed_actions:
+        action = "easy_quiz" if mastery >= 30 and "easy_quiz" in allowed_actions else allowed_actions[0]
     cognitive_strategy = get_strategy_for_stage(cognitive_stage)
 
     reason = macro["reason"]
@@ -538,7 +554,7 @@ def recommend_next_step(db: Session, user_id: int, current_module_id: str, curre
         "q_values": q_values,
         "q_value_states": q_value_states,
         "reason": reason,
-        "macro_model": "neural_gkt" if neural_gkt and neural_gkt.is_trained else "graph_fallback",
+        "macro_model": "neural_gkt" if use_neural_gkt else "graph_fallback",
         "neural_gkt_state": macro.get("neural_state", {}),
         "cognitive_stage": cognitive_stage,
         "cognitive_strategy": cognitive_strategy,

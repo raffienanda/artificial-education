@@ -76,6 +76,7 @@ class ModuleBase(BaseModel):
 class ModuleResponse(ModuleBase):
     subtopics: List[SubtopicResponse] = []
     assessment_enabled: bool = True
+    assessment_mode: str = "full"
     
     class Config:
         from_attributes = True
@@ -178,6 +179,11 @@ class AnswerFeedback(BaseModel):
     updated_q_values: Dict[str, float] = Field(default_factory=dict)
     learning_state: str = ""
     next_learning_state: str = ""
+    attempt_score: int = 0
+    attempt_total_questions: int = 0
+    attempt_percentage: float = 0.0
+    attempt_finished: bool = False
+    attempt_passed: bool = False
     user: UserResponse
 
 

@@ -1,0 +1,2518 @@
+[
+  {
+    "id": "voc-1-1-1",
+    "subtopic_id": "materi-1-1",
+    "question_text": "Transformasi adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Hambatan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pengembangan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pembaharuan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Tantangan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Perubahan"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-1-2",
+    "subtopic_id": "materi-1-1",
+    "question_text": "Kerja di masa depan dipengaruhi oleh …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Waktu"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Manusia"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kemajuan manusia"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kemajuan teknologi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pergeseran pendidikan"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-1-3",
+    "subtopic_id": "materi-1-1",
+    "question_text": "Skill-biased technological change adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Tantangan teknologi yang berpihak pada keterampilan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kekuatan teknologi yang berpihak pada kemampuan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Perubahan teknologi yang berpihak pada keterampilan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Perubahan yang tidak jelas keterampilannya"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tantangan teknologi dan kemampuan"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-1-4",
+    "subtopic_id": "materi-1-1",
+    "question_text": "Lifelong learning adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Belajar setiap waktu"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pembelajaran sepanjang hidup"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Belajar setiap saat"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Belajar dalam hidup"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pembelajaran sampai mati"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-1-5",
+    "subtopic_id": "materi-1-1",
+    "question_text": "Kebijakan-kebijakan pendidikan vokasional kecuali ...",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Generasi muda"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kompetensi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Produktivitas"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kerjasama"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Guru"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-2-1",
+    "subtopic_id": "materi-1-2",
+    "question_text": "Hubungan pendidikan vokasional dengan ekonomi adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Sebagai human capital"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Sebagai institusi pendidikan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Saling membutuhkan satu sama lain"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Modal negara"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tidak ada jawaban yang benar"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-2-2",
+    "subtopic_id": "materi-1-2",
+    "question_text": "Konteks ekonomi berbasis pengetahuan adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Ekonomi yang dipengaruhi oleh ilmu pengetahuan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Sistem ekonomi berbasis ilmu pengetahuan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Hubungan ekonomi dan pengetahuan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Permasalahan ekonomi yang diselesaikan oleh pengetahuan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-2-3",
+    "subtopic_id": "materi-1-2",
+    "question_text": "Sustainable development goals adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Capaian pembangunan negara"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Tujuan pengembangan lanjut"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Tujuan pembangunan berkelanjutan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Tujuan perubahan berkelanjutan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tujuan pembangunan bertahap"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-2-4",
+    "subtopic_id": "materi-1-2",
+    "question_text": "Praktik kerja autentik adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Magang"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Praktik industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Praktik kerja lapangan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Praktik kerja riil"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "On the job training"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-2-5",
+    "subtopic_id": "materi-1-2",
+    "question_text": "Kompetensi penentu daya saing lulusan adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Green skills"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Digital skills"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Soft-skills"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Hard-skills"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-3-1",
+    "subtopic_id": "materi-1-3",
+    "question_text": "Skill gap adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Permasalahan kompetensi antara tenaga kerja dan tempat kerja"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Situasi kompetensi antara tenaga kerja dan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Ketidaksesuaian kualifikasi dengan tuntutan pekerjaan yang dijalani"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kesenjangan antara tenaga kerja dan industri"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kesenjangan kompetensi antara tenaga kerja dan industri"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-3-2",
+    "subtopic_id": "materi-1-3",
+    "question_text": "Skill mismatch adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kesenjangan kompetensi antara tenaga kerja dan industri"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Ketidaksesuaian bidang keahlian dengan tuntutan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Situasi kompetensi antara tenaga kerja dan industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Ketidaksesuaian kualifikasi dengan tuntutan pekerjaan yang dijalani"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kesesuaian kualifikasi dengan tuntutan pekerjaan yang dijalani"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-3-3",
+    "subtopic_id": "materi-1-3",
+    "question_text": "Link and match adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Mengelink dan menyesuaikan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Jaringan dalam pendidikan kejuruan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Penyelarasan dunia pendidikan dan dunia kerja"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kolaborasi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban salah"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-3-4",
+    "subtopic_id": "materi-1-3",
+    "question_text": "Demand and supply adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kebutuhan dan penawaran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Permintaan dan penawaran"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Penawaran dan kebutuhan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Permintaan dan pemberian"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pemberian dan kebutuhan"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-3-5",
+    "subtopic_id": "materi-1-3",
+    "question_text": "Internship adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Magang"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kunjungan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Mencari pengalaman"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "On the job training"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban salah"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-4-1",
+    "subtopic_id": "materi-1-4",
+    "question_text": "Indikator-indikator penentu daya saing dalam ekonomi global adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Produktivitas"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Inovasi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pendidikan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pelatihan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-4-2",
+    "subtopic_id": "materi-1-4",
+    "question_text": "Kontribusi pendidikan vokasional terhadap daya saing adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Mencerdaskan kehidupan bangsa"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Human capital"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Memberikan pekerjaan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Memberikan pengalaman"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tidak ada jawaban yang benar"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-4-3",
+    "subtopic_id": "materi-1-4",
+    "question_text": "Sistem pendidikan vokasional yang efektif adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Terakreditasi nasional"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Dibangun sebagai bagian dari SKKNI"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Terakreditasi nasional dan internasional"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Lembaganya profesional"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Dibangun menurut standar industri"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-4-4",
+    "subtopic_id": "materi-1-4",
+    "question_text": "Jalur kontribusi pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Magang"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kunjungan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Mencari pengalaman"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "On the job training"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban salah"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-4-5",
+    "subtopic_id": "materi-1-4",
+    "question_text": "Indikator keberhasilan pendidikan vokasional dalam pembangunan ekonomi adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Peningkatan produktivitas tenaga kerja"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Keterserapan kerja"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Percepatan industrial upgrading"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Banyak orang kaya"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a dan c benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-5-1",
+    "subtopic_id": "materi-1-5",
+    "question_text": "Posisi Indonesia pada peta pendidikan vokasional global adalah pada …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Tahap reformasi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Transformasi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Fase transisi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Fase politisasi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tahap negosiasi"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-5-2",
+    "subtopic_id": "materi-1-5",
+    "question_text": "Permasalahan pendidikan vokasional yang dihadapi Indonesia adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengangguran lulusan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kompetensi lulusan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Linieritas pekerjaan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Lowongan pekerjaan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban salah"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-5-3",
+    "subtopic_id": "materi-1-5",
+    "question_text": "Indikator kinerja pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Relevansi kurikulum terhadap kebutuhan industri"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kualitas penjaminan mutu"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sertifikasi kompetensi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Produktivitas lulusan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-5-4",
+    "subtopic_id": "materi-1-5",
+    "question_text": "Standar apprenticeship pendidikan vokasional secara global adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Teaching factory"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Dibangun bersama industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Ada sertifikasi kompetensi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Magang"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban salah"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-1-5-5",
+    "subtopic_id": "materi-1-5",
+    "question_text": "Indikator pendidikan vokasional yang berstandar global adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kurikulum relevan dengan kebutuhan industri"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Quality assurance"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sertifikasi kompetensi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Jawaban b dan c benar"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a dan c benar"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-1-1",
+    "subtopic_id": "materi-2-1",
+    "question_text": "Teori Human Capital menjelaskan bahwa …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pendidikan dan pelatihan adalah investasi ekonomi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pendidikan dan industri adalah investasi ekonomi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pelatihan dan kewirausahaan adalah investasi ekonomi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pelatihan dan kepemimpinan adalah investasi ekonomi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban tidak ada yang salah"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-1-2",
+    "subtopic_id": "materi-2-1",
+    "question_text": "Komponen Human Capital kecuali …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pendidikan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pelatihan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pengalaman"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "a, b, c benar"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "a, b, c salah"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-1-3",
+    "subtopic_id": "materi-2-1",
+    "question_text": "Skills formation system terhubung dengan …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Training center"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Masyarakat"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sumber daya manusia"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kebijakan pasar kerja dan industri"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "link and match"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-1-4",
+    "subtopic_id": "materi-2-1",
+    "question_text": "Instrumen pembangunan berkelanjutan adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Training center"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Masyarakat"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sumber daya manusia"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "link and match"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Ekosistem kebijakan dan praktik"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-1-5",
+    "subtopic_id": "materi-2-1",
+    "question_text": "Ekosistem kebijakan adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Organisasi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Employability"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pendidikan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Industri"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pelatihan"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-2-1",
+    "subtopic_id": "materi-2-2",
+    "question_text": "Return of Investment adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Nilai tambah investasi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Balik modal"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Keuntungan"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kelebihan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Luaran"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-2-2",
+    "subtopic_id": "materi-2-2",
+    "question_text": "Indikator Return of Investment adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Industri"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Bisnis"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pemerintah"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Produktivitas"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-2-3",
+    "subtopic_id": "materi-2-2",
+    "question_text": "Mekanisme kausal pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Meningkatkan usable competence"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Lulusan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Peserta didik"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Guru"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Instruktur"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-2-4",
+    "subtopic_id": "materi-2-2",
+    "question_text": "Cara menentukan keterlibatan industri di pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Memperkuat keterampilan teknis dan non-teknis"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Link and match"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Industrial demand"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Industrial collaboration"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Magang"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-2-5",
+    "subtopic_id": "materi-2-2",
+    "question_text": "Manfaat Return of Investment adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengurangan youth unemployment"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Peningkatan tax base"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Percepatan industrial upgrading"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Jawaban a, b, c benar"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a, b, c salah"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-3-1",
+    "subtopic_id": "materi-2-3",
+    "question_text": "Industrial demand adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kebutuhan industri"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Permasalahan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Ketahanan industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Permintaan industri"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kerjasama industri"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-3-2",
+    "subtopic_id": "materi-2-3",
+    "question_text": "Disconnect antara sistem pelatihan dan pasar kerja akibat …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Banyak pengangguran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Minimnya lowongan kerja"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Lemahnya governance lintas-aktor"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Minimnya partisipasi industri dalam desain pelatihan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban c dan d benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-3-3",
+    "subtopic_id": "materi-2-3",
+    "question_text": "Skill ecosystem adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Skill terkait"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kualitas keterhubungan antara sistem pendidikan dan struktur industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Keterkaitan antarkomponen"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Skills yang dibutuhkan industri"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Skill sumber daya manusia"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-3-4",
+    "subtopic_id": "materi-2-3",
+    "question_text": "Mekanisme strategis yang menghubungkan transformasi industri dengan desain kurikulum dan pengembangan kompetensi disebut …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Workforce planning"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Ecosystem"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Industrial market"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Governance"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Human capital"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-3-5",
+    "subtopic_id": "materi-2-3",
+    "question_text": "Institusi pendidikan vokasional akan berfungsi efektif jika dilakukan melalui …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Tracer study"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kolaborasi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Magang"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Link and match"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Sinkronisasi kurikulum"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-4-1",
+    "subtopic_id": "materi-2-4",
+    "question_text": "Instrumen strategi pembangunan berkelanjutan kecuali …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengembangan keterampilan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Produktivitas"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pekerjaan layak"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Transformasi ekonomi hijau dan digital"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Human capital"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-4-2",
+    "subtopic_id": "materi-2-4",
+    "question_text": "Hubungan human capital dan pasar kerja adalah untuk …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Meningkatkan produktivitas dan daya saing ekonomi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Meningkatkan ekonomi keluarga"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Meningkatkan kesejahteraan masyarakat"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Meningkatkan pengetahuan generasi muda"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Meningkatkan kualitas pendidikan"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-4-3",
+    "subtopic_id": "materi-2-4",
+    "question_text": "Competency gap terjadi karena …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Tidak ada kolaborasi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Tidak ada sinkronisasi kurikulum"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Tidak ada integrasi struktural"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Tidak ada commitment"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tidak didukung pemerintah"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-4-4",
+    "subtopic_id": "materi-2-4",
+    "question_text": "Strategi implikasi praktis bagi institusi vokasi adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengembangan sustainability competency framework"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Penguatan work-based learning"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pelatihan guru"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "a, b, dan c benar"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Tidak ada jawaban yang benar"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-4-5",
+    "subtopic_id": "materi-2-4",
+    "question_text": "Keberhasilan green TVET sangat dipengaruhi oleh …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Perencanaannya"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Implementasinya"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kesiapan pedagogis instruktur dan kualitas kemitraan industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kemitraan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kurikulum"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-5-1",
+    "subtopic_id": "materi-2-5",
+    "question_text": "Perencanaan pendidikan sebagai investasi human capital perlu bergeser dari logika input menuju …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Proses"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Output"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Outcome"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Proses - Output"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Output - Outcomes"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-5-2",
+    "subtopic_id": "materi-2-5",
+    "question_text": "Penyelarasan green skills terkait dengan …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kebijakan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kurikulum"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Aktor industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Konteks regional"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-5-3",
+    "subtopic_id": "materi-2-5",
+    "question_text": "Logika Return of Investment di pendidikan vokasional terkait dengan …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Manfaat individu"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Manfaat industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Manfaat individu dan industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Manfaat masyarakat"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Manfaat negara"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-5-4",
+    "subtopic_id": "materi-2-5",
+    "question_text": "Indikator outcome perencanaan pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Employment outcomes"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Proses"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Output"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pekerjaan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Lulusan"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-2-5-5",
+    "subtopic_id": "materi-2-5",
+    "question_text": "Instrumen strategis untuk meningkatkan akses dan mempercepat mobilitas keterampilan adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "RPL"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "WBL"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "PBL"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "RoI"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua jawaban benar"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-1-1",
+    "subtopic_id": "materi-3-1",
+    "question_text": "Filosopi kerja berangkat dari pemahaman bahwa kerja adalah arena …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pembentukan kompetensi"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Tanggung jawab profesional"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kontribusi sosial"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Jawaban a, b, dan c benar"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a, b, dan c salah"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-1-2",
+    "subtopic_id": "materi-3-1",
+    "question_text": "Keterhubungan pendidikan vokasional dengan dunia kerja diimplementasikan melalui …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Work-Based Learning"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Program sekolah"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sinkronisasi kurikulum"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pembelajaran kolaborasi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kunjungan industri"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-1-3",
+    "subtopic_id": "materi-3-1",
+    "question_text": "Pekerjaan autentik tidak hanya memfasilitasi siswa untuk transfer keterampilan, tetapi juga memperkuat …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Hard-skills"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Soft-skills"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Employability skills"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Identitas profesional"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kemampuan diri"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-1-4",
+    "subtopic_id": "materi-3-1",
+    "question_text": "Career adaptability adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kemampuan beradaptasi dalam pekerjaan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kemampuan untuk beradaptasi dalam konteks pekerjaan yang berubah cepat"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kemampuan menyesuaikan diri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kemampuan beradaptasi"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kemampuan bekerja di industri"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-1-5",
+    "subtopic_id": "materi-3-1",
+    "question_text": "WBL adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pembelajaran berbasis proyek"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pembelajaran berbasis kerja"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Belajar berbasis kerja"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Belajar berbasis proyek"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Semua benar"
+      }
+    ],
+    "correct_answer": "b",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-2-1",
+    "subtopic_id": "materi-3-2",
+    "question_text": "Pada Competency-based education and training (CBET), kurikulum tidak disusun berdasarkan…",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Daftar mata pelajaran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Rekomendasi industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Standar kompetensi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Standar mutu"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Standar pemerintah"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-2-2",
+    "subtopic_id": "materi-3-2",
+    "question_text": "Dimensi yang perlu dimasukkan ke desain CBET kecuali …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Daftar mata pelajaran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Rekomendasi industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Standar kompetensi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Standar mutu"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Standar pemerintah"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-2-3",
+    "subtopic_id": "materi-3-2",
+    "question_text": "Salah satu dimensi yang perlu dimasukkan ke desain CBET adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Keselamatan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "kesehatan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "asuransi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Mutu pembelajaran"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Evaluasi pembelajaran"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-2-4",
+    "subtopic_id": "materi-3-2",
+    "question_text": "Konsep kompetensi di pendidikan vokasional adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Integrasi knowledge, skills, dan attitudes"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Integrasi dunia pendidikan dan industri"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Integrasi secara menyeluruh"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Integrasi pendidikan, industri, dan pemerintah"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Integrasi kompetensi industri"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-2-5",
+    "subtopic_id": "materi-3-2",
+    "question_text": "KKNI singkatan dari …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kerangka Kurikulum Nasional Indonesia"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kerangka Kompetensi Nasional Indonesia"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kerangka Kompetensi Negara Indonesia"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kerangka Kualifikasi Nasional Indonesia"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kerangka Kualifikasi Negara Indonesia"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-3-1",
+    "subtopic_id": "materi-3-3",
+    "question_text": "Experiential learning adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Belajar berbasis pengalaman"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pembelajaran berbasis pekerjaan riil"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pembelajaran berbasis magang"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pembelajaran berbasis penelitian"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pembelajaran berbasis pengalaman"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-3-2",
+    "subtopic_id": "materi-3-3",
+    "question_text": "Kontribusi experiential learning adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengembangan kemampuan problem solving"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Integrasi teori-praktik"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Kesiapan kerja peserta didik vokasi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kompetensi peserta didik"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a, b, dan c benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-3-3",
+    "subtopic_id": "materi-3-3",
+    "question_text": "Tacit knowledge tumbuh dari …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengetahuan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pembelajaran"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pengalaman"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kepribadian seseorang"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pemahaman diri"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-3-4",
+    "subtopic_id": "materi-3-3",
+    "question_text": "Perkembangan tacit knowledge siswa terjadi melalui …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pembelajaran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Kolaborasi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Integrasi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Interaksi sosial"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kompetensi"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-3-5",
+    "subtopic_id": "materi-3-3",
+    "question_text": "Komponen utama apprenticeship adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Coaching intensif"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Tugas autentik"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Tacit knowledge"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Dialog profesional"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Reflektif dan mentoring"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-4-1",
+    "subtopic_id": "materi-3-4",
+    "question_text": "Identitas profesional di pendidikan vokasional perlu diposisikan sebagai …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Outcome inti"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Keterampilan teknis"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Output pendidikan vokasional"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kualitas pendidikan vokasional"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Data siswa"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-4-2",
+    "subtopic_id": "materi-3-4",
+    "question_text": "Pembentukan identitas profesional siswa pendidikan vokasional diperoleh melalui …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Magang"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pembelajaran"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Partisipasi aktif dalam komunitas praktik"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Pelatihan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Pembinaan"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-4-3",
+    "subtopic_id": "materi-3-4",
+    "question_text": "Indikator yang memengaruhi identitas profesional siswa adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pembelajaran"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Program sekolah"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Pendampingan industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kualitas guru"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Kualitas pengalaman praktik dan relasi dengan siswa"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-4-4",
+    "subtopic_id": "materi-3-4",
+    "question_text": "Implementasi desain pendidikan vokasional adalah perlunya keseimbangan antara …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Competence attainment dan identity formation"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Tacit knowledge dan identity formation"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "SDM dan fasilitas"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kompetensi dunia pendidikan dan dunia kerja"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban tidak ada yang benar"
+      }
+    ],
+    "correct_answer": "a",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-4-5",
+    "subtopic_id": "materi-3-4",
+    "question_text": "Vocational identity secara jelas berkorelasi positif dengan …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Lulusan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Pekerjaan lulusan"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Career adaptability dan career commitment"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Kebutuhan pekerjaan"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Standar kompetensi lulusan"
+      }
+    ],
+    "correct_answer": "c",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-5-1",
+    "subtopic_id": "materi-3-5",
+    "question_text": "Kerangka konseptual pendidikan vokasional sebagai sistem terintegrasi yang menyatukan komponen…",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Fondasi pendidikan kejuruan"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Akreditasi institusi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Budaya industri"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Fondasi filosofis"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "SDM pendidikan vokasi"
+      }
+    ],
+    "correct_answer": "d",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-5-3",
+    "subtopic_id": "materi-3-5",
+    "question_text": "Komponen yang menghubungkan CBET sebagai sistem standardisasi outcome adalah …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Kurikulum"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Asesmen"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Sertifikasi"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "KKNI"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban semua benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-5-4",
+    "subtopic_id": "materi-3-5",
+    "question_text": "Experiential learning menjelaskan bahwa kompetensi berkembang melalui …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "Pengalaman konkret"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "Refleksi"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "Eksperimen ulang"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Jawaban a, b, dan c salah"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a, b, dan c benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  },
+  {
+    "id": "voc-3-5-5",
+    "subtopic_id": "materi-3-5",
+    "question_text": "Identitas profesional memperkuat …",
+    "options": [
+      {
+        "id": "a",
+        "label": "A",
+        "text": "employability"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "text": "career adaptability"
+      },
+      {
+        "id": "c",
+        "label": "C",
+        "text": "keberlanjutan karier"
+      },
+      {
+        "id": "d",
+        "label": "D",
+        "text": "Jawaban a, b, dan c salah"
+      },
+      {
+        "id": "e",
+        "label": "E",
+        "text": "Jawaban a, b, dan c benar"
+      }
+    ],
+    "correct_answer": "e",
+    "assessment_type": "quiz"
+  }
+]

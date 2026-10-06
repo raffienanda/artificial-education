@@ -8,7 +8,9 @@ from app.api.endpoints.modules import _enrich_module_with_user_progress
 from app.api.endpoints.admin import update_module, update_subtopic
 from app.core.database import Base
 from app.data.seed_official_course import OFFICIAL_COURSE_ID, seed_official_course
+from app.data.seed_official_questions import seed_official_questions
 from app.models.module import Course, Module, Subtopic
+from app.models.question import Question
 from app.schemas.api_schemas import AdminModuleUpdate, AdminSubtopicUpdate, ModuleResponse
 
 
@@ -38,14 +40,30 @@ class OfficialCourseSeedTests(unittest.TestCase):
         self.assertEqual(self.db.get(Subtopic, "materi-1-1").title, "Judul dari admin")
         self.assertEqual(self.db.query(Subtopic).count(), 15)
 
-    def test_official_modules_are_readable_without_assessments(self):
+    def test_official_modules_use_full_assessment_mode(self):
         seed_official_course(self.db)
         module = self.db.get(Module, "module-vocational-3")
         payload = _enrich_module_with_user_progress(module, self.db, 1, {})
         response = ModuleResponse.model_validate(payload)
-        self.assertEqual(response.status, "in_progress")
-        self.assertFalse(response.assessment_enabled)
+        self.assertEqual(response.status, "locked")
+        self.assertTrue(response.assessment_enabled)
+        self.assertEqual(response.assessment_mode, "full")
         self.assertEqual(len(response.subtopics), 5)
+
+    def test_lecturer_questions_are_insert_only(self):
+        seed_official_course(self.db)
+        self.assertEqual(seed_official_questions(self.db), 104)
+        self.assertEqual(self.db.query(Question).filter_by(assessment_type="quiz").count(), 74)
+        self.assertEqual(self.db.query(Question).filter_by(assessment_type="pre_test").count(), 15)
+        self.assertEqual(self.db.query(Question).filter_by(assessment_type="post_test").count(), 15)
+        self.assertEqual(self.db.query(Question).filter_by(subtopic_id="materi-3-5", assessment_type="quiz").count(), 4)
+        self.assertIsNone(self.db.get(Question, "voc-3-5-2"))
+
+        first = self.db.get(Question, "voc-1-1-1")
+        first.question_text = "Revisi dari admin"
+        self.db.commit()
+        self.assertEqual(seed_official_questions(self.db), 0)
+        self.assertEqual(self.db.get(Question, "voc-1-1-1").question_text, "Revisi dari admin")
 
     def test_admin_edit_is_returned_to_student(self):
         seed_official_course(self.db)

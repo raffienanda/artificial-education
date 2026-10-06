@@ -8,7 +8,6 @@ from app.models.progress import UserProgress
 from app.models.user import User
 from app.schemas.api_schemas import CourseResponse, ModuleResponse, SubtopicResponse
 from app.services.learning_path import build_prerequisite_graph
-from app.data.seed_official_course import OFFICIAL_COURSE_ID
 from typing import List
 
 router = APIRouter()
@@ -112,17 +111,10 @@ def _enrich_module_with_user_progress(module: Module, db: Session, user_id: int,
         "estimated_time": module.estimated_time,
         "order": module.order,
         "status": "locked",
-        "assessment_enabled": module.course_id != OFFICIAL_COURSE_ID,
+        "assessment_enabled": True,
+        "assessment_mode": "full",
         "subtopics": []
     }
-
-    if module.course_id == OFFICIAL_COURSE_ID:
-        module_dict["status"] = "in_progress"
-        module_dict["subtopics"] = [
-            {"id": item.id, "title": item.title, "content": item.content, "completed": False}
-            for item in sorted(module.subtopics, key=lambda item: item.id)
-        ]
-        return module_dict
     
     # 1. Fetch all progress and finished formal assessment attempts for this user.
     all_progress = db.query(UserProgress).filter(UserProgress.user_id == user_id).all()
@@ -277,8 +269,6 @@ def get_subtopic(
         raise HTTPException(status_code=404, detail="Subtopic not found")
 
     mod = db.query(Module).filter(Module.id == module_id).first()
-    if mod and mod.course_id == OFFICIAL_COURSE_ID:
-        return {"id": subtopic.id, "title": subtopic.title, "content": subtopic.content, "completed": False}
     prereq_graph = build_prerequisite_graph(db)
     if not mod or not _module_unlocked(module=mod, db=db, user_id=user_id, prereq_graph=prereq_graph):
         raise HTTPException(status_code=403, detail="Modul masih terkunci")
